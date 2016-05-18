@@ -446,7 +446,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('Ryc', function($scope, MercadoPagoService,$state, $stateParams, ProductService, $templateCache,$ionicHistory,$ionicNavBarDelegate, $rootScope){
 
-  //console.log("ryc",$ionicHistory.currentView());
+  console.log("ryc",$ionicHistory.currentView());
   $rootScope.no=false;
   //console.log("his",$ionicHistory.viewHistory());
 
