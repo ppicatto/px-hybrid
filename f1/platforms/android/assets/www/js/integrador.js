@@ -2,6 +2,7 @@ angular.module('integrador', ['ionic','starter'])
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider,$stateProvider){
 	  $urlRouterProvider.otherwise('/integrador');
 	  //$ionicConfigProvider.views.maxCache(0);
+    $ionicConfigProvider.views.forwardCache(true);
 
    var integrador = {
     name: 'integrador',

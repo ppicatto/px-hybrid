@@ -1,5 +1,9 @@
 [
     {
+        "merged": "/Users/etorres/px-hybrid/f1/platforms/android/build/intermediates/res/merged/debug/drawable-land-mdpi-v4/screen.png",
+        "source": "/Users/etorres/px-hybrid/f1/platforms/android/res/drawable-land-mdpi/screen.png"
+    },
+    {
         "merged": "/Users/etorres/f1/platforms/android/build/intermediates/res/merged/debug/drawable-land-mdpi-v4/screen.png",
         "source": "/Users/etorres/f1/platforms/android/res/drawable-land-mdpi/screen.png"
     }

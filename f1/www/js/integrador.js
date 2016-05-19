@@ -33,7 +33,7 @@ angular.module('integrador', ['ionic','starter'])
 })
 .controller('h', function($scope, MercadoPagoService,$state, $stateParams,$ionicHistory, $ionicViewService,$timeout){
 
-	$ionicHistory.clearHistory(); 
+	$ionicHistory.clearHistory();
 	$ionicHistory.clearCache();
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
 	MercadoPagoService.setPublicKey("?public_key=444a9ef5-8a6b-429f-abdf-587639155d88");
@@ -43,15 +43,24 @@ angular.module('integrador', ['ionic','starter'])
     	alert(datos);
     }
 
-	$scope.pagar=function(){
-		$ionicHistory.clearHistory(); 
+	$scope.f3=function(){
+		$ionicHistory.clearHistory();
     	$ionicHistory.clearCache();
-    	MercadoPagoService.grupos().get(function(data){
-
-    	//MercadoPagoService.startRyc(b, $state.current,data,pref,data.groups[1].children[0]);
-		})
-    	MercadoPagoService.startF2(b);
+    // 	MercadoPagoService.grupos().get(function(data){
+		//
+    // 	//MercadoPagoService.startRyc(b, $state.current,data,pref,data.groups[1].children[0]);
+		// })
+    	MercadoPagoService.startCheckout(b);
     }
+		$scope.f2=function(){
+			$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
+			// 	MercadoPagoService.grupos().get(function(data){
+			//
+			// 	//MercadoPagoService.startRyc(b, $state.current,data,pref,data.groups[1].children[0]);
+			// })
+				MercadoPagoService.startF2(b);
+			}
 })
 .controller('p', function($scope, MercadoPagoService,$state, $stateParams,$ionicHistory, $ionicViewService,$timeout){
 
