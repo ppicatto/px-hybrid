@@ -33,7 +33,7 @@ angular.module('integrador', ['ionic','starter'])
 })
 .controller('h', function($scope, MercadoPagoService,$state, $stateParams,$ionicHistory, $ionicViewService,$timeout){
 
-	$ionicHistory.clearHistory();
+	$ionicHistory.clearHistory(); 
 	$ionicHistory.clearCache();
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
 	MercadoPagoService.setPublicKey("?public_key=444a9ef5-8a6b-429f-abdf-587639155d88");
@@ -44,7 +44,7 @@ angular.module('integrador', ['ionic','starter'])
     }
 
 	$scope.pagar=function(){
-		$ionicHistory.clearHistory();
+		$ionicHistory.clearHistory(); 
     	$ionicHistory.clearCache();
     	MercadoPagoService.grupos().get(function(data){
 
@@ -59,8 +59,8 @@ angular.module('integrador', ['ionic','starter'])
     	$state.go('integrador', { // llamas al state
       });
     }
-	// $ionicHistory.clearHistory(); // no funciona
-	// $ionicHistory.clearCache();
+	$ionicHistory.clearHistory(); // no funciona
+	$ionicHistory.clearCache();
 
 	$state.reload();
 

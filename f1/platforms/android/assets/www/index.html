@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+/*/
+
+      /*
+      * {
+        font-family: font-family: -apple-system, "Helvetica Neue", sans-serif;
+      }*/
+    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.min.js"></script>
+    <script src="js/integrador.js"></script>
+    <script src="js/app.js"></script>
+    
+    
+<!--     <script src="js/services.js"></script>
+    <script src="js/controllers.js"></script> -->
+
+  </head>
+  <body ng-app="integrador" class="platform-android platform-cordova platform-webview">
+    <ion-nav-bar class='barra bar-positive '  >
+     <ion-nav-back-button class="button-clear">
+      <i class="ion-ios-arrow-back carrito"></i> 
+    </ion-nav-back-button> 
+    <ion-nav-buttons side="right">
+        <i class="ion-ios-cart-outline carrito" style="padding: 5px" ng-click="mos()"></i> 
+    </ion-nav-buttons>
+    </ion-nav-bar>
+  <ion-nav-view animation="slide-left-right"></ion-nav-view>
+
+  <script type="text/ng-template" id="integrador.html">
+<ion-view title="{{header}}" class"header" cache-view="false">
+      <ion-content style=" background-color:rgb(244,244,244)">
+      <button class="button button-full button-positive" ng-click="pagar()">pagar</button>
+      <br>
+        <div footer></div>
+      </ion-content>
+    </ion-view>
+  </script>
+  <script type="text/ng-template" id="mercadopago.html">
+    <!-- <ion-view title='{{header}}'><ion-content style='background-color:rgb(244,244,244)'> -->
+      
+      <div compile-html="codigo"></div>
+<!--  <ion-view title="{{header}}">
+      <ion-content style=" background-color:rgb(244,244,244)">
+      <div  ng-show="mostrar==true"class=" item-thumbnail-left header"style="height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt">
+        {{titulo}}
+              <img ng-src="{{imagen}}">
+              <br>
+        {{total() | currency}}
+      
+      </div>
+
+        <div class="list list-inset" style=" margin:20px 0px 0px 0px">
+        <div  id= "l"class="item item-icon-left item-icon-right opciones" ng-repeat="grupo in grupos" ng-click="selectedGrupo(grupo)">
+         <i class=" icon {{grupo.icon}} custom-icon"></i>
+        {{grupo.description}}
+        <i class="icon ion-ios-arrow-right flecha"></i>
+          </div>
+      </div>
+      <br>
+      <footer></footer>
+      </ion-content></ion-view> -->
+  </script>
+
+
+
+  <script type="text/ng-template" id="vip3.html">
+    <ion-view title="{{header}}">
+      <ion-content style=" background-color:rgb(244,244,244)">
+
+      <div ng-show="mostrar==true"class=" item-thumbnail-left header"style="height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt">
+        {{titulo}}
+              <img ng-src="{{imagen}}">
+              <br>
+        {{total() | currency}}
+      
+      </div>
+
+        <div class="list list-inset" style=" margin:20px 0px 0px 0px">
+        <div  id= "l"class="item item-icon-right" ng-repeat="grupo in grupos" ng-click="elegir(grupo)" style="padding: 10px">
+        <div style="padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px" class="opciones" >
+        <img id= 'im' ng-src='{{getImagen(grupo)}}' style="padding: 0px 10px 0px 0px">{{grupo.description}}</div>
+        <br>
+        <div class="footer" style="text-align: left">{{grupo.comment}} </div>
+        <i class="icon ion-ios-arrow-right flecha"></i>
+          </div>
+      </div>
+
+      <footer></footer>
+      </ion-content>
+    </ion-view>
+  </script>
+
+  <script type="text/ng-template" id="ryc.html">
+    <ion-view title="{{header}}">
+      <ion-content style=" background-color:rgb(244,244,244)">
+      <div class=" item-thumbnail-left header"style="height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt">
+        {{titulo}}
+              <img ng-src="{{imagen}}">
+              <br>
+        {{total() | currency}}
+      
+      </div>
+
+
+      <div class="list list-inset" style=" margin:20px 0px 0px 0px;border-bottom: none">
+      <div  id= "l"class="item item-icon-right" ng-click="goBack()" style="padding: 10px;border: none">
+      <div style="padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px" class="opciones">
+      <img id= 'im' ng-src='{{getImagen(grupos)}}' style="padding: 0px 10px 0px 0px">
+      {{grupos.description}}
+      </div>
+      <br>
+
+        <div class="footer" style="text-align: left">{{grupos.comment}} </div>
+        <i class="icon ion-ios-arrow-right flecha"></i>
+      </div>
+      </div>
+      <div class="opciones"style="height: 40pt;background-color:rgb(244,244,244);vertical-align: middle; font-size: 16pt;line-height: 40pt; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222);  border-style:solid; text-align: center;font-weight: 200;word-spacing-spacing: 1.5px">Total a pagar: {{total()| currency}}</div>
+      <br>
+      <div class="copy" style="padding: 0px 20px"><p>    Al pagar, afirmo que soy mayor de edad y acepto los <a class="link">Términos y Condiciones</a> de MercadoPago.</p></div>
+      <div style="padding: 0px 10px 0px 10px">
+      <button class="button button-block button-positive pagar" style="background-color:rgb(0,159,222)" ng-click="pagar()">
+        Pagar
+      </button></div>
+
+        <footer></footer>
+      </ion-content>
+    </ion-view>
+  </script>
+
+    <script type="text/ng-template" id="instru.html">
+    <ion-view title="{{header}}">
+    <ion-view hide-nav-bar='true'>
+      <ion-content style=" background-color:rgb(244,244,244)">
+      <div style="height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;" class="textoinstru">
+      <i class="icon ion-social-usd pesos" style="color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt"></i>
+      <br class="textoinstru">
+      Paga {{total() | currency}} desde tu banca en línea de BBVA Bancomer
+        
+      </div>  
+
+          <div class="card">
+      <div class="item item-text-wrap opciones" style="text-align: left;width:100%;display:inline-block;border: none">
+
+        Elige Pago de servicios a MercadoLibre.
+        <br class="textoinstru">
+        <br>
+        <div class="copy"style="font-weight: 200; text-align: left;">NÚMERO DE CONVENIO</div>
+        <div class="textoinstru"style="text-align: left; letter-spacing: 2.5px;">{{numConvenio}}</div>
+        <br>
+        <div class="copy"style="font-weight: 200; text-align: left;">REFERENCIA</div>
+        <div class="textoinstru"style="text-align: left; letter-spacing: 2.5px;">{{numReferencia}}</div>
+        <br>
+        <br>
+        <button class="button button-outline button-positive" style=" -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; 
+    width:80px; 
+    margin: -20px -100px; 
+    position:relative;
+    top:50%; 
+    left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);">
+    Ir a banca en línea
+      </button>
+      <br>
+      <br>
+      </div>
+      <div class="item item-text-wrap opciones" style=" background-color:rgb(244,244,244); text-align: left;">
+        ¿Prefieres transferir desde tu computadora o tablet?
+        <div class="copy">
+        <br>
+        </div>
+
+<div style="font-weight: 200">Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div>
+      </div>
+      <div class="item item-text-wrap texto item-icon-left amarillo" style=" background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200">
+      <i>Se acreditará en menos de 1 hora.</i>
+      <i class="icon ion-ios-clock-outline amarillo"></i>
+
+      </div>
+      </div>
+      <button ng-click="volver()">volver</button>
+      <footer></footer>
+      </ion-content>
+    </ion-view>
+  </script>
+
+
+  
+  <script type="text/ng-template" id="card_form.html">
+    <ion-view title="Datos de tu tarjeta">
+    <ion-content class="has-header" animation="slide-left-right"  scroll="true" has-bouncing="true">
+    <form ng-submit="createToken()" ng-controller="CardFormCtrl" >
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Card Number</span>
+          <input type="number" id="cardNumber" ng-model="card_token.cardNumber" placeholder="4509 9535 6623 3704">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Cardholder Name</span>
+          <input type="text" id="cardholderName" ng-model="card_token.cardholder.name" placeholder="APRO">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Expiration Month</span>
+          <input type="month" id="cardExpirationMonth" ng-model="card_token.expirationMonth" placeholder="MM AAAA">
+        </label>
+<!--         <label class="item item-input item-stacked-label">
+          <span class="input-label">Expiration Year</span>
+          <input type="number" id="cardExpirationYear" ng-model="card_token.expirationYear" placeholder="AAAA">
+        </label> -->
+        <label class="item item-input item-select">
+        <div class="input-label">Document Type</div>
+          <select id="docType" ng-model="card_token.cardholder.identification.type">
+           
+            <option ng-repeat="identification_type in identification_types">{{identification_type.name}}</option>
+             <option selected>Seleccionar</option>
+          </select>
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Document number</span>
+          <input type="number" id="docNumber" ng-model="card_token.cardholder.identification.number" placeholder="12345678">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Security Code</span>
+          <input type="number" id="securityCode" ng-model="card_token.securityCode" placeholder="123">
+        </label>
+      <center><button type="submit" class="button   button-balanced" style="padding:0px 100px;">
+    Pagar
+      </button></center>
+      </div>
+    </form>
+    </ion-content>
+    </ion-view>
+  </script>
+  
+  
+  </body>
+</html>

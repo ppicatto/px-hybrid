@@ -30,8 +30,8 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.min.js"></script>
     <script src="js/integrador.js"></script>
     <script src="js/app.js"></script>
-
-
+    
+    
 <!--     <script src="js/services.js"></script>
     <script src="js/controllers.js"></script> -->
 
@@ -39,10 +39,10 @@
   <body ng-app="integrador">
     <ion-nav-bar class='barra bar-positive '  >
      <ion-nav-back-button class="button-clear" ng-show="no">
-      <i class="ion-ios-arrow-back carrito"></i>
-    </ion-nav-back-button>
+      <i class="ion-ios-arrow-back carrito"></i> 
+    </ion-nav-back-button> 
     <ion-nav-buttons side="right">
-        <i class="ion-ios-cart-outline carrito" style="padding: 5px" ng-click="mos()"></i>
+        <i class="ion-ios-cart-outline carrito" style="padding: 5px" ng-click="mos()"></i> 
     </ion-nav-buttons>
     </ion-nav-bar>
 
@@ -58,8 +58,8 @@
     </ion-view>
   </script>
   <script type="text/ng-template" id="mercadopago.html">
-     <!-- <ion-view title='{{header}}'><ion-content style='background-color:rgb(244,244,244)'> -->
-
+    <!-- <ion-view title='{{header}}'><ion-content style='background-color:rgb(244,244,244)'> -->
+      
       <ion-view compile-html="codigo"></ion-view>
 <!--  <ion-view title="{{header}}">
       <ion-content style=" background-color:rgb(244,244,244)">
@@ -68,7 +68,7 @@
               <img ng-src="{{imagen}}">
               <br>
         {{total() | currency}}
-
+      
       </div>
 
         <div class="list list-inset" style=" margin:20px 0px 0px 0px">
@@ -94,7 +94,7 @@
               <img ng-src="{{imagen}}">
               <br>
         {{total() | currency}}
-
+      
       </div>
 
         <div class="list list-inset" style=" margin:20px 0px 0px 0px">
@@ -120,7 +120,7 @@
               <img ng-src="{{imagen}}">
               <br>
         {{total() | currency}}
-
+      
       </div>
 
 
@@ -157,8 +157,8 @@
       <i class="icon ion-social-usd pesos" style="color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt"></i>
       <br class="textoinstru">
       Paga {{total() | currency}} desde tu banca en línea de BBVA Bancomer
-
-      </div>
+        
+      </div>  
 
           <div class="card">
       <div class="item item-text-wrap opciones" style="text-align: left;width:100%;display:inline-block;border: none">
@@ -173,11 +173,11 @@
         <div class="textoinstru"style="text-align: left; letter-spacing: 2.5px;">{{numReferencia}}</div>
         <br>
         <br>
-        <button class="button button-outline button-positive" style=" -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt;
-    width:80px;
-    margin: -20px -100px;
+        <button class="button button-outline button-positive" style=" -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; 
+    width:80px; 
+    margin: -20px -100px; 
     position:relative;
-    top:50%;
+    top:50%; 
     left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);">
     Ir a banca en línea
       </button>
@@ -205,7 +205,7 @@
   </script>
 
 
-
+  
   <script type="text/ng-template" id="card_form.html">
     <ion-view title="Datos de tu tarjeta">
     <ion-content class="has-header" animation="slide-left-right"  scroll="true" has-bouncing="true">
@@ -230,7 +230,7 @@
         <label class="item item-input item-select">
         <div class="input-label">Document Type</div>
           <select id="docType" ng-model="card_token.cardholder.identification.type">
-
+           
             <option ng-repeat="identification_type in identification_types">{{identification_type.name}}</option>
              <option selected>Seleccionar</option>
           </select>
@@ -251,7 +251,7 @@
     </ion-content>
     </ion-view>
   </script>
-
-
+  
+  
   </body>
 </html>
