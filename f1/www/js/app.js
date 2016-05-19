@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controllers','ngResource', 'ngSanitize'])
 
-.run(function($ionicPlatform,$rootScope, MercadoPagoService) {
+.run(function($ionicPlatform,$rootScope, MercadoPagoService, $ionicLoading) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -25,30 +25,37 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
     style.innerHTML = '.custom-icon {/*font-size: 64px;*/color : rgb(29,159,222);}.barra{color:red!default;background-color:rgb(29,159,222)!important;border-style: none!important;}.carrito{color:white;font-size: 26px;font-weight: bold;}.texto{font-size: 12pt;text-align: center;color:rgb(153,153,153);}.link{color:rgb(0,102,204);}.flecha{color:rgb(153,153,153);}.amarillo{color:rgb(178,144,84);}.pesos{font-size: 30pt;font-weight: bold;text-align: center;content: url("http://static1.squarespace.com/static/552c1470e4b0656e7f15eb88/5616784ae4b0300f35ec946f/56167c83e4b007142a3e46bf/1444314243622/dollar.png?format=500w");}.header{font-size:13pt !important;font-weight: 200 !important;color:white!important;word-wrap:break-word!important}.opciones{font-size:12pt!important;color:rgb(102,102,102)!important;}.footer{font-size:11pt;color:rgb(153,153,153)!important;text-align: center;}.copy{font-size:9pt;color:rgb(153,153,153)!important;text-align: center;}.pagar{font-size: 15pt!important;text-align: center!important;font-weight: 200!important;}.textoinstru{font-size: 16pt!important;font-weight: 200!important;color:rgb(102,102,102)!important;}';
     document.getElementsByTagName('head')[0].appendChild(style);
 
+    $rootScope.$ionicGoBack=function(){
+      if ($rootScope.elegida==undefined && $state.current.name=='MercadoPago-Grupos')
+        $ionicHistory.goBack(-2);
+      else
+        $ionicHistory.goBack(-1);
+    }
 
-      $rootScope.mostrar=false;
-      $rootScope.no=true;
-      $rootScope.mos = function() {
-            if ($rootScope.mostrar==true)
-              $rootScope.mostrar=false;
-            else
-              $rootScope.mostrar=true;
-        };
-      MercadoPagoService.grupos().get(function(data){
-        $rootScope.datos=data;
-      });
-      MercadoPagoService.getPrefId().get(function(data){
-        $rootScope.prefid=data;
-      });
+    $rootScope.mostrar=false;
+    $rootScope.no=true;
+    $rootScope.mos = function() {
+          if ($rootScope.mostrar==true)
+            $rootScope.mostrar=false;
+          else
+            $rootScope.mostrar=true;
+      };
+    $ionicLoading.show({
+          template: 'Cargando...'
+      })
+    MercadoPagoService.grupos().get(function(data){
+      $rootScope.datos=data;
+    });
+    MercadoPagoService.getPrefId().get(function(data){
+      $rootScope.prefid=data;
+      $ionicLoading.hide();
+    });
   });
 })
 
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider) {
   $ionicConfigProvider.backButton.text('').icon('ion-chevron-left').previousTitleText(false);
-   $ionicConfigProvider.navBar.alignTitle('center');
-
-  //$urlRouterProvider.otherwise('/integrador');
-
+  $ionicConfigProvider.navBar.alignTitle('center');
 
   var card_form = {
     name: 'card_form',
@@ -89,10 +96,10 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
       prefid: { array: true },
       ruta: { array: true },
       flavour: {}
-
     },
     templateUrl: 'mercadopago.html',
     controller: 'Ryc'};
+
   var instru = {
     name: 'MercadoPago-Ins',
     url: '/',
@@ -119,12 +126,13 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 angular.module('mercadopago.services', [])
 
 .factory('MercadoPagoService', function ($resource, $http,$state,$ionicHistory,$rootScope) {
-  var public_key;// = "?public_key=444a9ef5-8a6b-429f-abdf-587639155d88";
+  var public_key;
   var base_url = "https://api.mercadopago.com";
   var access_token='';
   var call;
   var volver;
   var prefid='';
+  var flavour;
 
   var startIns=function(callback, view, datos,prefid){
         call=callback;
@@ -173,16 +181,23 @@ angular.module('mercadopago.services', [])
       setPublicKey:function(dato){
         public_key=dato;
       },
+      calcularTotal:function(prefid){
+        var precio=0;
+        for(i=0;i<prefid.items.length;i++){
+          precio+=prefid.items[i].unit_price;
+        }
+        return precio;
+      },
       startCheckout:function(callback, view){
         call=callback;
         volver=view;
+        $rootScope.elegida=undefined;
         $state.go('MercadoPago-Ryc', {
-         "flavour":3
-      });
+         "flavour":3});
       },
       startF2:function(callback){
         call=callback;
-
+        $rootScope.elegida=2;
         $state.go('MercadoPago-Grupos', {
          "flavour":2
       });
@@ -223,18 +238,6 @@ angular.module('mercadopago.services', [])
   }
 })
 
-.factory('ProductService', function () {
-     return {
-       getProduct: function(id) {
-        var products=[{ id: '0', name: 'Funda Flip Cover Samsung Galaxy S4 Mini', image_url:'http://mla-s1-p.mlstatic.com/funda-flip-cover-samsung-galaxy-s4-mini-original-film-7290-MLA5178884614_102013-O.jpg', price: 150 },{ id: '1', name: 'Funda Flip Cover Samsung Galaxy S4 Mini', image_url:'http://mla-s1-p.mlstatic.com/funda-flip-cover-samsung-galaxy-s4-mini-original-film-7290-MLA5178884614_102013-O.jpg', price: 300 }];
-        if (id!=null){
-          return products[id];
-        }
-        else
-          return products;
-      }
-    }
-})
 angular.module('mercadopago.controllers', [])
 
 .controller('CardFormCtrl', function($scope, MercadoPagoService,$state, $stateParams){
@@ -247,120 +250,42 @@ angular.module('mercadopago.controllers', [])
   };
 })
 
-//--------------------------------------------------------------------------------
+.controller('Inicio', function($scope, MercadoPagoService,$state, $stateParams, $templateCache, $rootScope,$ionicHistory, $ionicLoading){
 
-.controller('Inicio', function($scope, MercadoPagoService,$state, $stateParams, ProductService, $templateCache, $rootScope,$ionicHistory, $ionicLoading){
-console.log("vip",$ionicHistory.currentView());
-  /*var prefid=$rootScope.prefid;
-  var datos;
-  var ruta=[];
+//   function include(filename){
+//     var head = document.getElementsByTagName('head')[0];
+//
+//     var script = document.createElement('script');
+//     script.src = filename;
+//     script.type = 'text/javascript';
+//
+//     head.appendChild(script)
+// }
+// include("js/ej.js");
 
-  $ionicLoading.show({
-      template: 'Cargando...'
-  })
-
-  $scope.start = function() {
-    $scope.grupos={};
-    MercadoPagoService.grupos().get(function(data){
-        datos=data;
-        datos.groups[0].icon="ion-card ";
-        datos.groups[1].icon="ion-cash ";
-        datos.groups[2].icon="ion-ios-locked ";
-
-        //console.log(datos.groups)
-        $scope.grupos=datos.groups;
-    });
-
-    MercadoPagoService.getPrefId().get(function(data){
-      $ionicLoading.hide();
-      prefid=data;
-      $scope.titulo=prefid.items[0].title;
-      $scope.imagen=prefid.items[0].picture_url;
-      $scope.total=function(){
-        var precio=0;
-        for(i=0;i<prefid.items.length;i++){
-          precio+=prefid.items[i].unit_price;
-        }
-        return precio;
-      }
-    });
-      $scope.header="¿Comó quieres pagar?";
-  };
-
-  $scope.start();
-  $scope.codigo="<ion-view title='{{header}}'><ion-content style='background-color:rgb(244,244,244)'><div  ng-show='mostrar==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total() | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in grupos' ng-click='selectedGrupo(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content></ion-view>";
-
-  $scope.selectedGrupo = function(pm) {
-    //console.log(pm);
-    ruta[0]=(pm.id);
-
-      //$ionicHistory.clearCache();
-
-    if(pm.children==null){
-      if($stateParams.flavour==1)
-        MercadoPagoService.volver($stateParams.flavour, pm.id);
-      else if (pm.id=="credit_card"){
-        $state.go('card_form', {
-          "payment_method_id": pm.id
-        });
-      }
-    }
-    else{
-      $state.go('MercadoPago-Grupos2', {
-        "opcion": pm,
-        "datosapi":datos,
-        "prefid":prefid,
-        "flavour":$stateParams.flavour,
-        "ruta":ruta,
-      });
-    }
-  };*/
-  function include(filename){
-    var head = document.getElementsByTagName('head')[0];
-
-    var script = document.createElement('script');
-    script.src = filename;
-    script.type = 'text/javascript';
-
-    head.appendChild(script)
-}
-include("js/ej.js");
   $rootScope.no=true;
   var prefid=$rootScope.prefid;
   var datos=$rootScope.datos;
-  var ruta=[];
-console.log($state.current.name)
-  $rootScope.$ionicGoBack=function(){
-    if ($rootScope.elegida==undefined && $state.current.name=='MercadoPago-Grupos')
-      $ionicHistory.goBack(-2);
-    else
-      $ionicHistory.goBack(-1);
-  }
+  //var ruta=[];
+
+
   $scope.start = function() {
-    $scope.grupos={};
 
-        datos.groups[0].icon="ion-card ";
-        datos.groups[1].icon="ion-cash ";
-        datos.groups[2].icon="ion-ios-locked ";
+    datos.groups[0].icon="ion-card "; //Agrego iconos
+    datos.groups[1].icon="ion-cash ";
+    datos.groups[2].icon="ion-ios-locked ";
 
-        //console.log(datos.groups)
-        $scope.grupos=datos.groups;
+    $scope.grupos=datos.groups;
+    $scope.header="¿Comó quieres pagar?";
 
+    $scope.titulo=prefid.items[0].title; // seteo el prefid
+    $scope.imagen=prefid.items[0].picture_url;
+    $scope.total=MercadoPagoService.calcularTotal(prefid);
 
-      $scope.titulo=prefid.items[0].title;
-      $scope.imagen=prefid.items[0].picture_url;
-      $scope.total=function(){
-        var precio=0;
-        for(i=0;i<prefid.items.length;i++){
-          precio+=prefid.items[i].unit_price;
-        }
-        return precio;
-      }
-      $scope.header="¿Comó quieres pagar?";
   };
 
   $scope.start();
-  $scope.codigo="<ion-nav-view title='{{header}}'> <ion-content style='background-color:rgb(244,244,244)'><div  ng-show='mostrar==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total() | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in grupos' ng-click='selectedGrupo(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content></ion-nav-view>";
+  $scope.codigo="<ion-nav-view title='{{header}}'> <ion-content style='background-color:rgb(244,244,244)'><div  ng-show='mostrar==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in grupos' ng-click='selectedGrupo(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content></ion-nav-view>";
 
     $scope.Salir=function(){
     MercadoPagoService.volver($stateParams.flavour,"cancelo");
@@ -392,7 +317,7 @@ console.log($state.current.name)
     }
   };
 })
-.controller('Inicio2', function($scope, MercadoPagoService,$state, $stateParams, ProductService, $templateCache,$ionicHistory, $rootScope){
+.controller('Inicio2', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory, $rootScope){
   console.log("grupo",$ionicHistory.currentView());
   //console.log("grupo",$ionicHistory.viewHistory());
   var datos=$stateParams.datosapi;
@@ -456,13 +381,10 @@ console.log($state.current.name)
     //console.log($rootScope.elegida);
     $ionicHistory.goBack(-2);
   }
-
-
   }
-
 })
 
-.controller('Ryc', function($scope, MercadoPagoService,$state, $stateParams, ProductService, $templateCache,$ionicHistory,$ionicNavBarDelegate, $rootScope){
+.controller('Ryc', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory,$ionicNavBarDelegate, $rootScope){
 
   console.log("ryc",$ionicHistory.currentView());
   $rootScope.no=false;
@@ -598,7 +520,7 @@ console.log($state.current.name)
     }
   }
 })
-.controller('instru', function($scope, MercadoPagoService,$state, $stateParams, ProductService, $templateCache,$ionicHistory){
+.controller('instru', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory){
 
   var datos=$stateParams.pago;
   var prefid=$stateParams.prefid[0];
