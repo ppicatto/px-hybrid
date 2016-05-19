@@ -58,7 +58,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
   $ionicConfigProvider.navBar.alignTitle('center');
 
   var card_form = {
-    name: 'card_form',
+    name: 'MercadoPago-FormTarjeta',
     url: '/:product_id/:payment_method_id/:issuer_id/:installments/:token',
     templateUrl: 'card_form.html',
     controller: 'CardFormCtrl'};
@@ -140,8 +140,7 @@ angular.module('mercadopago.services', [])
         $state.go('MercadoPago-Ins', {
          "flavour":3,
          "pago": datos,
-         "prefid": prefid
-      });
+         "prefid": prefid});
   }
   //var token={"card_number": "4024007134824373","security_code": "123","expiration_month": 4,"expiration_year": 2020,"cardholder": {"name": "auto","identification": {"subtype": null,"type": "DNI","number": "12345678",}}};
     return {
@@ -229,8 +228,7 @@ angular.module('mercadopago.services', [])
       }
       else{
         $ionicHistory.goBack(-1*($ionicHistory.currentView().index));
-        /*$state.go(volver,{
-          "param1":1});*/
+
       if (call!=null)
         call(datos);
       }
@@ -264,7 +262,7 @@ angular.module('mercadopago.controllers', [])
 // include("js/ej.js");
   $scope.codigo="<ion-nav-view title='{{header}}'> <ion-content style='background-color:rgb(244,244,244)'><div  ng-show='mostrar==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in grupos' ng-click='selectedGrupo(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content></ion-nav-view>";
 
-  $rootScope.no=true;
+  $rootScope.no=true; //mostrar la flecha de atras
   var prefid=$rootScope.prefid;
   var datos=$rootScope.datos;
 
@@ -280,7 +278,7 @@ angular.module('mercadopago.controllers', [])
   $scope.total=MercadoPagoService.calcularTotal(prefid);
 
   $scope.Salir=function(){
-    MercadoPagoService.volver($stateParams.flavour,"cancelo");
+    MercadoPagoService.volver($stateParams.flavour,"cancelo"); //cancelar y salir
   }
   $scope.selectedGrupo = function(pm) {
 
@@ -289,7 +287,7 @@ angular.module('mercadopago.controllers', [])
         MercadoPagoService.volver($stateParams.flavour, pm.id);
 
       else if (pm.id=="credit_card"){
-        $state.go('card_form', {
+        $state.go('MercadoPago-FormTarjeta', {
           "payment_method_id": pm.id
         });
       }
@@ -315,12 +313,14 @@ angular.module('mercadopago.controllers', [])
 
   $scope.total=MercadoPagoService.calcularTotal(prefid);
 
-  $scope.getImagen=function(pm){
+  $scope.getImagen=function(pm){ //buscar imagenes
   if (pm.show_icon==true){
     if(pm.id=="redlink_bank_transfer"||pm.id=="redlink_atm") pm.id="redlink";
       for(a=0;a<datos.payment_methods.length;a++){
-        if(datos.payment_methods[a].id==pm.id)
+        if(datos.payment_methods[a].id==pm.id){
+          pm.thumbnail=datos.payment_methods[a].thumbnail;
           return datos.payment_methods[a].thumbnail;
+        }
       }
     }
   }
@@ -329,9 +329,8 @@ angular.module('mercadopago.controllers', [])
   }
 
   $scope.elegir=function(pm){
-
     if ($stateParams.flavour==1)
-      MercadoPagoService.volver($stateParams.flavour, ruta);
+      MercadoPagoService.volver($stateParams.flavour);
     else if ($stateParams.flavour==2){
       var datos=[];
       datos.push(pm.id);
@@ -352,20 +351,21 @@ angular.module('mercadopago.controllers', [])
 
   var datos=$rootScope.datos;
   var prefid=$rootScope.prefid;
+  $scope.grupos=$rootScope.elegida;
 
   if($rootScope.elegida==undefined){ //va directo a grupos
     $state.go('MercadoPago-Grupos', {
           "prefid":prefid,
-          "flavour":$stateParams.flavour,
-          "ruta":$stateParams.ruta});
+          "flavour":$stateParams.flavour});
   }
 
   $scope.titulo=prefid.items[0].title;
   $scope.imagen=prefid.items[0].picture_url;
-  $scope.grupos=$rootScope.elegida;
+  $scope.total=MercadoPagoService.calcularTotal(prefid);
+
   $scope.header="Revisa si está todo bien…";
   $scope.codigo="<ion-nav-view title='{{header}}'><ion-content style='background-color:rgb(244,244,244)'><div class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px;border-bottom: none'><div  id= 'l'class='item item-icon-right' ng-click='goBack()' style='padding: 10px;border: none'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones'><img id= 'im' ng-src='{{getImagen(grupos)}}' style='padding: 0px 10px 0px 0px'>{{grupos.description}}</div><br><div class='footer' style='text-align: left'>{{grupos.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div></div><div class='opciones'style='height: 40pt;background-color:rgb(244,244,244);vertical-align: middle; font-size: 16pt;line-height: 40pt; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222);  border-style:solid; text-align: center;font-weight: 200;word-spacing-spacing: 1.5px'>Total a pagar: {{total| currency}}</div><br><div class='copy' style='padding: 0px 20px'><p>    Al pagar, afirmo que soy mayor de edad y acepto los <a class='link'>Términos y Condiciones</a> de MercadoPago.</p></div><div style='padding: 0px 10px 0px 10px'><button class='button button-block button-positive pagar' style='background-color:rgb(0,159,222)' ng-click='pagar()'>Pagar</button></div><footer></footer></ion-content></ion-nav-view>";
-  $scope.total=MercadoPagoService.calcularTotal(prefid);
+
   $scope.getImagen=function(pm){
     if(pm!=undefined){
     if (pm.show_icon==true){
@@ -385,33 +385,21 @@ angular.module('mercadopago.controllers', [])
     if($stateParams.flavour==1)
       MercadoPagoService.volver($stateParams.flavour,"false",null,null);
     else{
-      $rootScope.no=true;
+      $rootScope.no=true; //mostrar atras
       $state.go('MercadoPago-Grupos', {
-           //"param1": pm,
-           //"datosapi":datos,
           "prefid":prefid,
-          "flavour":$stateParams.flavour,
-          "ruta":$stateParams.ruta});
+          "flavour":$stateParams.flavour});
     }
   }
 
   $scope.pagar=function(){
     $rootScope.no=true;
-           /*$state.go('MercadoPago-Ins', {
-           //"param1": pm,
-           //"datosapi":datos,
-          "prefid":prefid,
-          "flavour":$stateParams.flavour,
-          "ruta":$stateParams.ruta});*/
 
-    if($stateParams.flavour==1){
+    if($stateParams.flavour==1)
       MercadoPagoService.volver($stateParams.flavour,"true",null,null);
-    }
+
     else{
-      //$ionicHistory.clearCache();
-
       var datos=[];
-
       datos.push($scope.grupos.id);
       datos.push($scope.total);
       datos.push(prefid.items[0].title);
@@ -420,21 +408,16 @@ angular.module('mercadopago.controllers', [])
     }
   }
 })
-.controller('instru', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory){
+.controller('instru', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory, $rootScope){
 
   var datos=$stateParams.pago;
-  var prefid=$stateParams.prefid[0];
+  var prefid=$rootScope.prefid;
   $scope.numConvenio="9903136140";
   $scope.numReferencia="9903136140";
-  $scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total() | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
+  $scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
 
-  $scope.total=function(){
-    var precio=0;
-    for(i=0;i<prefid.items.length;i++){
-      precio+=prefid.items[i].unit_price;
-    }
-    return precio;
-  }
+  $scope.total=MercadoPagoService.calcularTotal(prefid);
+
   $scope.Salir=function(){
     MercadoPagoService.volver($stateParams.flavour,datos,prefid,false);
   }
