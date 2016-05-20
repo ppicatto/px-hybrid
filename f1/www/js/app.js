@@ -73,6 +73,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
   var grupos2 = {
     name: 'MercadoPago-Grupos2',
     url: '/',
+    cache:false,
     params: {
       opcion: { array: true },
       datosapi: { array: true },
@@ -144,7 +145,7 @@ angular.module('mercadopago.services', [])
   var access_token='';
   var call;
   var volver;
-  var prefid='';
+  var prefid;
   var flavour;
 
   var startIns=function(callback, view, datos,prefid){
@@ -154,6 +155,12 @@ angular.module('mercadopago.services', [])
          "flavour":3,
          "pago": datos,
          "prefid": prefid});
+  }
+  var postPayment=function(data){
+    return $resource("https://api.mercadopago.com/beta/checkout/payments",data);
+  }
+  var getPrefId=function(){
+    return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token);
   }
   //var token={"card_number": "4024007134824373","security_code": "123","expiration_month": 4,"expiration_year": 2020,"cardholder": {"name": "auto","identification": {"subtype": null,"type": "DNI","number": "12345678",}}};
     return {
@@ -178,12 +185,11 @@ angular.module('mercadopago.services', [])
       createPayment:function(data){
         return $resource("https://www.mercadopago.com/checkout/examples/doPayment",data);
       },
+      postPayment:postPayment,
       grupos:function(){
         return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options"+public_key);
       },
-      getPrefId:function(){
-        return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token);
-      },
+      getPrefId:getPrefId,
       setPrefId:function(dato){
         prefid=dato;
       },
@@ -232,10 +238,17 @@ angular.module('mercadopago.services', [])
       });
       },
       startIns:startIns,
-      volver:function(flavour, datos,prefid, seguir){
+      volver:function(flavour, datos,pref_id, seguir){
         $rootScope.elegida=undefined;
 
       if(flavour==3 && seguir==true){
+        postPayment({
+	    "public_key":"TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a",
+	    "payment_method_id":datos[1],
+	    "pref_id":prefid,
+	    "email":"test-email@email.com"}).save(function(response){
+    console.log(response);
+  });
         datos="Pago";
         startIns(call,volver,datos,prefid);
       }
@@ -356,10 +369,11 @@ $rootScope.$ionicGoBack=function(){
       MercadoPagoService.volver($stateParams.flavour);
     else if ($stateParams.flavour==2){
       var datos=[];
+      datos.push($scope.token);
       datos.push(pm.id);
-      datos.push($scope.total);
-      datos.push(prefid.items[0].title);
-      MercadoPagoService.volver($stateParams.flavour,datos,prefid,true);
+      datos.push($scope.issuer);
+      datos.push($scope.payer_cost);
+      MercadoPagoService.volver($stateParams.flavour,datos);
     }
     else {
       $rootScope.elegida=pm;
@@ -423,9 +437,10 @@ $rootScope.$ionicGoBack=function(){
 
     else{
       var datos=[];
+      datos.push($scope.token);
       datos.push($scope.grupos.id);
-      datos.push($scope.total);
-      datos.push(prefid.items[0].title);
+      datos.push($scope.issuer);
+      datos.push($scope.payer_cost);
 
       MercadoPagoService.volver($stateParams.flavour,datos,prefid,true);
     }
