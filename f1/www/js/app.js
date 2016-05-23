@@ -139,7 +139,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 })
 angular.module('mercadopago.services', [])
 
-.factory('MercadoPagoService', function ($resource, $http,$state,$ionicHistory,$rootScope) {
+.factory('MercadoPagoService', function ($resource, $http,$state,$ionicHistory,$rootScope,$ionicLoading) {
   var public_key;
   var base_url = "https://api.mercadopago.com";
   var access_token='';
@@ -148,13 +148,12 @@ angular.module('mercadopago.services', [])
   var prefid;
   var flavour;
 
-  var startIns=function(callback, view, datos,prefid){
+  var startIns=function(callback, view, datos){
         call=callback;
         volver=view;
         $state.go('MercadoPago-Ins', {
          "flavour":3,
-         "pago": datos,
-         "prefid": prefid});
+         "pago": datos});
   }
   var postPayment=function(data){
     return $resource("https://api.mercadopago.com/beta/checkout/payments",data);
@@ -165,29 +164,29 @@ angular.module('mercadopago.services', [])
   //var token={"card_number": "4024007134824373","security_code": "123","expiration_month": 4,"expiration_year": 2020,"cardholder": {"name": "auto","identification": {"subtype": null,"type": "DNI","number": "12345678",}}};
     return {
       getPaymentMethods:function(){
-        return $resource(base_url+'/v1/payment_methods'+public_key);
+        return $resource(base_url+'/v1/payment_methods?public_key='+public_key);
       },
       getIssuers:function(pmid){
-        return $resource(base_url+'/v1/payment_methods/card_issuers'+public_key+"&payment_method_id=:payment_method_id",{ payment_method_id: pmid});
+        return $resource(base_url+'/v1/payment_methods/card_issuers?public_key='+public_key+"&payment_method_id=:payment_method_id",{ payment_method_id: pmid});
       },
       getInstallments:function(pmid,issuid,amm){
-        return $resource(base_url+'/v1/payment_methods/installments'+public_key+"&payment_method_id=:payment_method_id&issuer.id=:issuer&amount=:ammount",{ payment_method_id: pmid,ammount:amm,issuer:issuid});
+        return $resource(base_url+'/v1/payment_methods/installments?public_key='+public_key+"&payment_method_id=:payment_method_id&issuer.id=:issuer&amount=:ammount",{ payment_method_id: pmid,ammount:amm,issuer:issuid});
       },
       getIdentificationTypes:function(){
-        return $resource(base_url+'/v1/identification_types'+public_key);
+        return $resource(base_url+'/v1/identification_types?public_key='+public_key);
       },
       getPromos:function(){
-        return $resource(base_url+'/v1/payment_methods/deals'+public_key);
+        return $resource(base_url+'/v1/payment_methods/deals?public_key='+public_key);
       },
       createTonken:function(data){
-        return $resource(base_url+'/v1/card_tokens'+public_key,data);
+        return $resource(base_url+'/v1/card_tokens?public_key='+public_key,data);
       },
       createPayment:function(data){
         return $resource("https://www.mercadopago.com/checkout/examples/doPayment",data);
       },
       postPayment:postPayment,
       grupos:function(){
-        return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options"+public_key);
+        return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key);
       },
       getPrefId:getPrefId,
       setPrefId:function(dato){
@@ -232,7 +231,7 @@ angular.module('mercadopago.services', [])
         volver=view;
         $state.go('MercadoPago-Ryc', {
          "flavour":1,
-          "opcion": pm,
+         "opcion": pm,
          "datosapi":datos,
          "prefid":prefid,
       });
@@ -242,15 +241,19 @@ angular.module('mercadopago.services', [])
         $rootScope.elegida=undefined;
 
       if(flavour==3 && seguir==true){
+        $ionicLoading.show({
+              template: 'Cargando...'
+          })
         postPayment({
-	    "public_key":"TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a",
+	    "public_key":public_key,
 	    "payment_method_id":datos[1],
 	    "pref_id":prefid,
 	    "email":"test-email@email.com"}).save(function(response){
-    console.log(response);
+        console.log(response);
+        $ionicLoading.hide();
+        startIns(call,volver,response);
   });
-        datos="Pago";
-        startIns(call,volver,datos,prefid);
+
       }
       else{
         $ionicHistory.goBack(-1*($ionicHistory.currentView().index));
@@ -442,22 +445,22 @@ $rootScope.$ionicGoBack=function(){
       datos.push($scope.issuer);
       datos.push($scope.payer_cost);
 
-      MercadoPagoService.volver($stateParams.flavour,datos,prefid,true);
+      MercadoPagoService.volver($stateParams.flavour,datos,"",true);
     }
   }
 })
 .controller('instru', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory, $rootScope){
 
   var datos=$stateParams.pago;
-  var prefid=$rootScope.prefid;
+  //var prefid=$rootScope.prefid;
   $scope.numConvenio="9903136140";
   $scope.numReferencia="9903136140";
   $scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
 
-  $scope.total=MercadoPagoService.calcularTotal(prefid);
+  $scope.total=datos[0].transaction_details.total_paid_amount;
 
   $scope.Salir=function(){
-    MercadoPagoService.volver($stateParams.flavour,datos,prefid,false);
+    MercadoPagoService.volver($stateParams.flavour,datos,"",false);
   }
 })
 .controller('congrats', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory, $rootScope){
