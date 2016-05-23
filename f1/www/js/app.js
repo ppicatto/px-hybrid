@@ -105,7 +105,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
       opcion: { array: true },
       datosapi: { array: true },
       prefid: { array: true },
-      ruta: { array: true },
+      instru: {},
       flavour: {},
       pago: { array: true }
 
@@ -148,12 +148,20 @@ angular.module('mercadopago.services', [])
   var prefid;
   var flavour;
 
+  var getInstructions= function(payment_id, payment_method_id, payment_type){
+    return $resource("https://api.mercadopago.com/beta/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_method_id="+payment_method_id+"&payment_type="+payment_type);
+  }
   var startIns=function(callback, view, datos){
+      getInstructions(datos.id,datos.payment_method_id,datos.payment_type_id).get(function(response){
+        console.log(response);
         call=callback;
         volver=view;
         $state.go('MercadoPago-Ins', {
          "flavour":3,
-         "pago": datos});
+         "pago": datos,
+         "instru":response});
+      })
+
   }
   var postPayment=function(data){
     return $resource("https://api.mercadopago.com/beta/checkout/payments",data);
@@ -161,6 +169,7 @@ angular.module('mercadopago.services', [])
   var getPrefId=function(){
     return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token);
   }
+
   //var token={"card_number": "4024007134824373","security_code": "123","expiration_month": 4,"expiration_year": 2020,"cardholder": {"name": "auto","identification": {"subtype": null,"type": "DNI","number": "12345678",}}};
     return {
       getPaymentMethods:function(){
@@ -188,6 +197,7 @@ angular.module('mercadopago.services', [])
       grupos:function(){
         return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key);
       },
+      getInstructions:getInstructions,
       getPrefId:getPrefId,
       setPrefId:function(dato){
         prefid=dato;
@@ -249,9 +259,12 @@ angular.module('mercadopago.services', [])
 	    "payment_method_id":datos[1],
 	    "pref_id":prefid,
 	    "email":"test-email@email.com"}).save(function(response){
-        console.log(response);
         $ionicLoading.hide();
-        startIns(call,volver,response);
+        if(response.payment_type_id=="ticket")
+          startIns(call,volver,response);
+        else {
+          //pantalla congtrats
+        }
   });
 
       }
@@ -452,6 +465,8 @@ $rootScope.$ionicGoBack=function(){
 .controller('instru', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory, $rootScope){
 
   var datos=$stateParams.pago;
+  var instru=$stateParams.instru;
+  console.log(instru);
   //var prefid=$rootScope.prefid;
   $scope.numConvenio="9903136140";
   $scope.numReferencia="9903136140";
