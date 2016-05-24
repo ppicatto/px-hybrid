@@ -292,7 +292,29 @@ Usar otro medio de pago
 </ion-view>
 </script>
 
+<script type="text/ng-template" id="card_issuers.html">
+  <ion-view title="Selecciona el banco">
+  <ion-content>
+    <div class="list">
+      <div class="item" ng-repeat="cardIssuer in cardIssuers" ng-click="selectedCardIssuer(cardIssuer)">
+        <img src="{{cardIssuer.thumbnail}}" width="50" height="19" style="margin-right: 20px;">{{cardIssuer.name}}
+      </div>
+    </div>
+  </ion-content>
+  </ion-view>
+</script>
 
+
+<script type="text/ng-template" id="installments.html">
+  <ion-view title="Selecciona las cuotas">
+  <ion-content>
+    <div class="list">
+      <div class="item" ng-repeat="installment in installments.payer_costs" ng-click="selectedInstallment(installment)">{{installment.recommended_message}}
+      </div>
+    </div>
+  </ion-content>
+  </ion-view>
+</script>
 
   <script type="text/ng-template" id="card_form.html">
     <ion-view title="Datos de tu tarjeta">
