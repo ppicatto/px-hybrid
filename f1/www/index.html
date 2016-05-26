@@ -322,7 +322,8 @@ Usar otro medio de pago
     <form ng-submit="createToken()" ng-controller="CardFormCtrl" >
       <div class="list">
         <label class="item item-input">
-          <span class="input-label">Card Number {{keyPress()}}</span>
+          <span class="input-label">Card Number</span>
+          <img ng-src='{{keyPress()}}'style="padding: 0px 10px">
           <input type="number" id="cardNumber" ng-model="card_token.card_number" ng-keyup="keyPress($event.keyCode)" placeholder="4509 9535 6623 3704">
         </label>
         <label class="item item-input">
