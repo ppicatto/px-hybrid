@@ -27,6 +27,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
     $rootScope.mostrar=false;
     $rootScope.no=true;
+    $rootScope.car="";
 
     $rootScope.mos = function() {
       if ($rootScope.mostrar==true)
@@ -413,16 +414,25 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
 
   $scope.keyPress = function(keyCode){
 
-    if($scope.card_token.card_number!=undefined&&($scope.card_token.card_number+'').length >=6){
+    if($scope.card_token.card_number!=undefined&&($scope.card_token.card_number+'').length >=6 && $rootScope.car!=$scope.card_token.card_number){
     var base=Math.pow(10,($scope.card_token.card_number+'').length-6);
     var num= ($scope.card_token.card_number-$scope.card_token.card_number%base)/base;
-    console.log($scope.sacarExclusiones(2,num));
+    //console.log($scope.sacarExclusiones(2,num));
+    var i=0;
+    while(i<$rootScope.datos.payment_methods.length){
+        if ($scope.sacarExclusiones(i,num)&&$scope.sacarBins(i,num))
+        return $rootScope.datos.payment_methods[i].id;
+      i++;
+    }
+
+    /*console.log(cantidad);
     if ($scope.sacarExclusiones(0,num)&&$scope.sacarBins(0,num))
     return "visa";
     else if ($scope.sacarExclusiones(1,num)&&$scope.sacarBins(1,num))
     return "master";
     else if ($scope.sacarExclusiones(2,num)&&$scope.sacarBins(2,num))
-    return "amex";
+    return "amex";*/
+     $rootScope.car=$scope.card_token.card_number;
   }
 }
 
@@ -431,7 +441,7 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
       'congrats':3,})*/
 
   var token={
-"card_number": "4539129730327532",
+"card_number": "4556364421355272",
 "security_code": "123",
 "expiration_month": 4,
 "expiration_year": 2020,
@@ -445,11 +455,17 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
 
 
   // $scope.card_token.cardholder.identification.type=""+$scope.card_token.cardholder.identification.type+"";
-  if($scope.card_token.cardholder!=undefined){
-  $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
-  // $scope.card_token.expiration_year=$scope.card_token.expirationMonth.year;
-  $scope.card_token.security_code=""+$scope.card_token.security_code+"";
+if ($scope.card_token.card_number!=undefined){
+token.card_number=$scope.card_token.card_number;
 }
+
+
+
+//  if ($scope.card_token.cardholder!=undefined){
+//   $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
+//   // $scope.card_token.expiration_year=$scope.card_token.expirationMonth.year;
+//   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
+// }
   /*var d = new Date( $scope.card_token.expirationMonth);
 
 if ( !!d.valueOf() ) { // Valid date
@@ -458,7 +474,7 @@ if ( !!d.valueOf() ) { // Valid date
 }*/
 
 
-
+console.log($scope.card_token);
   MercadoPagoService.createCardToken().save(token,function(response){
 
   console.log(response);
@@ -679,15 +695,82 @@ $rootScope.$ionicGoBack=function(){
 
   $scope.numConvenio="9903136140";
   $scope.numReferencia="9903136140";
-  $scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
+  //$scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
   $scope.imagen="http://img.mlstatic.com/org-img/MP3/API/logos/master.gif"
   $scope.total=MercadoPagoService.calcularTotal(prefid);
+  console.log(datos);
+
+  $scope.titulo="";
+  $scope.subtitulo="";
+  var pmid=datos.payment_method_id;
+
+  switch (datos.status_detail) {
+    case "accredited":
+      $scope.titulo="";
+      $scope.subtitulo="";
+      break;
+    case "pending_contingency":
+      $scope.titulo="Estamos procesando el pago";
+      $scope.subtitulo="En menos de 1 hora te enviaremos por e-mail el resultado.";
+
+      break;
+    case "pending_review_manual":
+      $scope.titulo="Estamos procesando el pago";
+      $scope.subtitulo="Depende de los if que estan acá: https://github.com/mercadolibre/checkout-frontend/blob/master/webserver/grails-app/views/checkout/pay/templates/errores/card/_pending_review_manual.gsp";
+      break;
+    case "rejected_high_risk":
+      $scope.titulo="Por seguridad, tuvimos que rechazar tu pago";
+      $scope.subtitulo="Si quieres pagar con el dinero de tu cuenta, contáctate con Atención al Cliente de MercadoPago. O si prefieres, puedes elegir otro medio de pago.";
+        break;
+    case "cc_rejected_insufficient_amount":
+      $scope.titulo="Tu "+pmid+" no tiene fondos suficientes";
+      $scope.subtitulo="¡No te desanimes! Recárgala en cualquier banco o desde tu banca electrónica e inténtalo de nuevo. O si prefieres, puedes elegir otro medio de pago.";
+        break;
+    case "cc_rejected_other_reason":
+      $scope.titulo=""+pmid+" no procesó el pago";
+      $scope.subtitulo="Usar otra tarjeta u otro medio de pago.";
+        break;
+    case "cc_rejected_max_attempts":
+      $scope.titulo="Llegaste al límite de intentos permitidos";
+      $scope.subtitulo="Elige otra tarjeta u otro medio de pago.";
+        break;
+    case "cc_rejected_call_for_authorize":
+      $scope.titulo="";
+      $scope.subtitulo="";
+        break;
+    case "cc_rejected_duplicated_payment":
+      $scope.titulo=""+pmid+" no procesó el pago";
+      $scope.subtitulo="Si necesitas volver a pagar usa otra tarjeta u otro medio de pago.";
+      break;
+    case "cc_rejected_card_disabled":
+      $scope.titulo="Llama a "+pmid+" para que active tu tarjeta";
+      $scope.subtitulo="El teléfono está al dorso de tu tarjeta.";
+      break;
+    case "cc_rejected_bad_filled_other":
+      $scope.titulo="Uy, no pudimos procesar el pago";
+      $scope.subtitulo="Algún dato de tu "+pmid+" es incorrecto.";
+      break;
+    case "cc_rejected_bad_filled_card_number":
+      $scope.titulo="Uy, no pudimos procesar el pago";
+      $scope.subtitulo="El número de tu "+pmid+" es incorrecto.";
+      break;
+    case "cc_rejected_bad_filled_security_code":
+      $scope.titulo="Uy, no pudimos procesar el pago";
+      $scope.subtitulo="El código de seguridad no es el correcto.";
+      break;
+    case "cc_rejected_bad_filled_date":
+      $scope.titulo="Uy, no pudimos procesar el pago";
+      $scope.subtitulo="La fecha de vencimiento no es la correcta.";
+      break;
+    default:
+
+  }
 
   $scope.Salir=function(){
     MercadoPagoService.volver($stateParams.flavour,datos,prefid,false);
   }
   if (datos.status=="rejected")
-    $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(248,233,233);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 35pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(185,74,72)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-cancel tic' style='color:rgb(153,6,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Mastercard no procesó el pago<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>Usa otra tarjeta u otro medio de pago.</div></div><br><br><button class='button button-outline button-positive' style='background-color:rgb(255,255,255); -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt;margin: -20px -115px;position:relative;top:40%;left:50%; width:220px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Usar otro medio de pago</button><footer></footer></ion-content></ion-view>";
+    $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(248,233,233);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 35pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(185,74,72)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-cancel tic' style='color:rgb(153,6,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>{{titulo}}<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>{{subtitulo}}</div></div><br><br><button class='button button-outline button-positive' style='background-color:rgb(255,255,255); -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt;margin: -20px -115px;position:relative;top:40%;left:50%; width:220px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Usar otro medio de pago</button><footer></footer></ion-content></ion-view>";
 
   else if (datos.status_detail=="cc_rejected_call_for_authorize")
     $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(228,242,249);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(102,102,102)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-call tic' style='color:rgb(57,135,173); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Debes autorizar ante Visa el pago de {{total | currency}} a MercadoPago<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>El teléfono está al dorso de tu tarjeta.</div></div><br><br><div class='footer'><a class='link' ng-click='Salir()'>Ya hablé con Visa y me autorizó</a></div><br><div class='footer' style='padding: 10px 0'>¿No pudiste autorizarlo?</div><div class='footer' style='line-height: 15pt;'><a class='link' ng-click='Salir()'>Elige otro medio de pago</a></div><br><footer></footer></ion-content></ion-view>";
