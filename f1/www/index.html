@@ -322,8 +322,8 @@ Usar otro medio de pago
     <form ng-submit="createToken()" ng-controller="CardFormCtrl" >
       <div class="list">
         <label class="item item-input">
-          <span class="input-label">Card Number</span>
-          <input type="number" id="cardNumber" ng-model="card_token.cardNumber" placeholder="4509 9535 6623 3704">
+          <span class="input-label">Card Number {{keyPress()}}</span>
+          <input type="number" id="cardNumber" ng-model="card_token.card_number" ng-keyup="keyPress($event.keyCode)" placeholder="4509 9535 6623 3704">
         </label>
         <label class="item item-input">
           <span class="input-label">Cardholder Name</span>
@@ -331,7 +331,11 @@ Usar otro medio de pago
         </label>
         <label class="item item-input">
           <span class="input-label">Expiration Month</span>
-          <input type="month" id="cardExpirationMonth" ng-model="card_token.expirationMonth" placeholder="MM AAAA">
+          <input type="number" id="cardExpirationMonth" ng-model="card_token.expiration_month" placeholder="MM AAAA">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Expiration Year</span>
+          <input type="number" id="cardExpirationyear" ng-model="card_token.expiration_year" placeholder="MM AAAA">
         </label>
 
         <label class="item item-input item-select">
@@ -348,7 +352,7 @@ Usar otro medio de pago
         </label>
         <label class="item item-input">
           <span class="input-label">Security Code</span>
-          <input type="number" id="securityCode" ng-model="card_token.securityCode" placeholder="123">
+          <input type="number" id="securityCode" ng-model="card_token.security_code" placeholder="123">
         </label>
       <center><button type="submit" class="button   button-balanced" style="padding:0px 100px;">
     Pagar
