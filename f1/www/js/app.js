@@ -357,7 +357,8 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
 })
 
 .controller('CardFormCtrl', function($scope, MercadoPagoService,$state, $stateParams,$rootScope,$ionicHistory){
-  console.log($ionicHistory.currentView());
+  //console.log($ionicHistory.currentView());
+  $scope.mostrarIcono=false;
   MercadoPagoService.getIdentificationTypes().query(function(data) {
     $scope.identification_types = data;
   });
@@ -390,7 +391,7 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
   }
   $scope.sacarExclusiones=function(num,card){
     var bin=[""]; var a=0;
-    for (i=1;i<($rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern.length);i++){ //saco los numeros
+    for (i=$rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern.length-1;i>0;i--){ //saco los numeros
       if ($rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i]!='('&& $rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i]!=')'){
          if ($rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i]!='|'){
         bin[a]+=$rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i];
@@ -416,51 +417,41 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
   $scope.keyPress = function(keyCode){
 
     if($scope.card_token.card_number!=undefined&&($scope.card_token.card_number+'').length >=6 && $rootScope.car!=$scope.card_token.card_number){
+      $scope.mostrarIcono=true;
     var base=Math.pow(10,($scope.card_token.card_number+'').length-6);
     var num= ($scope.card_token.card_number-$scope.card_token.card_number%base)/base;
-    //console.log($scope.sacarExclusiones(2,num));
+
     var i=0;
     while(i<$rootScope.datos.payment_methods.length){
-        if ($scope.sacarExclusiones(i,num)&&$scope.sacarBins(i,num))
-        return $rootScope.datos.payment_methods[i].thumbnail;
+        if ($scope.sacarExclusiones(i,num)&&$scope.sacarBins(i,num)){
+        return $rootScope.datos.payment_methods[i];
+      }
       i++;
     }
-
-    /*console.log(cantidad);
-    if ($scope.sacarExclusiones(0,num)&&$scope.sacarBins(0,num))
-    return "visa";
-    else if ($scope.sacarExclusiones(1,num)&&$scope.sacarBins(1,num))
-    return "master";
-    else if ($scope.sacarExclusiones(2,num)&&$scope.sacarBins(2,num))
-    return "amex";*/
      $rootScope.car=$scope.card_token.card_number;
   }
-}
+  else if($scope.card_token.card_number==undefined||($scope.card_token.card_number+'').length <=6){}
+    $scope.mostrarIcono=false;
 
+}
   $scope.createToken = function() {
-    /*$state.go('MercadoPago-Congrats',{
-      'congrats':3,})*/
 
   var token={
-"card_number": "4556364421355272",
-"security_code": "123",
-"expiration_month": 4,
-"expiration_year": 2020,
-"cardholder": {
-"name": "auto",
-"identification": {
-  "subtype": null,
-  "type": "DNI",
-  "number": "12345678"}}};
+    "card_number": "4556364421355272",
+    "security_code": "123",
+    "expiration_month": 4,
+    "expiration_year": 2020,
+    "cardholder": {
+    "name": "APRO",
+    "identification": {
+      "subtype": null,
+      "type": "DNI",
+      "number": "12345678"}}
+  };
 
-
-
-  // $scope.card_token.cardholder.identification.type=""+$scope.card_token.cardholder.identification.type+"";
-if ($scope.card_token.card_number!=undefined){
-token.card_number=$scope.card_token.card_number;
-}
-
-
+  if ($scope.card_token.card_number!=undefined){
+    token.card_number=$scope.card_token.card_number;
+  }
 
 //  if ($scope.card_token.cardholder!=undefined){
 //   $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
@@ -474,13 +465,10 @@ if ( !!d.valueOf() ) { // Valid date
     $scope.card_token.expiration_month=d.getMonth();
 }*/
 
-
-console.log($scope.card_token);
-  MercadoPagoService.createCardToken().save(token,function(response){
-
+MercadoPagoService.createCardToken().save(token,function(response){
   console.log(response);
   $state.go('MercadoPago-CardIssuers',{
-    'opcion':$scope.keyPress(),
+    'opcion':$scope.keyPress().id,
     'token': response,
     "flavour": $stateParams.flavour,})
 });
@@ -697,6 +685,7 @@ $rootScope.$ionicGoBack=function(){
   //$scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
   $scope.imagen="http://img.mlstatic.com/org-img/MP3/API/logos/master.gif"
   $scope.total=MercadoPagoService.calcularTotal(prefid);
+
   console.log(datos);
 
   $scope.titulo="";
@@ -776,7 +765,8 @@ $rootScope.$ionicGoBack=function(){
 
   else if (datos.status_detail=="cc_rejected_call_for_authorize")
     $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(228,242,249);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(102,102,102)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-call tic' style='color:rgb(57,135,173); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Debes autorizar ante Visa el pago de {{total | currency}} a MercadoPago<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>El teléfono está al dorso de tu tarjeta.</div></div><br><br><div class='footer'><a class='link' ng-click='Salir()'>Ya hablé con Visa y me autorizó</a></div><br><div class='footer' style='padding: 10px 0'>¿No pudiste autorizarlo?</div><div class='footer' style='line-height: 15pt;'><a class='link' ng-click='Salir()'>Elige otro medio de pago</a></div><br><footer></footer></ion-content></ion-view>";
-
+  else if (datos.status=="in_process")
+    $scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style=' background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 20px 16pt 20pt 16pt;' class='textoinstru'><i class='icon ion-ios-clock-outline pesos' style='color:rgb(239,199,1); padding:40pt'></i><br class='textoinstru'>{{titulo}}<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>{{subtitulo}}</div></div><footer></footer></ion-content></ion-view>";
   else
     $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div style=' background-color:rgb(234,255,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;' class='textoinstru'><i class='icon ion-checkmark-circled tic' style='color:rgb(47,176,0); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>¡Listo, se acreditó tu pago!<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>Te enviaremos los datos  a usuario@gmail.com</div></div><div class='card' style='margin:0px 0px 0px 0px'><div class='item item-text-wrap textoinstru ' style='text-align: left;width:100%;display:inline-block; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><img id= 'im' ng-src='{{imagen}}' style='padding: 0px 10px 0px 0px'>terminada en 5676<br class='textoinstru'><br><div class='textoinstru'style='font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>6 de {{total | currency}}  <i class='texto' style='color:rgb(67,176,0);text-align: left;'>Sin intereses</i></div><br><div class='texto'style='text-align: left;  color:rgb(102,102,102)'>En tu estado de cuenta verás el cargo como MERCADOPAGO.</div></div></div><div class='item item-text-wrap texto' style=' text-align: center;border-style: none;font-weight: 200;color: rgb(102,102,102); border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><i>Comprobante: 234534678532</i></div></div><footer></footer></ion-content></ion-view>";
 
