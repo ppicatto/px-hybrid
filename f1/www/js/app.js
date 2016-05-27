@@ -366,6 +366,7 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
 
   $scope.sacarBins=function(num, card){
     var bin=[""]; var a=0;
+    if ($rootScope.datos.payment_methods[num].payment_type_id=="credit_card"||$rootScope.datos.payment_methods[num].payment_type_id=="debit_card"){
     for (i=1;i<($rootScope.datos.payment_methods[num].settings[0].bin.pattern.length);i++){ //saco los numeros
       if ($rootScope.datos.payment_methods[num].settings[0].bin.pattern[i]!='('&& $rootScope.datos.payment_methods[num].settings[0].bin.pattern[i]!=')'){
          if ($rootScope.datos.payment_methods[num].settings[0].bin.pattern[i]!='|'){
@@ -376,7 +377,6 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
           bin[a]="";
         }
       }
-
     }
     if (bin[0].length==0)
       return false;
@@ -389,9 +389,14 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
     }
     return false;
   }
+  else {
+    return false;
+  }
+  }
   $scope.sacarExclusiones=function(num,card){
     var bin=[""]; var a=0;
-    for (i=$rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern.length-1;i>0;i--){ //saco los numeros
+    if ($rootScope.datos.payment_methods[num].payment_type_id=="credit_card"||$rootScope.datos.payment_methods[num].payment_type_id=="debit_card"){
+    for (i=1;i<($rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern.length);i++){ //saco los numeros
       if ($rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i]!='('&& $rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i]!=')'){
          if ($rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i]!='|'){
         bin[a]+=$rootScope.datos.payment_methods[num].settings[0].bin.exclusion_pattern[i];
@@ -413,20 +418,29 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
     }
     return true;
   }
+  else {
+    return false;
+  }
+}
 
   $scope.keyPress = function(keyCode){
-
+    console.log($rootScope.datos.payment_methods[16].settings);
     if($scope.card_token.card_number!=undefined&&($scope.card_token.card_number+'').length >=6 && $rootScope.car!=$scope.card_token.card_number){
       $scope.mostrarIcono=true;
     var base=Math.pow(10,($scope.card_token.card_number+'').length-6);
     var num= ($scope.card_token.card_number-$scope.card_token.card_number%base)/base;
 
-    var i=0;
-    while(i<$rootScope.datos.payment_methods.length){
+    console.log($scope.sacarExclusiones(2,num));
+    console.log($scope.sacarBins(2,num));
+
+    var i=($rootScope.datos.payment_methods.length)-1;
+
+    while(i>=0){
         if ($scope.sacarExclusiones(i,num)&&$scope.sacarBins(i,num)){
-        return $rootScope.datos.payment_methods[i];
+          return $rootScope.datos.payment_methods[i];
       }
-      i++;
+
+      i--;
     }
      $rootScope.car=$scope.card_token.card_number;
   }
@@ -662,6 +676,7 @@ $rootScope.$ionicGoBack=function(){
   $scope.references=instru.references;
   $scope.second=instru.secondary_info[0];
 
+
   $scope.value=function (reference) { //junto los datos de field_value
     var resultado="";
     for (i=0;i<reference.field_value.length;i++)
@@ -683,13 +698,25 @@ $rootScope.$ionicGoBack=function(){
   var prefid=$rootScope.prefid;
 
   //$scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style='height: 120pt; background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 10px 16pt 50pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Paga {{total | currency}} desde tu banca en línea de BBVA Bancomer</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'>Elige Pago de servicios a MercadoLibre.<br class='textoinstru'><br><div class='copy'style='font-weight: 200; text-align: left;'>NÚMERO DE CONVENIO</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numConvenio}}</div><br><div class='copy'style='font-weight: 200; text-align: left;'>REFERENCIA</div><div class='textoinstru'style='text-align: left; letter-spacing: 2.5px;'>{{numReferencia}}</div><br><br><button class='button button-outline button-positive' style=' -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt; width:80px; margin: -20px -100px; position:relative;top:50%; left:50%; width:200px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'>Ir a banca en línea</button><br><br></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>¿Prefieres transferir desde tu computadora o tablet?<div class='copy'><br></div><div style='font-weight: 200'>Te enviamos un e-mail para que puedas hacerlo desde tu correo.</div></div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>Se acreditará en menos de 1 hora.</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
-  $scope.imagen="http://img.mlstatic.com/org-img/MP3/API/logos/master.gif"
+  $scope.getImagen=function(){ //buscar imagenes de los pm
+    var pm=datos.payment_method_id;
+    if(pm=="redlink_bank_transfer"||pm=="redlink_atm") pm="redlink";
+      for(a=0;a<$rootScope.datos.payment_methods.length;a++){
+        if($rootScope.datos.payment_methods[a].id==pm){
+          return $rootScope.datos.payment_methods[a].thumbnail;
+      }
+    }
+  }
   $scope.total=MercadoPagoService.calcularTotal(prefid);
 
   console.log(datos);
 
+  $scope.finalTarjeta=datos.card.last_four_digits;
+  $scope.cuotas=datos.installments;
+  $scope.cuanto=datos.transaction_details.installment_amount;
   $scope.titulo="";
   $scope.subtitulo="";
+  $scope.nombre=datos.statement_descriptor;
   var pmid=datos.payment_method_id;
 
   switch (datos.status_detail) {
@@ -704,7 +731,9 @@ $rootScope.$ionicGoBack=function(){
       break;
     case "pending_review_manual":
       $scope.titulo="Estamos procesando el pago";
-      $scope.subtitulo="Depende de los if que estan acá: https://github.com/mercadolibre/checkout-frontend/blob/master/webserver/grails-app/views/checkout/pay/templates/errores/card/_pending_review_manual.gsp";
+
+      $scope.subtitulo="En menos de 2 días hábiles te diremos por e-mail si se acreditó o si necesitamos más información.";
+      $scope.subtitulo="En poquitas horas te diremos por e-mail si se acreditó o si necesitamos más información.";
       break;
     case "rejected_high_risk":
       $scope.titulo="Por seguridad, tuvimos que rechazar tu pago";
@@ -768,7 +797,7 @@ $rootScope.$ionicGoBack=function(){
   else if (datos.status=="in_process")
     $scope.codigo="<ion-view title='{{header}}' hide-nav-bar='true'><ion-nav-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style=' background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 20px 16pt 20pt 16pt;' class='textoinstru'><i class='icon ion-ios-clock-outline pesos' style='color:rgb(239,199,1); padding:40pt'></i><br class='textoinstru'>{{titulo}}<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>{{subtitulo}}</div></div><footer></footer></ion-content></ion-view>";
   else
-    $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div style=' background-color:rgb(234,255,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;' class='textoinstru'><i class='icon ion-checkmark-circled tic' style='color:rgb(47,176,0); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>¡Listo, se acreditó tu pago!<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>Te enviaremos los datos  a usuario@gmail.com</div></div><div class='card' style='margin:0px 0px 0px 0px'><div class='item item-text-wrap textoinstru ' style='text-align: left;width:100%;display:inline-block; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><img id= 'im' ng-src='{{imagen}}' style='padding: 0px 10px 0px 0px'>terminada en 5676<br class='textoinstru'><br><div class='textoinstru'style='font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>6 de {{total | currency}}  <i class='texto' style='color:rgb(67,176,0);text-align: left;'>Sin intereses</i></div><br><div class='texto'style='text-align: left;  color:rgb(102,102,102)'>En tu estado de cuenta verás el cargo como MERCADOPAGO.</div></div></div><div class='item item-text-wrap texto' style=' text-align: center;border-style: none;font-weight: 200;color: rgb(102,102,102); border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><i>Comprobante: 234534678532</i></div></div><footer></footer></ion-content></ion-view>";
+    $scope.codigo="<ion-view title='{{header}}'><ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div style=' background-color:rgb(234,255,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;' class='textoinstru'><i class='icon ion-checkmark-circled tic' style='color:rgb(47,176,0); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>¡Listo, se acreditó tu pago!<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>Te enviaremos los datos  a usuario@gmail.com</div></div><div class='card' style='margin:0px 0px 0px 0px'><div class='item item-text-wrap textoinstru ' style='text-align: left;width:100%;display:inline-block; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><img id= 'im' ng-src='{{getImagen()}}' style='padding: 0px 10px 0px 0px'>terminada en {{finalTarjeta}}<br class='textoinstru'><br><div class='textoinstru'style='font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>{{cuotas}} de {{cuanto | currency}}  <i class='texto' style='color:rgb(67,176,0);text-align: left;'>Sin intereses</i></div><br><div class='texto'style='text-align: left;  color:rgb(102,102,102)'>En tu estado de cuenta verás el cargo como {{nombre}}.</div></div></div><div class='item item-text-wrap texto' style=' text-align: center;border-style: none;font-weight: 200;color: rgb(102,102,102); border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><i>Comprobante: 234534678532</i></div></div><footer></footer></ion-content></ion-view>";
 
 })
 .directive('footer', function(){
