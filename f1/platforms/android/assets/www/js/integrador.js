@@ -35,8 +35,8 @@ angular.module('integrador', ['ionic','starter'])
 	$ionicHistory.clearHistory();
 	$ionicHistory.clearCache();
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
-	MercadoPagoService.setPublicKey("APP_USR-5a399d42-6015-4f6a-8ff8-dd7d368068f8");
-	MercadoPagoService.setPrefId("150216849-34d5b32d-02d1-40b4-808f-62d11cc3e460");
+	MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
+	MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
 
 	var callback=function(datos){
 		console.log(datos);
