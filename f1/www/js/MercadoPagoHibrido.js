@@ -55,7 +55,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
         $rootScope.prefid=data;
 
       });
-    MercadoPagoService.grupos().get(function(data){
+    MercadoPagoService.getGrupos().get(function(data){
       $rootScope.datos=data;
       $ionicLoading.hide();
     });
@@ -192,25 +192,23 @@ angular.module('mercadopago.services', [])
   var getPrefId=function(){
     return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token);
   }
-  var startIns=function(callback, view, datos){
+  var startIns=function(callback, datos, f){
+    console.log(datos)
       getInstructions(datos.id,datos.payment_method_id,datos.payment_type_id).get(function(response){
         console.log(response);
         $ionicLoading.hide();
         call=callback;
-        volver=view;
         $state.go('MercadoPago-Ins', {
-         "flavour":3,
+         "flavour":f,
          "pago": datos,
          "instru":response});})
   }
-  var startCongrats=function(callback, view, datos){
+  var startCongrats=function(callback, datos,f){
         $ionicLoading.hide();
         call=callback;
-        volver=view;
         $state.go('MercadoPago-Congrats', {
-         "flavour":3,
-         "pago": datos,
-         "congrats":2});
+         "flavour":f,
+         "pago": datos});
   }
 
     return {
@@ -235,7 +233,7 @@ angular.module('mercadopago.services', [])
       createPayment:function(data){
         return $resource("https://www.mercadopago.com/checkout/examples/doPayment",data);
       },
-      grupos:function(){
+      getGrupos:function(){
         return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key);
       },
       setPrefId:function(dato){
@@ -273,21 +271,17 @@ angular.module('mercadopago.services', [])
          "flavour":2
       });
       },
-      startGrupos:function(callback, view){
+      startGrupos:function(callback){
         call=callback;
-        volver=view;
         $state.go('MercadoPago-Grupos', {
          "flavour":1
       });
       },
-      startRyc:function(callback, view, datos, prefid, pm){
+      startRyc:function(callback, pm){
         call=callback;
-        volver=view;
+        $rootScope.elegida=pm;
         $state.go('MercadoPago-Ryc', {
-         "flavour":1,
-         "opcion": pm,
-         "datosapi":datos,
-         "prefid":prefid,});
+         "flavour":1,});
       },
 
       volver:function(flavour, datos,pref_id, seguir){
@@ -298,22 +292,22 @@ angular.module('mercadopago.services', [])
           if (datos[0]==undefined){
           postPayment({
             "public_key":public_key,
-            "payment_method_id":datos[1],
+            "payment_method_id":datos[1].id,
             "pref_id":prefid,
             "email":"test-email@email.com"}).save(function(response){
-              startIns(call,volver,response);
+              startIns(call,response,3);
             });
           }
           else {
               postPayment({
                 "public_key":public_key,
-                "payment_method_id":datos[1],
+                "payment_method_id":datos[1].id,
                 "pref_id":prefid,
                 "email":"test-email@email.com",
                 "token":datos[0].id,
-                "issuer":datos[2],
+                "issuer_id":datos[2].id,
                 "installments":datos[3]}).save(function(response){
-                  startCongrats(call,volver,response);
+                  startCongrats(call,response,3);
                 })
             }
           }
@@ -330,7 +324,7 @@ angular.module('mercadopago.services', [])
 angular.module('mercadopago.controllers', [])
 .controller('CardIssuersCtrl', function($scope, MercadoPagoService,$state, $stateParams){
 
-MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_digits).query(function(data) {
+MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_six_digits).query(function(data) {
     if (data.length==1){
       $scope.selectedCardIssuer(data[0]);
   }
@@ -342,7 +336,7 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
   $scope.selectedCardIssuer = function(issuer) {
     $state.go('MercadoPago-CardInstallments',
       {
-         "issuer": issuer.id,
+         "issuer": issuer,
          "opcion": $stateParams.opcion,
          "token": $stateParams.token,
          "flavour": $stateParams.flavour,
@@ -356,7 +350,7 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
 
    //console.log($stateParams.token);
   $scope.total=MercadoPagoService.calcularTotal(prefid);
-    MercadoPagoService.getInstallments($stateParams.opcion, $stateParams.issuer, $scope.total).query(function(data) {
+    MercadoPagoService.getInstallments($stateParams.opcion.id, $stateParams.issuer.id, $scope.total).query(function(data) {
       $scope.installments = data[0];}
   );
   $scope.selectedInstallment = function(installment) {
@@ -446,10 +440,8 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
     var i=($rootScope.datos.payment_methods.length)-1;
 
     while(i>=0){
-        if ($scope.sacarExclusiones(i,num)&&$scope.sacarBins(i,num)){
+        if ($scope.sacarExclusiones(i,num)&&$scope.sacarBins(i,num))
           return $rootScope.datos.payment_methods[i];
-      }
-
       i--;
     }
      $rootScope.car=$scope.card_token.card_number;
@@ -457,7 +449,7 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
   else if($scope.card_token.card_number==undefined||($scope.card_token.card_number+'').length <=6){}
     $scope.mostrarIcono=false;
 
-}
+  }
   $scope.createToken = function() {
 
   var token={
@@ -482,17 +474,12 @@ MercadoPagoService.getIssuers($stateParams.opcion, $stateParams.token.first_six_
 //   // $scope.card_token.expiration_year=$scope.card_token.expirationMonth.year;
 //   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
 // }
-  /*var d = new Date( $scope.card_token.expirationMonth);
 
-if ( !!d.valueOf() ) { // Valid date
-    $scope.card_token.expiration_year=d.getFullYear();
-    $scope.card_token.expiration_month=d.getMonth();
-}*/
 
 MercadoPagoService.createCardToken().save(token,function(response){
   console.log(response);
   $state.go('MercadoPago-CardIssuers',{
-    'opcion':$scope.keyPress().id,
+    'opcion':$scope.keyPress(),
     'token': response,
     "flavour": $stateParams.flavour,})
 });
@@ -502,16 +489,6 @@ MercadoPagoService.createCardToken().save(token,function(response){
 
 .controller('Inicio', function($scope, MercadoPagoService,$state, $stateParams, $templateCache, $rootScope,$ionicHistory, $ionicLoading){
 
-//   function include(filename){
-//     var head = document.getElementsByTagName('head')[0];
-//
-//     var script = document.createElement('script');
-//     script.src = filename;
-//     script.type = 'text/javascript';
-//
-//     head.appendChild(script)
-// }
-// include("js/ej.js");
 
 $rootScope.$ionicGoBack=function(){
   if ($rootScope.elegida==undefined && $state.current.name=='MercadoPago-Grupos')
@@ -544,7 +521,7 @@ $rootScope.$ionicGoBack=function(){
 
     if(pm.children==null){
       if($stateParams.flavour==1)
-        MercadoPagoService.volver($stateParams.flavour, pm.id); //devuelvo el resultado sino hay childs y f2 gris
+        MercadoPagoService.volver($stateParams.flavour, pm); //devuelvo el resultado sino hay childs y f2 gris
 
       else if (pm.id=="credit_card"){
         $state.go('MercadoPago-FormTarjeta', {
@@ -593,12 +570,12 @@ $rootScope.$ionicGoBack=function(){
 
   $scope.elegir=function(pm){
     if ($stateParams.flavour==1)
-      MercadoPagoService.volver($stateParams.flavour, pm.id); //volver si es f2 gris
+      MercadoPagoService.volver($stateParams.flavour, pm); //volver si es f2 gris
 
     else if ($stateParams.flavour==2){ //datos de f2
       var datos=[];
       datos.push($scope.token);
-      datos.push(pm.id);
+      datos.push(pm);
       datos.push($scope.issuer);
       datos.push($scope.payer_cost);
       MercadoPagoService.volver($stateParams.flavour,datos);
@@ -665,7 +642,7 @@ $rootScope.$ionicGoBack=function(){
     else{
       var datos=[]; //ir a pagar
       datos.push($scope.token);
-      datos.push($scope.grupos.id);
+      datos.push($scope.grupos);
       datos.push($scope.issuer);
       datos.push($scope.payer_cost);
 
