@@ -17,12 +17,13 @@ angular.module('integrador', ['ionic','starter'])
 		.state(integrador)
 
 	})
-.run(function($ionicPlatform,$rootScope,$state) {
+.run(function($ionicPlatform,$rootScope,$state,$rootScope) {
+	$rootScope.barra="barra";
 	$ionicPlatform.ready(function() {
 	});
 })
 .controller('AppCtrl', function($scope, MercadoPagoService){
-
+	//$scope.barra="barra";
 	// $ionicHistory.clearHistory();
 	// $ionicHistory.clearCache();
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");

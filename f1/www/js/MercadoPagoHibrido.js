@@ -419,7 +419,7 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
 
 .controller('CardFormCtrl', function($scope, MercadoPagoService,$state, $stateParams,$rootScope,$ionicHistory){
   //console.log($ionicHistory.currentView());
-  $scope.codigo="<ion-view><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()' ng-controller='CardFormCtrl' ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='mostrarIcono'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Month</span><input type='number' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM AAAA'> </label><label class='item item-input'><span class='input-label'>Expiration Year</span><input type='number' id='cardExpirationyear' ng-model='card_token.expiration_year' placeholder='MM AAAA'></label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type'><option ng-repeat='identification_type in identification_types'>{{identification_type.name}}</option><option selected>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content></ion-view>";
+  $scope.codigo="<ion-view><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()' ng-controller='CardFormCtrl' ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='mostrarIcono'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Date</span><input type='Month' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type'><option ng-repeat='identification_type in identification_types'>{{identification_type.name}}</option><option selected>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content></ion-view>";
   $scope.header="Datos de tu tarjeta";
   $scope.mostrarIcono=false;
   MercadoPagoService.getIdentificationTypes().query(function(data) {
@@ -490,7 +490,6 @@ $scope.getfoto=function(){
 }
 
   $scope.keyPress = function(keyCode){
-
     if($scope.card_token.card_number!=undefined&&($scope.card_token.card_number+'').length >=6 && $rootScope.car!=$scope.card_token.card_number){
       $scope.mostrarIcono=true;
     var base=Math.pow(10,($scope.card_token.card_number+'').length-6);
@@ -514,7 +513,7 @@ $scope.getfoto=function(){
 
   }
   $scope.createToken = function() {
-
+    var month= new Date($scope.card_token.expiration_month);
   var token={
     "card_number": "4556364421355272",
     "security_code": "123",
@@ -534,7 +533,8 @@ $scope.getfoto=function(){
 
 //  if ($scope.card_token.cardholder!=undefined){
 //   $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
-//   // $scope.card_token.expiration_year=$scope.card_token.expirationMonth.year;
+//   $scope.card_token.expiration_year=month.getFullYear();
+//   $scope.card_token.expiration_month=month.getMonth()+1;
 //   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
 // }
 
