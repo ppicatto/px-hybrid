@@ -24,11 +24,6 @@
 
   <body ng-app="integrador">
 
-    <ion-nav-bar class=" {{barra}} bar-positive">
-      <ion-nav-back-button class="button-clear" ng-show="no">
-        <i class="ion-ios-arrow-back carrito"></i>
-      </ion-nav-back-button>
-    </ion-nav-bar>
 
 
     <ion-nav-view animation="slide-left-right"></ion-nav-view>
@@ -36,7 +31,7 @@
     <script type="text/ng-template" id="integrador.html">
 
       <ion-view title="{{header}}" class"header" cache-view="false">
-
+<ion-nav-bar class='bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons><ion-nav-back-button class='button-clear' ng-show='no'><i class='ion-ios-arrow-back carrito'></i></ion-nav-back-button></ion-nav-bar>
         <ion-content style=" background-color:rgb(244,244,244)">
           <button class="button button-full button-positive MercadoPago" ng-click="f3()">F3</button><br>
           <button class="button button-full button-positive" ng-click="f2()">F2</button><br>
@@ -50,11 +45,14 @@
 
     <script type="text/ng-template" id="mercadopago.html">
 
-      <ion-view compile-html="codigo" title='{{header}}'>
-        <ion-nav-buttons side="right">
-          <i class="ion-ios-cart-outline carrito" style="padding: 5px" ng-click="mos()"></i>
-        </ion-nav-buttons>
-      </ion-view>
+
+
+
+
+          <ion-view compile-html="codigo" title='{{header}}'>
+        </ion-view>
+          <!-- <ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons> -->
+
 
     </script>
 
@@ -332,7 +330,7 @@ Usar otro medio de pago
           </label>
           <label class="item item-input">
             <span class="input-label">Expiration Month</span>
-            <input type="date" id="cardExpirationMonth" ng-model="card_token.expiration_month" placeholder="MM AAAA">
+            <input type="number" id="cardExpirationMonth" ng-model="card_token.expiration_month" placeholder="MM AAAA">
           </label>
           <label class="item item-input">
             <span class="input-label">Expiration Year</span>
