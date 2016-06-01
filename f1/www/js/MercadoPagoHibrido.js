@@ -52,7 +52,18 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider) {
+.config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider,$httpProvider) {
+
+  if (!$httpProvider.defaults.headers.get) {
+        $httpProvider.defaults.headers.get = {};
+    }
+
+    //disable IE ajax request caching
+     //$httpProvider.defaults.headers.get['If-None-Match'] = '*';
+    //
+    // $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+    // $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+
   $ionicConfigProvider.backButton.text('').icon('ion-chevron-left').previousTitleText(false);
   $ionicConfigProvider.navBar.alignTitle('center');
 
@@ -160,7 +171,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 })
 angular.module('mercadopago.services', [])
 
-.factory('MercadoPagoService', function ($resource, $http,$state,$ionicHistory,$rootScope,$ionicLoading,$q) {
+.factory('MercadoPagoService', function ($resource, $http,$state,$ionicHistory,$rootScope,$ionicLoading,$q,$timeout) {
   var public_key;
   var base_url = "https://api.mercadopago.com";
   var access_token='';
@@ -170,34 +181,99 @@ angular.module('mercadopago.services', [])
   var flavour;
 
   var buscarDatos=function(){
-    var deferred = $q.defer();
-  setTimeout(function() {
+
+    var deferred= $q.defer();
+
     getPrefId().get(function(pref){
       getGrupos().get(function(dato){
       $rootScope.datos=dato;
+      console.log(dato);
       $rootScope.prefid=pref;
       deferred.resolve(dato);
+    },
+    function(error){
+      deferred.reject(error);
     })
-    })
-
-  }, 100);
-return deferred.promise;
+  },function(error){
+    deferred.reject(error);
+  })
+  return deferred.promise;
   }
 
   var getGrupos=function(){
-    return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key);
+    return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key, {}, {
+    get: {
+        method: 'GET',
+        cache: false,
+        timeout: 1000,
+        interceptor: {
+            response: function(response) {
+                var result = response.resource;
+                result.$status = response.status;
+                return result;
+            }
+        }
+    }});
   }
   var getInstructions= function(payment_id, payment_method_id, payment_type){
-    return $resource("https://api.mercadopago.com/beta/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_method_id="+payment_method_id+"&payment_type="+payment_type);
+    return $resource("https://api.mercadopago.com/beta/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_method_id="+payment_method_id+"&payment_type="+payment_type, {}, {
+    get: {
+        method: 'GET',
+        cache: false,
+        timeout: 1000,
+        interceptor: {
+            response: function(response) {
+                var result = response.resource;
+                result.$status = response.status;
+                return result;
+            }
+        }
+    }});
   }
   var postPayment=function(data){
-    return $resource("https://api.mercadopago.com/beta/checkout/payments",data);
+    return $resource("https://api.mercadopago.com/beta/checkout/payments",data, {
+    save: {
+        method: 'POST',
+        cache: false,
+        timeout: 10000,
+        interceptor: {
+            response: function(response) {
+                var result = response.resource;
+                result.$status = response.status;
+                return result;
+            }
+        }
+    }});
   }
   var createCardToken=function(data){
-    return $resource(base_url+'/v1/card_tokens?public_key='+public_key+'', data);
+    return $resource(base_url+'/v1/card_tokens?public_key='+public_key+'', data, {
+    save: {
+        method: 'POST',
+        cache: false,
+        timeout: 10000,
+        interceptor: {
+            response: function(response) {
+                var result = response.resource;
+                result.$status = response.status;
+                return result;
+            }
+        }
+    }});
   }
   var getPrefId=function(){
-    return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token);
+    return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token, {}, {
+    get: {
+        method: 'GET',
+        cache: false,
+        timeout: 10000,
+        interceptor: {
+            response: function(response) {
+                var result = response.resource;
+                result.$status = response.status;
+                return result;
+            }
+        }
+    }});
   }
   var startIns=function(callback, datos, f){
     console.log(datos)
@@ -208,7 +284,9 @@ return deferred.promise;
         $state.go('MercadoPago-Ins', {
          "flavour":f,
          "pago": datos,
-         "instru":response});})
+         "instru":response});},function(error){
+           console.log(error);
+         })
   }
   var startCongrats=function(callback, datos,f){
         $ionicLoading.hide();
@@ -220,19 +298,82 @@ return deferred.promise;
 
     return {
       getPaymentMethods:function(){
-        return $resource(base_url+'/v1/payment_methods?public_key='+public_key);
+        return $resource(base_url+'/v1/payment_methods?public_key='+public_key, {}, {
+        get: {
+            method: 'GET',
+            cache: false,
+            timeout: 10000,
+            interceptor: {
+                response: function(response) {
+                    var result = response.resource;
+                    result.$status = response.status;
+                    return result;
+                }
+            }
+        }});
       },
       getIssuers:function(pmid,bin){
-        return $resource(base_url+'/v1/payment_methods/card_issuers?public_key='+public_key+"&payment_method_id=:payment_method_id&bin="+bin,{ payment_method_id: pmid});
+        return $resource(base_url+'/v1/payment_methods/card_issuers?public_key='+public_key+"&payment_method_id="+pmid+"&bin="+bin,{}, {
+        get: {
+            method: 'GET',
+            timeout: 1000,
+            cache: false,
+            isArray: true,
+            interceptor: {
+                response: function(response) {
+                    var result = response.resource;
+                    result.$status = response.status;
+                    return result;
+                }
+            }
+        }});
       },
       getInstallments:function(pmid,issuid,amm){
-        return $resource(base_url+'/v1/payment_methods/installments?public_key='+public_key+"&payment_method_id=:payment_method_id&issuer.id=:issuer&amount=:ammount",{ payment_method_id: pmid,ammount:amm,issuer:issuid});
+        return $resource(base_url+'/v1/payment_methods/installments?public_key='+public_key+"&payment_method_id=:payment_method_id&issuer.id=:issuer&amount=:ammount",{ payment_method_id: pmid,ammount:amm,issuer:issuid},{
+        get: {
+            method: 'GET',
+            cache: false,
+            timeout: 1000,
+            isArray: true,
+            interceptor: {
+                response: function(response) {
+                    var result = response.resource;
+                    result.$status = response.status;
+                    return result;
+                }
+            }
+        }});
       },
       getIdentificationTypes:function(){
-        return $resource(base_url+'/v1/identification_types?public_key='+public_key);
+        return $resource(base_url+'/v1/identification_types?public_key='+public_key, {}, {
+        get: {
+            method: 'GET',
+            cache: false,
+            timeout: 1,
+            isArray: true,
+            interceptor: {
+                response: function(response) {
+                    var result = response.resource;
+                    result.$status = response.status;
+                    return result;
+                }
+            }
+        }});
       },
       getPromos:function(){
-        return $resource(base_url+'/v1/payment_methods/deals?public_key='+public_key);
+        return $resource(base_url+'/v1/payment_methods/deals?public_key='+public_key, {}, {
+        get: {
+            method: 'GET',
+            cache: false,
+            timeout: 10000,
+            interceptor: {
+                response: function(response) {
+                    var result = response.resource;
+                    result.$status = response.status;
+                    return result;
+                }
+            }
+        }});
       },
       createTonken:function(data){
         return $resource(base_url+'/v1/card_tokens?public_key='+public_key,data);
@@ -276,7 +417,10 @@ return deferred.promise;
             $rootScope.elegida=undefined;
             $state.go('MercadoPago-Ryc', {
              "flavour":3});
-          });
+          }, function(error) {
+          console.log(error);
+          $ionicLoading.hide();
+      });
 
       },
       startF2:function(callback){
@@ -290,7 +434,10 @@ return deferred.promise;
           $rootScope.elegida=2;
           $state.go('MercadoPago-Grupos', {
            "flavour":2});
-        })
+        }, function(error) {
+        console.log(error);
+        $ionicLoading.hide();
+    })
 
       },
       startGrupos:function(callback){
@@ -298,6 +445,7 @@ return deferred.promise;
               template: 'Cargando...'
           })
         var promise=buscarDatos();
+
         promise.then(function(){
             $ionicLoading.hide();
 
@@ -305,7 +453,10 @@ return deferred.promise;
         $state.go('MercadoPago-Grupos', {
          "flavour":1
       });
-      })
+    }, function(error) {
+    console.log(error);
+    $ionicLoading.hide();
+})
       },
       startRyc:function(callback, pm){
         $ionicLoading.show({
@@ -318,7 +469,10 @@ return deferred.promise;
         $rootScope.elegida=pm;
         $state.go('MercadoPago-Ryc', {
          "flavour":1,});
-       })
+       }, function(error) {
+       console.log(error);
+       $ionicLoading.hide();
+   })
       },
 
       volver:function(flavour, datos,pref_id, seguir){
@@ -333,6 +487,8 @@ return deferred.promise;
             "pref_id":prefid,
             "email":"test-email@email.com"}).save(function(response){
               startIns(call,response,3);
+            }, function(error){
+              console.log(error);
             });
           }
           else {
@@ -345,6 +501,8 @@ return deferred.promise;
                 "issuer_id":datos[2].id,
                 "installments":datos[3]}).save(function(response){
                   startCongrats(call,response,3);
+                }, function(error){
+                  console.log(error);
                 })
             }
           }
@@ -363,13 +521,15 @@ angular.module('mercadopago.controllers', [])
 
 $scope.codigo=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='no'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='cardIssuer in cardIssuers' ng-click='selectedCardIssuer(cardIssuer)'><img src='{{cardIssuer.thumbnail}}' width='50' height='19' style='margin-right: 20px;'>{{cardIssuer.name}}</div></div></ion-content>";
 $scope.header="Selecciona el banco";
-MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_six_digits).query(function(data) {
+MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_six_digits).get(function(data) {
     if (data.length==1){
       $scope.selectedCardIssuer(data[0]);
   }
   else{
   $scope.cardIssuers = data;
 }
+  },function(error){
+    console.log(error);
   });
 
   $scope.selectedCardIssuer = function(issuer) {
@@ -390,9 +550,11 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
   $scope.header="Selecciona las cuotas";
    //console.log($stateParams.token);
   $scope.total=MercadoPagoService.calcularTotal(prefid);
-    MercadoPagoService.getInstallments($stateParams.opcion.id, $stateParams.issuer.id, $scope.total).query(function(data) {
+    MercadoPagoService.getInstallments($stateParams.opcion.id, $stateParams.issuer.id, $scope.total).get(function(data) {
       $scope.installments = data[0];}
-  );
+      ,function(error){
+        console.log(error);
+      });
   $scope.selectedInstallment = function(installment) {
     var datos=[];
     datos.push($stateParams.token);
@@ -408,8 +570,10 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
   $scope.codigo=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='no'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()' ng-controller='CardFormCtrl' ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='mostrarIcono'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Date</span><input type='Month' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type'><option ng-repeat='identification_type in identification_types'>{{identification_type.name}}</option><option selected>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
   $scope.header="Datos de tu tarjeta";
   $scope.mostrarIcono=false;
-  MercadoPagoService.getIdentificationTypes().query(function(data) {
+  MercadoPagoService.getIdentificationTypes().get(function(data) {
     $scope.identification_types = data;
+  },function(error){
+    console.log(error);
   });
   $scope.card_token={};
 
