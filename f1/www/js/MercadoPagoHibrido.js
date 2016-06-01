@@ -183,13 +183,11 @@ angular.module('mercadopago.services', [])
   var buscarDatos=function(){
 
     var deferred= $q.defer();
-
     getPrefId().get(function(pref){
       getGrupos().get(function(dato){
-      $rootScope.datos=dato;
-      console.log(dato);
-      $rootScope.prefid=pref;
-      deferred.resolve(dato);
+        $rootScope.datos=dato;
+        $rootScope.prefid=pref;
+        deferred.resolve(dato);
     },
     function(error){
       deferred.reject(error);
@@ -278,13 +276,15 @@ angular.module('mercadopago.services', [])
   var startIns=function(callback, datos, f){
     console.log(datos)
       getInstructions(datos.id,datos.payment_method_id,datos.payment_type_id).get(function(response){
-        console.log(response);
         $ionicLoading.hide();
+        console.log(response);
         call=callback;
         $state.go('MercadoPago-Ins', {
          "flavour":f,
          "pago": datos,
-         "instru":response});},function(error){
+         "instru":response
+       });
+       },function(error){
            console.log(error);
          })
   }
@@ -404,19 +404,15 @@ angular.module('mercadopago.services', [])
         return precio;
       },
       startCheckout:function(callback, view){
-
-        $ionicLoading.show({
-              template: 'Cargando...'
-          })
+        $ionicLoading.show({template: 'Cargando...'});
         var promise=buscarDatos();
         promise.then(function(){
             $ionicLoading.hide();
-
             call=callback;
-            volver=view;
             $rootScope.elegida=undefined;
             $state.go('MercadoPago-Ryc', {
-             "flavour":3});
+             "flavour":3
+           });
           }, function(error) {
           console.log(error);
           $ionicLoading.hide();
@@ -424,16 +420,16 @@ angular.module('mercadopago.services', [])
 
       },
       startF2:function(callback){
-        $ionicLoading.show({
-              template: 'Cargando...'
-          })
+        $ionicLoading.show({template: 'Cargando...'});
         var promise=buscarDatos();
         promise.then(function(){
           $ionicLoading.hide();
           call=callback;
           $rootScope.elegida=2;
           $state.go('MercadoPago-Grupos', {
-           "flavour":2});
+           "flavour":2
+         });
+
         }, function(error) {
         console.log(error);
         $ionicLoading.hide();
@@ -441,34 +437,29 @@ angular.module('mercadopago.services', [])
 
       },
       startGrupos:function(callback){
-        $ionicLoading.show({
-              template: 'Cargando...'
-          })
+        $ionicLoading.show({template: 'Cargando...'})
         var promise=buscarDatos();
-
         promise.then(function(){
             $ionicLoading.hide();
-
-        call=callback;
-        $state.go('MercadoPago-Grupos', {
-         "flavour":1
-      });
+            call=callback;
+            $state.go('MercadoPago-Grupos', {
+              "flavour":1
+            });
     }, function(error) {
     console.log(error);
     $ionicLoading.hide();
 })
       },
       startRyc:function(callback, pm){
-        $ionicLoading.show({
-              template: 'Cargando...'
-          })
+        $ionicLoading.show({template: 'Cargando...'})
         var promise=buscarDatos();
         promise.then(function(){
             $ionicLoading.hide();
-        call=callback;
-        $rootScope.elegida=pm;
-        $state.go('MercadoPago-Ryc', {
-         "flavour":1,});
+            call=callback;
+            $rootScope.elegida=pm;
+            $state.go('MercadoPago-Ryc', {
+              "flavour":1,
+            });
        }, function(error) {
        console.log(error);
        $ionicLoading.hide();
@@ -477,22 +468,24 @@ angular.module('mercadopago.services', [])
 
       volver:function(flavour, datos,pref_id, seguir){
         $rootScope.elegida=undefined;
-
         if(flavour==3 && seguir==true){
           $ionicLoading.show({template: 'Cargando...'});
-          if (datos[0]==undefined){
+          if (datos[0]==undefined){ //medio off
+
           postPayment({
             "public_key":public_key,
             "payment_method_id":datos[1].id,
             "pref_id":prefid,
             "email":"test-email@email.com"}).save(function(response){
+
               startIns(call,response,3);
+
             }, function(error){
               console.log(error);
             });
           }
           else {
-              postPayment({
+              postPayment({ //online
                 "public_key":public_key,
                 "payment_method_id":datos[1].id,
                 "pref_id":prefid,
@@ -500,7 +493,9 @@ angular.module('mercadopago.services', [])
                 "token":datos[0].id,
                 "issuer_id":datos[2].id,
                 "installments":datos[3]}).save(function(response){
+
                   startCongrats(call,response,3);
+
                 }, function(error){
                   console.log(error);
                 })
@@ -522,12 +517,10 @@ angular.module('mercadopago.controllers', [])
 $scope.codigo=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='no'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='cardIssuer in cardIssuers' ng-click='selectedCardIssuer(cardIssuer)'><img src='{{cardIssuer.thumbnail}}' width='50' height='19' style='margin-right: 20px;'>{{cardIssuer.name}}</div></div></ion-content>";
 $scope.header="Selecciona el banco";
 MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_six_digits).get(function(data) {
-    if (data.length==1){
-      $scope.selectedCardIssuer(data[0]);
-  }
-  else{
-  $scope.cardIssuers = data;
-}
+    if (data.length==1)
+      $scope.selectedCardIssuer(data[0]); //si es uno solo que elija ese directo
+    else
+      $scope.cardIssuers = data;
   },function(error){
     console.log(error);
   });
@@ -569,7 +562,7 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
   //console.log($ionicHistory.currentView());
   $scope.codigo=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='no'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()' ng-controller='CardFormCtrl' ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='mostrarIcono'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Date</span><input type='Month' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type'><option ng-repeat='identification_type in identification_types'>{{identification_type.name}}</option><option selected>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
   $scope.header="Datos de tu tarjeta";
-  $scope.mostrarIcono=false;
+  $scope.mostrarIcono=false; //mostrar que tarjeta es
   MercadoPagoService.getIdentificationTypes().get(function(data) {
     $scope.identification_types = data;
   },function(error){
@@ -595,7 +588,6 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
       return false;
 
     for(i=0;i<bin.length;i++){
-
       if(bin[i]==(card-card%Math.pow(10,6-bin[i].length))/Math.pow(10,6-bin[i].length)){ //los comparo con la tarjeta
         return true;
       }
@@ -635,9 +627,9 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
     return false;
   }
 }
-$scope.getfoto=function(){
-  console.log($scope.keyPress());
-}
+  $scope.getfoto=function(){
+    console.log($scope.keyPress());
+  }
 
   $scope.keyPress = function(keyCode){
     if($scope.card_token.card_number!=undefined&&($scope.card_token.card_number+'').length >=6 && $rootScope.car!=$scope.card_token.card_number){
