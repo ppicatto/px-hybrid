@@ -57,6 +57,10 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
   if (!$httpProvider.defaults.headers.get) {
         $httpProvider.defaults.headers.get = {};
     }
+    $httpProvider.defaults.headers.common = {};
+$httpProvider.defaults.headers.post = {};
+$httpProvider.defaults.headers.put = {};
+$httpProvider.defaults.headers.patch = {};
 
     //disable IE ajax request caching
      //$httpProvider.defaults.headers.get['If-None-Match'] = '*';
@@ -228,6 +232,21 @@ angular.module('mercadopago.services', [])
         }
     }});
   }
+  var tracking=function(data){
+    return $resource("https://api.mercadopago.com/beta/checkout/tracking",data, {
+    save: {
+        method: 'POST',
+        cache: false,
+        timeout: 10000,
+        interceptor: {
+            response: function(response) {
+                var result = response.resource;
+                result.$status = response.status;
+                return result;
+            }
+        }
+    }});
+  }
   var postPayment=function(data){
     return $resource("https://api.mercadopago.com/beta/checkout/payments",data, {
     save: {
@@ -244,7 +263,7 @@ angular.module('mercadopago.services', [])
     }});
   }
   var createCardToken=function(data){
-    return $resource(base_url+'/v1/card_tokens?public_key='+public_key+'', data, {
+    return $resource(base_url+'/v1/card_tokens?public_key='+public_key,data, {
     save: {
         method: 'POST',
         cache: false,
@@ -349,7 +368,7 @@ angular.module('mercadopago.services', [])
         get: {
             method: 'GET',
             cache: false,
-            timeout: 1,
+            timeout: 10000,
             isArray: true,
             interceptor: {
                 response: function(response) {
@@ -396,6 +415,7 @@ angular.module('mercadopago.services', [])
       getPrefId:getPrefId,
       startIns:startIns,
       createCardToken:createCardToken,
+      tracking:tracking,
 
       calcularTotal:function(prefid){
         var precio=0;
@@ -680,12 +700,27 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
 //   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
 // }
 
-MercadoPagoService.createCardToken().save(token,function(response){
-  console.log(response);
+MercadoPagoService.createCardToken().save(token,function(token){
+  console.log(token);
+  var body={
+     //online
+      "public_key":"TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a",
+      "token":token.id,
+      "sdk_flavor":$stateParams.flavour,
+      "sdk_platform":"Hybrid",
+      "sdk_type":"hybrid",
+      "sdk_framework":"ionic",
+      "sdk_version":"1.0"
+  }
   $state.go('MercadoPago-CardIssuers',{
     'opcion':$scope.keyPress(),
-    'token': response,
+    'token': token,
     "flavour": $stateParams.flavour,})
+  MercadoPagoService.tracking().save(body,function(response){
+    console.log(response);
+
+  })
+
 });
 
   };
