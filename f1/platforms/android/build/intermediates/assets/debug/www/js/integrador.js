@@ -18,14 +18,16 @@ angular.module('integrador', ['ionic','starter'])
 
 	})
 .run(function($ionicPlatform,$rootScope,$state,$rootScope) {
-	$rootScope.barra="barra";
+//$rootScope.claseBarra= false ;
 	$ionicPlatform.ready(function() {
 	});
 })
-.controller('AppCtrl', function($scope, MercadoPagoService){
+.controller('AppCtrl', function($scope, MercadoPagoService, $rootScope){
 	//$scope.barra="barra";
 	// $ionicHistory.clearHistory();
 	// $ionicHistory.clearCache();
+
+
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
 	MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
 	MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
@@ -37,7 +39,7 @@ var pm={
           "id": "bapropagos",
           "show_icon": true,
           "type": "payment_method"
-        };
+    };
 	var pagooff={"id":585794,
    "date_created":"2016-05-03T13:23:30.000-04:00",
    "date_approved":null,
@@ -123,6 +125,7 @@ var pm={
 		//MercadoPagoService.startCongrats(callback);
 	}
 	$scope.f3=function(){
+
 		MercadoPagoService.startCheckout(callback);
 	}
 	$scope.f2=function(){

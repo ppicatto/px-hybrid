@@ -7,7 +7,8 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
 .run(function($ionicPlatform,$rootScope, MercadoPagoService, $ionicLoading) {
   $ionicPlatform.ready(function() {
-    //alert(ionic.Platform.platform())
+    $rootScope.platform=ionic.Platform.platform()
+    console.log($rootScope.platform);
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -587,7 +588,6 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
 
 .controller('CardFormCtrl', function($scope, MercadoPagoService,$state, $stateParams,$rootScope,$ionicHistory){
   //console.log($ionicHistory.currentView());
-  console.log(ionic.Platform.platform());
   $scope.codigo=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='no'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()' ng-controller='CardFormCtrl' ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='mostrarIcono'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Date</span><input type='Month' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type'><option ng-repeat='identification_type in identification_types'>{{identification_type.name}}</option><option selected>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
   $scope.header="Datos de tu tarjeta";
   $scope.mostrarIcono=false; //mostrar que tarjeta es
@@ -710,13 +710,13 @@ MercadoPagoService.getIssuers($stateParams.opcion.id, $stateParams.token.first_s
 // }
 
 MercadoPagoService.createCardToken().save({},token,function(token){
-
+  console.log(token);
   var body={
      //online
       "public_key":"TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a",
       "token":token.id,
       "sdk_flavor":$stateParams.flavour,
-      "sdk_platform":ionic.Platform.platform(),
+      "sdk_platform":$rootScope.platform,
       "sdk_type":"hybrid",
       "sdk_framework":"ionic",
       "sdk_version":"1.0"
