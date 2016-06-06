@@ -187,7 +187,12 @@ angular.module('mercadopago.services', [])
   var prefid;
   var flavour;
   var numerror=0;
-
+  var randomString= function () {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+}
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
+  }
   var getPublickey=function(){
     return public_key
   }
@@ -211,6 +216,7 @@ angular.module('mercadopago.services', [])
   }
 
   var getGrupos=function(){
+    console.log(randomString());
     return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key, {}, {
     get: {
         method: 'GET',
@@ -218,9 +224,16 @@ angular.module('mercadopago.services', [])
         timeout: 10800,
         interceptor: {
             response: function(response) {
+              //console.log("interceptor",response)
                 var result = response.resource;
                 result.$status = response.status;
                 return result;
+            },
+            requestError: function(response){
+              //console.log("request",response);
+            },
+            responseError: function(response){
+              //console.log("response",response)
             }
         }
     }});
@@ -271,12 +284,13 @@ angular.module('mercadopago.services', [])
     }});
   }
   var postPayment=function(data){
+
     return $resource("https://api.mercadopago.com/beta/checkout/payments",data, {
     save: {
         method: 'POST',
         cache: false,
         timeout: 9800,
-        headers: {'X-Idempotency-Key': 'AJKDLKSLdfjklS','Content-Type':'application/json; charset=UTF-8'},
+        headers: {'X-Idempotency-Key': randomString(),'Content-Type':'application/json; charset=UTF-8'},
         interceptor: {
             response: function(response) {
                 var result = response.resource;
@@ -319,7 +333,8 @@ angular.module('mercadopago.services', [])
   var startCheckout=function(callback){
     $ionicLoading.show({template: 'Cargando...'});
     var promise=buscarDatos();
-    promise.then(function(){
+    promise.then(function(dato){
+      //console.log(dato.status)
         numerror=0;
         $ionicLoading.hide();
         call=callback;
@@ -329,6 +344,7 @@ angular.module('mercadopago.services', [])
          "flavour":3
        });
       }, function(error) {
+        console.log(error.status);
         console.log(error);
         if (error.status==-1){
           if(numerror<3){
