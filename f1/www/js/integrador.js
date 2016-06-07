@@ -241,6 +241,8 @@ var pm={"children": null,
 			$scope.selectedCardIssuer(undefined);
 		}
 		$ionicLoading.hide();
+	}, function(error){
+		console.log(error);
 	});
 
 	$scope.selectedCardIssuer = function(issuer) {
@@ -282,6 +284,8 @@ var issue="";
 					"installments": 1
 				});
 			}
+		}, function(error){
+			console.log(error);
 		}
 	);
 
@@ -304,6 +308,8 @@ var issue="";
     MercadoPagoService.getIdentificationTypes().get(function(response) {
 		$scope.identification_types = response;
 		$ionicLoading.hide();
+	}, function(error){
+		console.log(error);
 	});
 
 	$scope.card_token = {};

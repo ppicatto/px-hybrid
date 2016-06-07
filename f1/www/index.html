@@ -42,18 +42,19 @@
         <ion-content style=" background-color:rgb(244,244,244)">
           <button class="button button-full button-positive MercadoPago" ng-click="f3()">F3</button><br>
           <button class="button button-full button-positive" ng-click="f2()">F2</button><br>
+          <button class="button button-full button-positive" ng-click="pagar()">Pagar F1</button><br>
           <button class="button button-full button-positive" ng-click="grupos()">Grupos</button><br>
           <button class="button button-full button-positive" ng-click="ryc()">Ryc</button><br>
           <button class="button button-full button-positive" ng-click="ins()">Instrucciones</button><br>
           <button class="button button-full button-positive" ng-click="con()">Congrats</button><br>
-          <button class="button button-full button-positive" ng-click="pagar()">Pagar F1</button><br>
+
         </ion-content>
       </ion-view>
     </script>
 
     <script type="text/ng-template" id="mercadopago.html">
 
-        <ion-view compile-html="codigo" title='{{header}}'>
+        <ion-view compile-html="HTML" title='{{header}}'>
         </ion-view>
           <!-- <ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='mos()'></i></ion-nav-buttons> -->
     </script>
@@ -80,7 +81,7 @@
 		</div>
 		</ion-content>
 		</ion-view>
-		</script>
+	</script>
 
 
 	<script type="text/ng-template" id="installments.html">
@@ -92,44 +93,45 @@
 		</div>
 		</ion-content>
 		</ion-view>
-		</script>
+	</script>
 
 
 	<script type="text/ng-template" id="card_form.html">
 		<ion-view title="Datos de tu tarjeta">
-		<ion-content class="has-header" animation="slide-left-right" padding="true" scroll="true" has-bouncing="true">
+		<ion-content class="has-header" animation="slide-left-right" padding="true" scroll='true' has-bouncing="true">
 		<form ng-submit="createToken()" ng-controller="CardFormCtrl" >
 		<div class="list">
-		<label class="item item-input item-stacked-label">
+
+      <label class="item item-input">
+      <span class="input-label">Cardholder Name</span>
+      <input type="text" id="cardholderName" ng-model="card_token.cardholder.name" placeholder="APRO">
+      </label>
+		<label class="item item-input">
 		<span class="input-label">Card Number</span>
 		<input type="number" id="cardNumber" ng-model="card_token.cardNumber" placeholder="4509 9535 6623 3704">
 		</label>
-		<label class="item item-input item-stacked-label">
-		<span class="input-label">Cardholder Name</span>
-		<input type="text" id="cardholderName" ng-model="card_token.cardholder.name" placeholder="APRO">
-		</label>
-		<label class="item item-input item-stacked-label">
+
+		<label class="item item-input">
 		<span class="input-label">Expiration Month</span>
 		<input type="number" id="cardExpirationMonth" ng-model="card_token.expirationMonth" placeholder="MM">
 		</label>
-		<label class="item item-input item-stacked-label">
+		<label class="item item-input">
 		<span class="input-label">Expiration Year</span>
 		<input type="number" id="cardExpirationYear" ng-model="card_token.expirationYear" placeholder="AAAA">
 		</label>
 		<label class="item item-input item-select">
 		<div class="input-label">Document Type</div>
-		<select id="docType" ng-model="card_token.cardholder.identification.type">
-		<option selected>Seleccionar</option>
-		<option ng-repeat="identification_type in identification_types">{{identification_type.name}}</option>
+		<select id="docType" ng-model="card_token.cardholder.identification.type" ng-options=" identification_type.name for identification_type in identification_types">
+      <option value="">Seleccionar</option>
 		</select>
 		</label>
-		<label class="item item-input item-stacked-label">
-		<span class="input-label">Document number</span>
-		<input type="text" id="docNumber" ng-model="card_token.cardholder.identification.number" placeholder="12345678">
+		<label class="item item-input">
+		<span class="input-label">Document Number</span>
+		<input type="number" id="docNumber" ng-model="card_token.cardholder.identification.number" placeholder="12345678">
 		</label>
-		<label class="item item-input item-stacked-label">
+		<label class="item item-input">
 		<span class="input-label">Security Code</span>
-		<input type="text" id="securityCode" ng-model="card_token.securityCode" placeholder="123">
+		<input type="number" id="securityCode" ng-model="card_token.securityCode" placeholder="123">
 		</label>
 		<button type="submit" class="button button-full button-balanced">
 		Pagar
