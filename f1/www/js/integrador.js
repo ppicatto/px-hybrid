@@ -77,92 +77,90 @@ angular.module('integrador', ['ionic','starter'])
 //$rootScope.claseBarra= false ;
 	$ionicPlatform.ready(function() {
 	});
+	$rootScope.pm={
+		"children": null,
+    "children_header": null,
+    "comment": "Se acreditará en 7 dias hábiles",
+    "description": "",
+    "id": "bapropagos",
+    "show_icon": true,
+    "type": "payment_method"};
+	$rootScope.pagooff={
+		"id":585794,
+	   "date_created":"2016-05-03T13:23:30.000-04:00",
+	   "date_approved":null,
+	   "date_last_updated":"2016-05-03T13:23:30.000-04:00",
+	   "money_release_date":null,
+	   "operation_type":"regular_payment",
+	   "issuer_id":null,
+	   "payment_method_id":"rapipago",
+	   "payment_type_id":"ticket",
+	   "status":"pending",
+	   "status_detail":"pending_waiting_payment",
+	   "currency_id":"ARS",
+	   "description":null,
+	   "live_mode":false,
+	   "sponsor_id":null,
+	   "authorization_code":null,
+	   "collector_id":150216849,
+	   "payer":{
+	      "type":"guest",
+	      "id":null,
+	      "email":"test-email@email.com",
+	      "identification":{
+	         "type":null,
+	         "number":null
+	      },
+	      "phone":{
+	         "area_code":null,
+	         "number":null,
+	         "extension":null
+	      },
+	      "first_name":null,
+	      "last_name":null
+	   },
+	   "metadata":{
+
+	   },
+	   "order":{
+
+	   },
+	   "external_reference":null,
+	   "transaction_amount":1000,
+	   "transaction_amount_refunded":0,
+	   "coupon_amount":0,
+	   "differential_pricing_id":null,
+	   "deduction_schema":null,
+	   "transaction_details":{
+	      "net_received_amount":0,
+	      "total_paid_amount":1000,
+	      "overpaid_amount":0,
+	      "external_resource_url":"https://sandbox.mercadopago.com/coupon/rapipago",
+	      "installment_amount":0,
+	      "financial_institution":null,
+	      "payment_method_reference_id":"585793"
+	   },
+	   "fee_details":[
+
+	   ],
+	   "captured":true,
+	   "binary_mode":false,
+	   "call_for_authorize_id":null,
+	   "statement_descriptor":null,
+	   "installments":1,
+	   "card":{
+
+	   },
+	   "notification_url":null,
+	   "refunds":[
+
+	   ]};
 })
 .controller('AppCtrl', function($scope, MercadoPagoService, $rootScope, $state){
-	//$scope.barra="barra";
-	// $ionicHistory.clearHistory();
-	// $ionicHistory.clearCache();
-
-
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
 	MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
 	MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
-var pm={"children": null,
-          "children_header": null,
-          "comment": "Se acreditará en 7 dias hábiles",
-          "description": "",
-          "id": "bapropagos",
-          "show_icon": true,
-          "type": "payment_method"};
-	var pagooff={"id":585794,
-   "date_created":"2016-05-03T13:23:30.000-04:00",
-   "date_approved":null,
-   "date_last_updated":"2016-05-03T13:23:30.000-04:00",
-   "money_release_date":null,
-   "operation_type":"regular_payment",
-   "issuer_id":null,
-   "payment_method_id":"rapipago",
-   "payment_type_id":"ticket",
-   "status":"pending",
-   "status_detail":"pending_waiting_payment",
-   "currency_id":"ARS",
-   "description":null,
-   "live_mode":false,
-   "sponsor_id":null,
-   "authorization_code":null,
-   "collector_id":150216849,
-   "payer":{
-      "type":"guest",
-      "id":null,
-      "email":"test-email@email.com",
-      "identification":{
-         "type":null,
-         "number":null
-      },
-      "phone":{
-         "area_code":null,
-         "number":null,
-         "extension":null
-      },
-      "first_name":null,
-      "last_name":null
-   },
-   "metadata":{
 
-   },
-   "order":{
-
-   },
-   "external_reference":null,
-   "transaction_amount":1000,
-   "transaction_amount_refunded":0,
-   "coupon_amount":0,
-   "differential_pricing_id":null,
-   "deduction_schema":null,
-   "transaction_details":{
-      "net_received_amount":0,
-      "total_paid_amount":1000,
-      "overpaid_amount":0,
-      "external_resource_url":"https://sandbox.mercadopago.com/coupon/rapipago",
-      "installment_amount":0,
-      "financial_institution":null,
-      "payment_method_reference_id":"585793"
-   },
-   "fee_details":[
-
-   ],
-   "captured":true,
-   "binary_mode":false,
-   "call_for_authorize_id":null,
-   "statement_descriptor":null,
-   "installments":1,
-   "card":{
-
-   },
-   "notification_url":null,
-   "refunds":[
-
-   ]};
 	var callback=function(datos){
 		console.log(datos);
 	}
@@ -170,16 +168,15 @@ var pm={"children": null,
 		MercadoPagoService.startGrupos(callback);
 	}
 	$scope.ryc=function(){
-		MercadoPagoService.startRyc(callback, pm);
+		MercadoPagoService.startRyc(callback, $rootScope.pm);
 	}
 	$scope.ins=function(){
-		MercadoPagoService.startIns(callback, pagooff);
+		MercadoPagoService.startIns(callback, $rootScope.pagooff);
 	}
 	$scope.con=function(){
 		//MercadoPagoService.startCongrats(callback);
 	}
 	$scope.f3=function(){
-
 		MercadoPagoService.startCheckout(callback);
 	}
 	$scope.f2=function(){
@@ -193,8 +190,6 @@ var pm={"children": null,
 	}
 })
 .controller('ProductCtrl', function($scope, $state, $stateParams, $ionicHistory, ProductService) {
-	$ionicHistory.clearHistory();
-
 	$scope.product = ProductService.getProduct('id1');
 	$scope.startCheckout = function(prod) {
 		$state.go('payment_methods',
@@ -204,67 +199,54 @@ var pm={"children": null,
 	};
 })
 .controller('PaymentMethodsCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService) {
-	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
+		$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
 
     MercadoPagoService.getPaymentMethods().get(function(response){
 		$scope.paymentMethods = response;
 		$ionicLoading.hide();
-		console.log(response);
 	});
 
 	$scope.selectedPaymentMethod = function(pm) {
 		var state = 'payment_result_off';
-		if (pm.payment_type_id == "credit_card" ||
-			pm.payment_type_id == "debit_card" ||
-			pm.payment_type_id == "prepaid_card") {
+		if (pm.payment_type_id == "credit_card" ||pm.payment_type_id == "debit_card" ||pm.payment_type_id == "prepaid_card") {
 			state = 'card_issuers';
 		}
-		$state.go(state,
-			{
+		$state.go(state,{
 				"product_id": $stateParams.product_id,
 				"payment_method_id": pm.id
 			});
 	};
 })
 .controller('CardIssuersCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService) {
-	$ionicLoading.show({
-      template: 'Cargando...',
-      noBackdrop: true
-    });
+	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
 
     MercadoPagoService.getIssuers($stateParams.payment_method_id,"").get(function(response) {
-			console.log(response);
-		$scope.cardIssuers = response;
-		if (response.length==1)
-			$scope.selectedCardIssuer(response[0]);
-		else if (response.length==0){
-			$scope.selectedCardIssuer(undefined);
-		}
-		$ionicLoading.hide();
-	}, function(error){
-		console.log(error);
+			$ionicLoading.hide();
+			$scope.cardIssuers = response;
+			if (response.length==1)
+				$scope.selectedCardIssuer(response[0]);
+			else if (response.length==0)
+				$scope.selectedCardIssuer(undefined);
+		}, function(error){
+			console.log(error);
 	});
 
 	$scope.selectedCardIssuer = function(issuer) {
-var issue="";
+		var issuerid="";
 		if (issuer!=undefined)
-		issue=issuer.id;
-		else {
-			issue=issuer;
-		}
+			issuerid=issuer.id;
+		else
+			issuerid=issuer;
 		$state.go('installments',
 			{
 				"product_id": $stateParams.product_id,
 				"payment_method_id": $stateParams.payment_method_id,
-				"issuer_id": issue,
+				"issuer_id": issuerid,
 			});
 	};
 })
 .controller('InstallmentsCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService, ProductService) {
-	$ionicLoading.show({
-      template: 'Cargando...',
-      noBackdrop: true
-    });
+	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
 
 	var product = ProductService.getProduct('id1');
 
@@ -300,12 +282,9 @@ var issue="";
 	};
 })
 .controller('CardFormCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService) {
-	$ionicLoading.show({
-      template: 'Cargando...',
-      noBackdrop: true
-    });
+	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
 
-    MercadoPagoService.getIdentificationTypes().get(function(response) {
+  MercadoPagoService.getIdentificationTypes().get(function(response) {
 		$scope.identification_types = response;
 		$ionicLoading.hide();
 	}, function(error){
