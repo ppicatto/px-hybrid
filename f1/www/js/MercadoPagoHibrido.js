@@ -8,6 +8,8 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 .run(function($ionicPlatform,$rootScope, MercadoPagoService, $ionicLoading) {
   $ionicPlatform.ready(function() {
     $rootScope.platform=ionic.Platform.platform()
+    console.log(JSON.stringify(ionic.Platform.device()));
+
     console.log($rootScope.platform);
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -27,9 +29,10 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
     style.innerHTML = '.custom-icon {/*font-size: 64px;*/color : rgb(29,159,222);} .MpBarra{color:red!default;background-color:rgb(29,159,222)!important;border-style: none!important;}.carrito{color:white;font-size: 26px;font-weight: bold;}.texto{font-size: 12pt;text-align: center;color:rgb(153,153,153);}.link{color:rgb(0,102,204);}.flecha{color:rgb(153,153,153);}.amarillo{color:rgb(178,144,84);}.pesos{font-size: 30pt;font-weight: bold;text-align: center; }.tic{font-size: 50px;font-weight: bold;text-align: center;}.header{font-size:13pt !important;font-weight: 200 !important;color:white!important;word-wrap:break-word!important}.opciones{font-size:12pt!important;color:rgb(102,102,102)!important;}.footer{font-size:11pt;color:rgb(153,153,153)!important;text-align: center;}.copy{font-size:9pt;color:rgb(153,153,153)!important;text-align: center;}.pagar{font-size: 15pt!important;text-align: center!important;font-weight: 200!important;}.textoinstru{font-size: 16pt!important;font-weight: 200!important;color:rgb(102,102,102)!important;}';
     document.getElementsByTagName('head')[0].appendChild(style);
 
+    //var goglean=""
     var script=document.createElement('script');
     script.type="text/javascript";
-    script.innerHTML="(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', 'UA-78949791-1', 'auto');ga('send', 'pageview');";
+    script.innerHTML="(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', 'UA-46085787-6', 'auto');ga('send', 'pageview');";
     document.getElementsByTagName('head')[0].appendChild(script);
 
     // var style = document.createElement('style');
@@ -503,7 +506,7 @@ angular.module('mercadopago.services', [])
         }, function(error){
           console.log(error);
 
-            alert("Intente devuelta");
+            alert(error);
             $ionicLoading.hide();
         });
       }
@@ -512,15 +515,22 @@ angular.module('mercadopago.services', [])
             "public_key":public_key,
             "payment_method_id":datos[1].id,
             "pref_id":prefid,
-            "email":"edenl@email.com",
+            "email":$rootScope.prefid.payer.email,
             "token":datos[0].id,
             "issuer_id":datos[2].id,
             "installments":datos[3]},function(response){
               startCongrats(call,response,3);
 
             }, function(error){
-              console.log(error);
-                alert("Intente devuelta");
+              if (error.status=400){
+              console.log(error.data.message);
+              alert(error.data.message);
+
+              }
+              else {
+                console.log(eror);
+                alert("Intente nuevamente")
+              }
 
                 $ionicLoading.hide();
 
@@ -541,7 +551,7 @@ angular.module('mercadopago.services', [])
         get: {
             method: 'GET',
             cache: false,
-            timeout: 1000,
+            timeout: 10000,
             isArray:true,
             interceptor: {
                 response: function(response) {
@@ -556,7 +566,7 @@ angular.module('mercadopago.services', [])
         return $resource(base_url+'/v1/payment_methods/card_issuers?public_key='+public_key+"&payment_method_id="+pmid+"&bin="+bin,{}, {
         get: {
             method: 'GET',
-            timeout: 1000,
+            timeout: 10000,
             cache: false,
             isArray: true,
             interceptor: {
@@ -573,7 +583,7 @@ angular.module('mercadopago.services', [])
         get: {
             method: 'GET',
             cache: false,
-            timeout: 1000,
+            timeout: 10000,
             isArray: true,
             interceptor: {
                 response: function(response) {
@@ -589,7 +599,7 @@ angular.module('mercadopago.services', [])
         get: {
             method: 'GET',
             cache: false,
-            timeout: 1000,
+            timeout: 10000,
             isArray: true,
             interceptor: {
                 response: function(response) {
@@ -695,6 +705,7 @@ angular.module('mercadopago.controllers', [])
 })
 .controller('MpInstallmentsCtrl', function($scope, MercadoPagoService,$state, $stateParams,$rootScope,$ionicHistory){
   //console.log("ins",$ionicHistory.currentView());
+
   $scope.HTML=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='installment in installments.payer_costs' ng-click='selectedInstallment(installment)'>{{installment.recommended_message}}</div></div></ion-content>";
   $scope.header="Selecciona las cuotas";
 
@@ -705,6 +716,7 @@ angular.module('mercadopago.controllers', [])
 
   MercadoPagoService.getInstallments($stateParams.opcion.id, $stateParams.issuer.id, $scope.total).get(function(data) {
     $scope.installments = data[0];
+    console.log(data);
     numerror=0;
   },function(error){
       console.log(error);
@@ -859,14 +871,47 @@ angular.module('mercadopago.controllers', [])
         "type": "DNI",
         "number": "12345678"}}
     };
+    // var token={
+    //   "card_number": "4556364421355272",
+    //   "security_code": "637",
+    //   "expiration_month": 5,
+    //   "expiration_year": 2019,
+    //   "cardholder": {
+    //   "name": "Rubio Hector Nahuel",
+    //   "identification": {
+    //     "subtype": null,
+    //     "type": "DNI",
+    //     "number": "31604507"}}
+    // };
 
   if ($scope.card_token.card_number!=undefined)
     token.card_number=$scope.card_token.card_number;
+  else
+    $scope.card_token.card_number=token.card_number;
+  if($scope.card_token.cardholder!=undefined){
+    if($scope.card_token.cardholder.name!=undefined)
+      token.cardholder.name=$scope.card_token.cardholder.name
+      console.log($scope.card_token.cardholder.identification.type);
+    if($scope.card_token.cardholder.identification!=undefined){
+
+        if($scope.card_token.cardholder.identification.type!=undefined)
+          token.cardholder.identification.type=$scope.card_token.cardholder.identification.type.id;
+        if($scope.card_token.cardholder.identification.number!=undefined)
+            token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
+      }
+  }
+  // if($scope.card_token.expiration_year!=undefined)
+  //   token.expiration_year=$scope.card_token.expiration_year;
+  // if($scope.card_token.expiration_month!=undefined)
+  //   token.expiration_month=$scope.card_token.expiration_month;
+  if($scope.card_token.security_code!=undefined)
+    token.security_code=""+$scope.card_token.security_code+"";
+
+  // if($scope.card_token.cardholder.identification.type!=undefined)
+  //   token.cardholder.identification.type=$scope.card_token.cardholder.identification.type
 
 //  if ($scope.card_token.cardholder!=undefined){
 //   $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
-//   $scope.card_token.expiration_year=month.getFullYear();
-//   $scope.card_token.expiration_month=month.getMonth()+1;
 //   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
 // }
 
@@ -900,7 +945,15 @@ MercadoPagoService.createCardToken().save(token,function(token){
   $scope.HTML=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-android-arrow-back carrito' ng-click='irparaatras()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' style='background-color:rgb(244,244,244)'><div ng-show='MpPrefIdVisible==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in grupos' ng-click='selectedGrupo(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content>";
   $scope.header="¿Comó quieres pagar?";
 
+  //alert(JSON.stringify($cordovaDevice.getDevice()));
+
   ga('send', 'pageview', '/Grupos');
+  ga('send', {
+  hitType: 'event',
+  eventCategory: 'APP',
+  eventAction: 'testAction2',
+  eventLabel: 'TestLabel2'
+});
 
   $scope.titulo=$rootScope.prefid.items[0].title; // seteo el prefid para el carrito
   $scope.imagen=$rootScope.prefid.items[0].picture_url;
@@ -992,6 +1045,7 @@ MercadoPagoService.createCardToken().save(token,function(token){
     }
     else {
       $rootScope.elegida=pm; //si es f3 vuelvo a ryc
+      $rootScope.ryc[0]=undefined;
       $ionicHistory.goBack(-2);
     }
   }
@@ -999,13 +1053,14 @@ MercadoPagoService.createCardToken().save(token,function(token){
 .controller('MpRycCtrl', function($scope, MercadoPagoService,$state, $stateParams, $templateCache,$ionicHistory, $rootScope){
   //console.log("ryc",$ionicHistory.currentView());
 
-  $scope.HTML="<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons></ion-nav-bar><ion-content class='has-header' style='background-color:rgb(244,244,244)'><div class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px;border-bottom: none'><div  id= 'l'class='item item-icon-right' ng-click='goBack()' style='padding: 10px;border: none'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones'><img id= 'im' ng-src='{{getImagen(grupos)}}' style='padding: 0px 10px 0px 0px'>{{grupos.description}}</div><br><div class='footer' style='text-align: left'>{{grupos.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div><div  id= 'l'class='item item-icon-right' ng-show='on' style='padding: 10px;'><div class='opciones'style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px;font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>{{cuotas}}</div><br><div class='footer' style='text-align: left'> </div></div></div><div class='opciones'style='height: 40pt;background-color:rgb(244,244,244);vertical-align: middle; font-size: 16pt;line-height: 40pt; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222);  border-style:solid; text-align: center;font-weight: 200;word-spacing-spacing: 1.5px'>Total a pagar: {{total| currency}}</div><br><div class='copy' style='padding: 0px 20px'><p>    Al pagar, afirmo que soy mayor de edad y acepto los <a class='link'>Términos y Condiciones</a> de MercadoPago.</p></div><div style='padding: 0px 10px 0px 10px'><button class='button button-block button-positive pagar' style='background-color:rgb(0,159,222)' ng-click='pagar()'>Pagar</button></div><footer></footer></ion-content>";
+  $scope.HTML="<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons></ion-nav-bar><ion-content class='has-header' style='background-color:rgb(244,244,244)'><div class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{titulo}}<img ng-src='{{imagen}}'><br>{{total | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px;border-bottom: none'><div  id= 'l'class='item item-icon-right' ng-click='goBack()' style='padding: 10px;border: none'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones'><img id= 'im' ng-src='{{getImagen(grupos)}}' style='padding: 0px 10px 0px 0px'>{{grupos.description}}</div><br><div class='footer' style='text-align: left'>{{grupos.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div><div  id= 'l'class='item item-icon-right' ng-if='on==true' style='padding: 10px;'><div class='opciones'style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px;font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>{{cuotas}}<i class='texto' style='color:rgb(67,176,0);text-align: left;'ng-show='intereses'>Sin intereses</i></div><br><div class='footer' style='text-align: left'> </div></div></div><div class='opciones'style='height: 40pt;background-color:rgb(244,244,244);vertical-align: middle; font-size: 16pt;line-height: 40pt; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222);  border-style:solid; text-align: center;font-weight: 200;word-spacing-spacing: 1.5px'>Total a pagar: {{total| currency}}</div><br><div class='copy' style='padding: 0px 20px'><p>    Al pagar, afirmo que soy mayor de edad y acepto los <a class='link'>Términos y Condiciones</a> de MercadoPago.</p></div><div style='padding: 0px 10px 0px 10px'><button class='button button-block button-positive pagar' style='background-color:rgb(0,159,222)' ng-click='pagar()'>Pagar</button></div><footer></footer></ion-content>";
   $scope.header="Revisa si está todo bien…";
 
   ga('send', 'pageview', '/RyC');
 
   $rootScope.MpShowBack=false; //no mostrar flecha atras
   $scope.on=false; //si es pago on
+  $scope.intereses=false;
 
   $scope.grupos=$rootScope.elegida; //muestro la opcion elegida
 
@@ -1014,7 +1069,9 @@ MercadoPagoService.createCardToken().save(token,function(token){
   $scope.total=MercadoPagoService.getTotal($rootScope.prefid);
 
   if($scope.grupos!=undefined && $rootScope.ryc[0]!=undefined){ //seteo si es un pago on
-    $scope.cuotas=$rootScope.ryc[4].recommended_message;
+    $scope.cuotas=$rootScope.ryc[4].installments+" cuotas de $"+ $rootScope.ryc[4].installment_amount+ " ";
+    if ($rootScope.ryc[4].installment_rate==0)
+      $scope.intereses=true;
     $scope.grupos.description="terminada en "+ $rootScope.ryc[0].last_four_digits;
     $scope.on=true;
   }
@@ -1080,7 +1137,7 @@ MercadoPagoService.createCardToken().save(token,function(token){
   $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style=' background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 20px 16pt 20pt 16pt;' class='textoinstru'><i class='icon ion-social-usd pesos' style='color:rgb(239,199,1); padding:40pt'></i><br class='textoinstru'>{{titulo}}</div><div class='card'><div class='item item-text-wrap opciones' style='text-align: left;width:100%;display:inline-block;border: none'><div ng-repeat='in in infos track by $index'>{{in}}<br></div><br><div ng-repeat='reference in references'><div class='copy'style='font-weight: 200; text-align: left;'>{{reference.label}}</div><div class='textoinstru'style='text-align: left; letter-spacing: 1.5px;padding:5px 0px 5px 0px'>{{value(reference)}}</div></div></div><div class='item item-text-wrap opciones' style=' background-color:rgb(244,244,244); text-align: left;'>{{second}}</div><div class='item item-text-wrap texto item-icon-left amarillo' style=' background-color:rgb(244,244,244); text-align: left;border-style: none; color:rgb(178,144,84);font-weight: 200'><i>{{accreditation_message}}</i><i class='icon ion-ios-clock-outline amarillo'></i></div></div><footer></footer></ion-content></ion-view>";
 
   ga('send', 'pageview', 'Instrucciones');
-  
+
   var datos=$stateParams.pago;
   var instru=$stateParams.instru;
 
@@ -1137,7 +1194,12 @@ ga('send', 'pageview', 'Congrats');
   $scope.titulo="";
   $scope.subtitulo="";
   $scope.nombre=$stateParams.pago.statement_descriptor;
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
   var pmid=$stateParams.pago.payment_method_id;
+  pmid=capitalizeFirstLetter(pmid);
+  $scope.pmid=pmid;
 
   switch ($stateParams.pago.status_detail) {
     case "accredited":
@@ -1207,14 +1269,15 @@ ga('send', 'pageview', 'Congrats');
   }
 
   $scope.Salir=function(){
-    MercadoPagoService.volver($stateParams.flavour,datos,false);
+    MercadoPagoService.volver($stateParams.flavour,$rootScope.datos,false);
   }
-  if ($rootScope.datos.status=="rejected")
-    $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(248,233,233);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 35pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(185,74,72)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-cancel tic' style='color:rgb(153,6,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>{{titulo}}<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>{{subtitulo}}</div></div><br><br><button class='button button-outline button-positive' style='background-color:rgb(255,255,255); -webkit-tap-highlight-background-color: rgb(0,0,0,0);    height:18pt;margin: -20px -115px;position:relative;top:40%;left:50%; width:220px;text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'ng-click='Volver()'>Usar otro medio de pago</button><footer></footer></ion-content></ion-view>";
+  if ($stateParams.pago.status_detail=="cc_rejected_call_for_authorize")
+  $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(228,242,249);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(102,102,102)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-call tic' style='color:rgb(57,135,173); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Debes autorizar ante {{pmid}} el pago de {{total | currency}} a MercadoPago<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>El teléfono está al dorso de tu tarjeta.</div></div><br><br><div class='footer'><a class='link' ng-click='Salir()'>Ya hablé con Visa y me autorizó</a></div><br><div class='footer' style='padding: 10px 0'>¿No pudiste autorizarlo?</div><div class='footer' style='line-height: 15pt;'><a class='link' ng-click='Salir()'>Elige otro medio de pago</a></div><br><footer></footer></ion-content></ion-view>";
 
-  else if ($rootScope.datos.status_detail=="cc_rejected_call_for_authorize")
-    $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(228,242,249);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(102,102,102)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-call tic' style='color:rgb(57,135,173); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Debes autorizar ante Visa el pago de {{total | currency}} a MercadoPago<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>El teléfono está al dorso de tu tarjeta.</div></div><br><br><div class='footer'><a class='link' ng-click='Salir()'>Ya hablé con Visa y me autorizó</a></div><br><div class='footer' style='padding: 10px 0'>¿No pudiste autorizarlo?</div><div class='footer' style='line-height: 15pt;'><a class='link' ng-click='Salir()'>Elige otro medio de pago</a></div><br><footer></footer></ion-content></ion-view>";
-  else if ($rootScope.datos.status=="in_process")
+  else if ($stateParams.pago.status=="rejected")
+  $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(248,233,233);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 25pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(185,74,72)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-cancel tic' style='color:rgb(153,6,1); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>{{titulo}}<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 8px 5px; color:rgb(102,102,102)'>{{subtitulo}}</div></div><br><br><center><button class='button button-outline button-positive' style='background-color:rgb(255,255,255); -webkit-tap-highlight-background-color: rgb(0,0,0,0);text-align: center; font-size: 12pt;color: rgb(0,159,222); border-color:rgb(0,159,222);'ng-click='Volver()'>Usar otro medio de pago</button></center><footer></footer></ion-content></ion-view>";
+
+  else if ($stateParams.pago.status=="in_process")
     $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style='background-color:rgb(244,244,244)'><div style=' background-color:rgb(251,248,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 22pt;text-align: center;padding: 20px 16pt 20pt 16pt;' class='textoinstru'><i class='icon ion-ios-clock-outline pesos' style='color:rgb(239,199,1); padding:40pt'></i><br class='textoinstru'>{{titulo}}<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>{{subtitulo}}</div></div><footer></footer></ion-content></ion-view>";
   else
     $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div style=' background-color:rgb(234,255,225);border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;' class='textoinstru'><i class='icon ion-checkmark-circled tic' style='color:rgb(47,176,0); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>¡Listo, se acreditó tu pago!<div class='texto' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 5px 30px; color:rgb(102,102,102)'>Te enviaremos los datos  a usuario@gmail.com</div></div><div class='card' style='margin:0px 0px 0px 0px'><div class='item item-text-wrap textoinstru ' style='text-align: left;width:100%;display:inline-block; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><img id= 'im' ng-src='{{getImagen()}}' style='padding: 0px 10px 0px 0px'>terminada en {{finalTarjeta}}<br class='textoinstru'><br><div class='textoinstru'style='font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>{{cuotas}} de {{cuanto | currency}}  <i class='texto' style='color:rgb(67,176,0);text-align: left;'ng-show='intereses()'>Sin intereses</i></div><br><div class='texto'style='text-align: left;  color:rgb(102,102,102)'>En tu estado de cuenta verás el cargo como {{nombre}}.</div></div></div><div class='item item-text-wrap texto' style=' text-align: center;border-style: none;font-weight: 200;color: rgb(102,102,102); border-bottom: 2pt;border-bottom-color: rgb( 222,222,222); border-style:solid;'><i>Comprobante: {{comprobante}}</i></div></div><footer></footer></ion-content></ion-view>";

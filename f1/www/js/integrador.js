@@ -7,6 +7,7 @@ angular.module('integrador', ['ionic','starter'])
 	var integrador = {
 		name: 'integrador',
 		url: '/integrador',
+		cache:false,
 		params: {
 			param1: { array: true }
 		},
@@ -15,6 +16,7 @@ angular.module('integrador', ['ionic','starter'])
 
 		var vip = {
 		name: 'vip',
+		cache:false,
 		url: '/vip',
 		templateUrl: 'vip.html',
 		controller: 'ProductCtrl'
@@ -22,6 +24,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var payment_methods = {
 		name: 'payment_methods',
+		cache:false,
 		url: '/:product_id/:payment_method_id',
 		templateUrl: 'payment_methods.html',
 		controller: 'PaymentMethodsCtrl'
@@ -29,6 +32,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var card_issuers = {
 		name: 'card_issuers',
+		// cache:false,
 		url: '/:product_id/:payment_method_id/:issuer_id',
 		templateUrl: 'card_issuers.html',
 		controller: 'CardIssuersCtrl'
@@ -36,6 +40,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var installments = {
 		name: 'installments',
+		cache:false,
 		url: '/:product_id/:payment_method_id/:issuer_id/:installments',
 		templateUrl: 'installments.html',
 		controller: 'InstallmentsCtrl'
@@ -43,6 +48,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var card_form = {
 		name: 'card_form',
+		cache:false,
 		url: '/:product_id/:payment_method_id/:issuer_id/:installments/:token',
 		templateUrl: 'card_form.html',
 		controller: 'CardFormCtrl'
@@ -50,6 +56,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var payment_result = {
 		name: 'payment_result',
+		cache:false,
 		url: '/:product_id/:payment_method_id/:issuer_id/:installments/:token/payment_result',
 		templateUrl: 'payment_result.html',
 		controller: 'PaymentCtrl'
@@ -57,6 +64,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var payment_result_off = {
 		name: 'payment_result_off',
+		cache:false,
 		url: '/:product_id/:payment_method_id/payment_result_off',
 		templateUrl: 'payment_result.html',
 		controller: 'PaymentCtrl'
@@ -161,6 +169,10 @@ angular.module('integrador', ['ionic','starter'])
 	MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
 	MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
 
+	// MercadoPagoService.setAccessToken("APP_USR-8666946229145884-060616-4b35b1b63cb75b53e3f5e18b1ac154b3__LA_LC__-176234066");
+	// MercadoPagoService.setPublicKey("APP_USR-4d5ba2c5-5151-4bca-a472-27ffe6e2de08");
+	// MercadoPagoService.setPrefId("176234066-fc6d5d5e-2671-4073-ab49-362a98b720b5"); productivos
+
 	var callback=function(datos){
 		console.log(datos);
 	}
@@ -204,6 +216,9 @@ angular.module('integrador', ['ionic','starter'])
     MercadoPagoService.getPaymentMethods().get(function(response){
 		$scope.paymentMethods = response;
 		$ionicLoading.hide();
+	},function(error){
+		alert(JSON.stringify(error));
+		$ionicLoading.hide();
 	});
 
 	$scope.selectedPaymentMethod = function(pm) {
@@ -221,15 +236,17 @@ angular.module('integrador', ['ionic','starter'])
 	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
 
     MercadoPagoService.getIssuers($stateParams.payment_method_id,"").get(function(response) {
+			console.log(response);
 			$ionicLoading.hide();
 			$scope.cardIssuers = response;
 			if (response.length==1)
 				$scope.selectedCardIssuer(response[0]);
 			else if (response.length==0)
 				$scope.selectedCardIssuer(undefined);
-		}, function(error){
-			console.log(error);
-	});
+		},function(error){
+			alert(JSON.stringify(error));
+			$ionicLoading.hide();
+		});
 
 	$scope.selectedCardIssuer = function(issuer) {
 		var issuerid="";
@@ -250,8 +267,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var product = ProductService.getProduct('id1');
 
-    MercadoPagoService.getInstallments($stateParams.payment_method_id, $stateParams.issuer_id, product.price)
-		.get(function(response) {
+    MercadoPagoService.getInstallments($stateParams.payment_method_id, $stateParams.issuer_id, product.price).get(function(response) {
 			var pcs = response[0]["payer_costs"];
 			if (pcs.length > 1) {
 				$scope.installments = pcs;
@@ -266,8 +282,9 @@ angular.module('integrador', ['ionic','starter'])
 					"installments": 1
 				});
 			}
-		}, function(error){
-			console.log(error);
+		},function(error){
+			alert(JSON.stringify(error));
+			$ionicLoading.hide();
 		}
 	);
 
@@ -287,8 +304,9 @@ angular.module('integrador', ['ionic','starter'])
   MercadoPagoService.getIdentificationTypes().get(function(response) {
 		$scope.identification_types = response;
 		$ionicLoading.hide();
-	}, function(error){
-		console.log(error);
+	},function(error){
+		alert(JSON.stringify(error));
+		$ionicLoading.hide();
 	});
 
 	$scope.card_token = {};
@@ -320,8 +338,9 @@ angular.module('integrador', ['ionic','starter'])
 				"installments": $stateParams.installments,
 				"token": response.id
 			});
-		}, function(response) {
-			alert(JSON.stringify(response));
+		},function(error){
+			alert(JSON.stringify(error));
+			$ionicLoading.hide();
 		});
 	};
 })
