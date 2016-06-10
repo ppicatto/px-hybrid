@@ -306,7 +306,7 @@ angular.module('mercadopago.services', [])
         }
     }});
   }
-  var createCardToken=function(data){
+  var createToken=function(data){
     return $resource(base_url+'/v1/card_tokens?public_key='+public_key,data, {
     save: {
         method: 'POST',
@@ -610,12 +610,13 @@ angular.module('mercadopago.services', [])
             }
         }});
       },
-      getPromos:function(){
+      getBankDeals:function(){
         return $resource(base_url+'/v1/payment_methods/deals?public_key='+public_key, {}, {
         get: {
             method: 'GET',
             cache: false,
-            timeout: 1000,
+            timeout: 10000,
+            isArray: true,
             interceptor: {
                 response: function(response) {
                     var result = response.resource;
@@ -625,11 +626,12 @@ angular.module('mercadopago.services', [])
             }
         }});
       },
-      createTonken:function(data){
-        return $resource(base_url+'/v1/card_tokens?public_key='+public_key,data);
+
+      createPayment:function(YOUR_BASE_URL, YOUR_PAYMENT_URI,data){
+        return $resource(YOUR_BASE_URL+YOUR_PAYMENT_URI,data);
       },
-      createPayment:function(data){
-        return $resource("https://www.mercadopago.com/checkout/examples/doPayment",data);
+      createPrefId:function(YOUR_BASE_URL, YOUR_PAYMENT_URI,data){
+        return $resource(YOUR_BASE_URL+YOUR_PAYMENT_URI,data);
       },
       getGrupos:getGrupos,
       setPrefId:function(dato){
@@ -646,7 +648,7 @@ angular.module('mercadopago.services', [])
       getInstructions:getInstructions,
       getPrefId:getPrefId,
       startIns:startIns,
-      createCardToken:createCardToken,
+      createToken:createToken,
       trackingOn:trackingOn,
       trackingOff:trackingOff,
       getTotal:function(prefid){
@@ -871,18 +873,7 @@ angular.module('mercadopago.controllers', [])
         "type": "DNI",
         "number": "12345678"}}
     };
-    // var token={
-    //   "card_number": "4556364421355272",
-    //   "security_code": "637",
-    //   "expiration_month": 5,
-    //   "expiration_year": 2019,
-    //   "cardholder": {
-    //   "name": "Rubio Hector Nahuel",
-    //   "identification": {
-    //     "subtype": null,
-    //     "type": "DNI",
-    //     "number": "31604507"}}
-    // };
+
 
   if ($scope.card_token.card_number!=undefined)
     token.card_number=$scope.card_token.card_number;
@@ -891,7 +882,6 @@ angular.module('mercadopago.controllers', [])
   if($scope.card_token.cardholder!=undefined){
     if($scope.card_token.cardholder.name!=undefined)
       token.cardholder.name=$scope.card_token.cardholder.name
-      console.log($scope.card_token.cardholder.identification.type);
     if($scope.card_token.cardholder.identification!=undefined){
 
         if($scope.card_token.cardholder.identification.type!=undefined)
@@ -915,7 +905,7 @@ angular.module('mercadopago.controllers', [])
 //   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
 // }
 
-MercadoPagoService.createCardToken().save(token,function(token){
+MercadoPagoService.createToken().save(token,function(token){
   console.log(token);
   var body={
      //online

@@ -83,8 +83,7 @@ angular.module('integrador', ['ionic','starter'])
 	})
 .run(function($ionicPlatform,$rootScope,$state,$rootScope) {
 //$rootScope.claseBarra= false ;
-	$ionicPlatform.ready(function() {
-	});
+	$ionicPlatform.ready(function() {});
 	$rootScope.pm={
 		"children": null,
     "children_header": null,
@@ -164,7 +163,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	   ]};
 })
-.controller('AppCtrl', function($scope, MercadoPagoService, $rootScope, $state){
+.controller('AppCtrl', function($scope, MercadoPagoService, $rootScope, $state, $cordovaDevice){
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
 	MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
 	MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
@@ -172,6 +171,8 @@ angular.module('integrador', ['ionic','starter'])
 	// MercadoPagoService.setAccessToken("APP_USR-8666946229145884-060616-4b35b1b63cb75b53e3f5e18b1ac154b3__LA_LC__-176234066");
 	// MercadoPagoService.setPublicKey("APP_USR-4d5ba2c5-5151-4bca-a472-27ffe6e2de08");
 	// MercadoPagoService.setPrefId("176234066-fc6d5d5e-2671-4073-ab49-362a98b720b5"); productivos
+
+	alert($cordovaDevice.getDevice())
 
 	var callback=function(datos){
 		console.log(datos);
@@ -212,6 +213,11 @@ angular.module('integrador', ['ionic','starter'])
 })
 .controller('PaymentMethodsCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService) {
 		$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
+		MercadoPagoService.getBankDeals().get(function(response){
+			console.log(response)
+		}, function(error){
+			console.log(error);
+		})
 
     MercadoPagoService.getPaymentMethods().get(function(response){
 		$scope.paymentMethods = response;
@@ -236,7 +242,6 @@ angular.module('integrador', ['ionic','starter'])
 	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
 
     MercadoPagoService.getIssuers($stateParams.payment_method_id,"").get(function(response) {
-			console.log(response);
 			$ionicLoading.hide();
 			$scope.cardIssuers = response;
 			if (response.length==1)
@@ -328,7 +333,7 @@ angular.module('integrador', ['ionic','starter'])
 	      template: 'Cargando...',
 	      noBackdrop: true
 	    });
-		MercadoPagoService.createCardToken().save(token,function(response) {
+		MercadoPagoService.createToken().save(token,function(response) {
 			$ionicLoading.hide();
 			$state.go('payment_result',
 			{
@@ -374,8 +379,9 @@ angular.module('integrador', ['ionic','starter'])
 		$ionicHistory.goBack(-1*($ionicHistory.currentView().index));
 	}
 
-	MercadoPagoService.createPayment(YOUR_BASE_URL, YOUR_PAYMENT_URI, merchant_payment)
-		.save(function(response) {
+	MercadoPagoService.createPayment(YOUR_BASE_URL, YOUR_PAYMENT_URI)
+		.save(merchant_payment,function(response) {
+			console.log(response);
 			$ionicLoading.hide();
 			if (response["data"].status == "approved") {
 				$scope.title = "Felicitaciones!";
