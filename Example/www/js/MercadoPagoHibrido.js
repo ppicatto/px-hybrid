@@ -155,9 +155,9 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 });
 angular.module('mercadopago.services', [])
 .factory('MercadoPagoService', function ($resource,$state,$ionicHistory,$rootScope,$ionicLoading,$q,$timeout) {
-  var public_key,call,prefid,flavour;
-  var access_token='';
-  var numerror=0;
+
+  var public_key,call,prefid,flavour,access_token;
+  var errorNum=0;
 
   var getUUID= function () {
     function s4() {
@@ -242,180 +242,210 @@ angular.module('mercadopago.services', [])
     }});
   };
   var startCheckout=function(callback){
+
     $ionicLoading.show({template: 'Cargando...'});
+    call=callback;
     var promise=buscarDatos();
-    promise.then(function(dato){
-      //console.log(dato.status)
-        numerror=0;
-        $ionicLoading.hide();
-        call=callback;
-        $rootScope.elegida=undefined;
-        $rootScope.MpCheckoutInfo=[];
-        $state.go('MercadoPago_Checkout', {
-         "flavour":3
-       });
-      }, function(error) {
-        console.log(error.status);
-        console.log(error);
-        if (error.status==-1){
-          if(numerror<3){
-            numerror++;
-            startCheckout();
-        }else{
+
+    promise.then(function(response){
+      errorNum=0;
+      $ionicLoading.hide();
+      $rootScope.selectedPaymentMethod=undefined;
+      $rootScope.MpCheckoutInfo=[];
+
+      $state.go('MercadoPago_Checkout',
+      {
+       "flavour":3
+      });
+
+    }, function(error) {
+      console.log(error);
+      if (error.status==-1){
+        if(errorNum<3){
+          errorNum++;
+          startCheckout();
+        }
+        else{
           alert("Intente devuelta");
-          numerror=0;
+          errorNum=0;
           $ionicLoading.hide();
         }
       }
   });
 };
   var startRyc=function(callback, pm){
+
     $ionicLoading.show({template: 'Cargando...'});
+    call=callback;
     var promise=buscarDatos();
+
     promise.then(function(){
       numeros=0;
-        $ionicLoading.hide();
-        call=callback;
-        $rootScope.elegida=pm;
-        $state.go('MercadoPago_Checkout', {
+      $ionicLoading.hide();
+      $rootScope.selectedPaymentMethod=pm;
+
+        $state.go('MercadoPago_Checkout',
+        {
           "flavour":1,
         });
+
    }, function(error) {
      console.log(error);
+
      if (error.status==-1){
-       if(numerror<3){
-         numerror++;
+       if(errorNum<3){
+         errorNum++;
          startRyc(callback,pm);
-     }else{
-       alert("Intente devuelta");
-       numerror=0;
-       $ionicLoading.hide();
-     }
-   }
- });
-  };
-  var startGrupos=function(callback){
-    $ionicLoading.show({template: 'Cargando...'});
-    var promise=buscarDatos();
-    promise.then(function(){
-      numerror=0;
-        $ionicLoading.hide();
-        call=callback;
-        $state.go('', {
-          "flavour":1
-        });
-    }, function(error) {
-      console.log(error);
-      if (error.status==-1){
-        if(numerror<3){
-          numerror++;
-          startGrupos();
-      }else{
-        alert("Intente devuelta");
-        numerror=0;
-        $ionicLoading.hide();
+       }
+       else {
+         $ionicLoading.hide();
+         alert("Intente devuelta");
+         errorNum=0;
       }
     }
   });
-  };
-  var startF2=function(callback){
+};
+  var startGrupos=function(callback){
     $ionicLoading.show({template: 'Cargando...'});
+    call=callback;
+
     var promise=buscarDatos();
     promise.then(function(){
-      numerror=0;
+      errorNum=0;
       $ionicLoading.hide();
-      call=callback;
-      $rootScope.elegida=2;
+
       $state.go('MercadoPago_PaymentMethodSearch', {
-       "flavour":2
-     });
+          "flavour":1
+      });
 
     }, function(error) {
       console.log(error);
       if (error.status==-1){
-        if(numerror<3){
-          numerror++;
-          startF2();
-      }else{
-        alert("Intente devuelta");
-        numerror=0;
-        $ionicLoading.hide();
+        if(errorNum<3){
+          errorNum++;
+          startGrupos();
+        }
+        else {
+          alert("Intente devuelta");
+          errorNum=0;
+          $ionicLoading.hide();
+        }
       }
-    }
-});
+  });
+};
+  var startF2=function(callback){
+
+    $ionicLoading.show({template: 'Cargando...'});
+    call=callback;
+
+    var promise=buscarDatos();
+    promise.then(function(){
+      errorNum=0;
+      $ionicLoading.hide();
+      $rootScope.selectedPaymentMethod=2;
+
+      $state.go('MercadoPago_PaymentMethodSearch',
+      {
+       "flavour":2
+      });
+
+    }, function(error) {
+      console.log(error);
+      if (error.status==-1){
+        if(errorNum<3){
+          errorNum++;
+          startF2();
+        }
+        else {
+          alert("Intente devuelta");
+          errorNum=0;
+          $ionicLoading.hide();
+        }
+      }
+    });
   };
   var startIns=function(callback, datos, f){
     console.log(datos);
-      getInstructions(datos.id,datos.payment_type_id).get(function(response){
-        $ionicLoading.hide();
-        numerror=0;
-        console.log(response);
-        call=callback;
-        $state.go('MercadoPago_Instructions', {
+    call=callback;
+    getInstructions(datos.id,datos.payment_type_id).get(function(response){
+      $ionicLoading.hide();
+      errorNum=0;
+      console.log(response);
+
+      $state.go('MercadoPago_Instructions',
+      {
          "flavour":f,
-         "pago": datos,
-         "instru":response
+         "paymentInfo": datos,
+         "instructionInfo":response
        });
-       },function(error){
-         console.log(error);
-         if (error.status==-1){
-           if(numerror<3){
-             numerror++;
-             startIns(callback,datos,f);
-         }else{
-           alert("Intente devuelta");
-           numerror=0;
-           $ionicLoading.hide();
-         }
-       }
-     });
+
+    },function(error){
+      console.log(error);
+      if (error.status==-1){
+        if(errorNum<3){
+          errorNum++;
+          startIns(callback,datos,f);
+        }
+        else {
+          alert("Intente devuelta");
+          errorNum=0;
+          $ionicLoading.hide();
+        }
+      }
+    });
   };
-  var startCongrats=function(callback, datos,f){
+  var startCongrats=function(callback, datos, f){
         $ionicLoading.hide();
         call=callback;
         $state.go('MercadoPago_Congrats', {
          "flavour":f,
-         "pago": datos});
+         "paymentInfo": datos});
   };
+
   var volver= function(flavour, datos, seguir){
-    $rootScope.elegida=undefined;
+    $rootScope.selectedPaymentMethod=undefined;
     if(flavour==3 && seguir===true){
       $ionicLoading.show({template: 'Cargando...'});
       if (datos[0]===undefined){ //medio off
-            var pm=datos[1].id;
-            if (datos[1].id=="redlink_bank_transfer"||datos[1].id=="redlink_atm")pm="redlink";
+        var pm=datos[1].id;
+        if (datos[1].id=="redlink_bank_transfer"||datos[1].id=="redlink_atm")pm="redlink";
 
-      postPayment().save({
-        "public_key":public_key,
-        "payment_method_id":pm,
-        "pref_id":prefid,
-        "email":"test-email@email.com"},function(response){
-          if (datos[1].id=="redlink_bank_transfer")response.payment_type_id="bank_transfer";
-          var body={
-             //online
-              "public_key":getPublickey(),
-              "payment_id":response.id,
-              "sdk_flavor":flavour,
-              "sdk_platform":$rootScope.platform,
-              "sdk_type":"hybrid",
-              "sdk_framework":"ionic",
-              "sdk_version":"1.0"
-          };
-          trackingOff().save(body,function(response){
-            console.log("tracking",response);
-          },function(error){
-            console.log(error);
+          postPayment().save({
+            "public_key":public_key,
+            "payment_method_id":pm,
+            "pref_id":prefid,
+            "email":"test-email@email.com"},function(response){
+              if (datos[1].id=="redlink_bank_transfer")
+                response.payment_type_id="bank_transfer";
+
+              trackingOff().save({
+                "public_key":getPublickey(),
+                "payment_id":response.id,
+                "sdk_flavor":flavour,
+                "sdk_platform":$rootScope.platform,
+                "sdk_type":"hybrid",
+                "sdk_framework":"ionic",
+                "sdk_version":"1.0"
+              },function(response){
+                console.log("tracking",response);
+              },function(error){
+                console.log(error);
+              });
+              startIns(call,response,3);
+
+          }, function(error){
+              $ionicLoading.hide();
+              if (error.status==400){
+                console.log(error.data.message);
+                alert(error.data.message);
+              }
+              else {
+                console.log(eror);
+                alert("Intente nuevamente");
+              }
           });
-          startIns(call,response,3);
-
-        }, function(error){
-          console.log(error);
-
-            alert(error);
-            $ionicLoading.hide();
-        });
-      }
-      else {
+        }
+    else {
           postPayment().save({ //online
             "public_key":public_key,
             "payment_method_id":datos[1].id,
@@ -427,16 +457,15 @@ angular.module('mercadopago.services', [])
               startCongrats(call,response,3);
 
             }, function(error){
+              $ionicLoading.hide();
               if (error.status==400){
-              console.log(error.data.message);
-              alert(error.data.message);
-
+                console.log(error.data.message);
+                alert(error.data.message);
               }
               else {
                 console.log(eror);
                 alert("Intente nuevamente");
               }
-                $ionicLoading.hide();
             });
         }
       }
@@ -534,23 +563,23 @@ angular.module('mercadopago.controllers', [])
   $scope.HTML=" <ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='cardIssuer in cardIssuers' ng-click='selectedCardIssuer(cardIssuer)'><img src='{{cardIssuer.thumbnail}}' width='50' height='19' style='margin-right: 20px;'>{{cardIssuer.name}}</div></div></ion-content>";
   $scope.header="Selecciona el banco";
   // ga('send', 'pageview', 'Card Issuers');
-  var numerror=0;
+  var errorNum=0;
 
   $scope.getIssuer=function(){
     MercadoPagoService.getIssuers($stateParams.paymentMethod.id, $stateParams.token.first_six_digits).get(function(data) {
-      numerror=0;
+      errorNum=0;
       if (data.length==1)
         $scope.selectedCardIssuer(data[0]); //si es uno solo que elija ese directo
       else
         $scope.cardIssuers = data;
     },function(error){
       console.log(error);
-      if(numerror<3){
-        numerror++;
+      if(errorNum<3){
+        errorNum++;
         $scope.getIssuer();
     } else{
         alert("Intente devuelta");
-        numerror=0;
+        errorNum=0;
       }
   });
 };
@@ -574,22 +603,22 @@ angular.module('mercadopago.controllers', [])
 
   // ga('send', 'pageview', 'installments');
 
-  var numerror=0;
+  var errorNum=0;
   $scope.total=MercadoPagoService.getTotal($rootScope.prefid);
 
   MercadoPagoService.getInstallments($stateParams.paymentMethod.id, $stateParams.issuer.id, $scope.total).get(function(data) {
     $scope.installments = data[0];
     console.log(data);
-    numerror=0;
+    errorNum=0;
   },function(error){
       console.log(error);
       if(error.status==-1){
-        if(numerror<3){
-          numerror++;
+        if(errorNum<3){
+          errorNum++;
           $scope.getInstallments($stateParams.paymentMethod.id, $stateParams.issuer.id, $scope.total);
         }else{
           alert("Intente devuelta");
-          numerror=0;
+          errorNum=0;
       }
     }
   });
@@ -605,7 +634,7 @@ angular.module('mercadopago.controllers', [])
     if ($stateParams.flavour==2)
       MercadoPagoService.volver($stateParams.flavour,datos,true);
     else {
-      $rootScope.elegida=$stateParams.paymentMethod; //si es f3 vuelvo a ryc
+      $rootScope.selectedPaymentMethod=$stateParams.paymentMethod; //si es f3 vuelvo a ryc
       $ionicHistory.goBack(-1*($ionicHistory.currentView().index-1));
     }
   };
@@ -619,20 +648,20 @@ angular.module('mercadopago.controllers', [])
   // ga('send', 'pageview', 'Card Form');
 
   $scope.mostrarIcono=false; //mostrar que tarjeta es
-  var numerror=0;
+  var errorNum=0;
   $scope.getIdentificationTypes=function(){
   MercadoPagoService.getIdentificationTypes().get(function(data) {
     $scope.identification_types = data;
-    numerror=0;
+    errorNum=0;
   },function(error){
     console.log(error);
     if(error.status==-1){
-      if(numerror<3){
-        numerror++;
+      if(errorNum<3){
+        errorNum++;
         $scope.getIdentificationTypes();
       }else{
         alert("Intente devuelta");
-        numerror=0;
+        errorNum=0;
       }
     }
     });
@@ -808,7 +837,7 @@ MercadoPagoService.createToken().save(token,function(token){
   $scope.grupos=$rootScope.datos.groups;
 
   $rootScope.$ionicGoBack=function(){
-    if ($rootScope.elegida==undefined && $state.current.name=='MercadoPago_PaymentMethodSearch')
+    if ($rootScope.selectedPaymentMethod==undefined && $state.current.name=='MercadoPago_PaymentMethodSearch')
       $ionicHistory.goBack(-2);
     else
       $ionicHistory.goBack(-1);
@@ -883,7 +912,7 @@ MercadoPagoService.createToken().save(token,function(token){
       MercadoPagoService.volver($stateParams.flavour,datos);
     }
     else {
-      $rootScope.elegida=pm; //si es f3 vuelvo a ryc
+      $rootScope.selectedPaymentMethod=pm; //si es f3 vuelvo a ryc
       $rootScope.MpCheckoutInfo[0]=undefined;
       $ionicHistory.goBack(-2);
     }
@@ -900,7 +929,7 @@ MercadoPagoService.createToken().save(token,function(token){
   $scope.on=false; //si es pago on
   $scope.intereses=false;
 
-  $scope.grupos=$rootScope.elegida; //muestro la paymentMethod elegida
+  $scope.grupos=$rootScope.selectedPaymentMethod; //muestro la paymentMethod elegida
 
   $scope.titulo=$rootScope.prefid.items[0].title; //muestro la compra
   $scope.imagen=$rootScope.prefid.items[0].picture_url;
@@ -914,7 +943,7 @@ MercadoPagoService.createToken().save(token,function(token){
     $scope.on=true;
   }
 
-  if($rootScope.elegida==undefined){ //va directo a grupos apenas entro con f3
+  if($rootScope.selectedPaymentMethod==undefined){ //va directo a grupos apenas entro con f3
     $state.go('MercadoPago_PaymentMethodSearch', {
           "flavour":$stateParams.flavour});
   }
