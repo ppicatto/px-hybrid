@@ -462,14 +462,16 @@ angular.module('mercadopago.services', [])
               "public_key": public_key,
               "payment_method_id": paymentMethod,
               "pref_id": prefid,
-              "email": "test-email@email.com"},function (response) {
+              "email": "test-email@email.com"}, function(data){
                 if (MpResponse[1].id == "redlink_bank_transfer") {
-                  response.payment_type_id = "bank_transfer";
+                  data.payment_type_id = "bank_transfer";
                 }
+                console.log(data);
+                startIns(call, data, 3);
 
                 trackingOff().save({
                   "public_key": getPublicKey(),
-                  "payment_id": response.id,
+                  "payment_id": data.id,
                   "sdk_flavor": flavour,
                   "sdk_platform": $rootScope.platform,
                   "sdk_type": "hybrid",
@@ -481,7 +483,7 @@ angular.module('mercadopago.services', [])
                   console.log(error);
                 });
 
-                startIns(call,response,3);
+
             }, function (error) {
                 $ionicLoading.hide();
                 if (error.status == 400) {
@@ -1046,14 +1048,13 @@ angular.module('mercadopago.controllers', [])
   $scope.value = function (reference) { //junto los datos de field_value
     var resultado = "";
 
-    for (i = 0; i < reference.field_value.length; i++){
+    for (i = 0; i < reference.field_value.length; i++)
       if (reference.separator != null) {
           resultado += reference.field_value[i]+reference.separator;
       } else {
           resultado += reference.field_value[i];
       }
       return resultado;
-    }
   };
 
   $scope.exit = function () { //salir de la pantalla
