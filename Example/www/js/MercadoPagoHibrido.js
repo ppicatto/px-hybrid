@@ -155,39 +155,8 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 });
 angular.module('mercadopago.services', [])
 .factory('MercadoPagoService', function ($resource,$state,$ionicHistory,$rootScope,$ionicLoading,$q,$timeout) {
-
   var public_key,call,prefid,flavour,access_token;
   var errorNum=0;
-
-  var getUUID= function () {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
-  };
-
-  var getPublickey=function(){
-    return public_key;
-  };
-
-  var buscarDatos=function(){
-
-    var deferred= $q.defer();
-    getPrefId().get(function(pref){
-      getPaymentMethodSearch().get(function(dato){
-        $rootScope.datos=dato;
-        $rootScope.prefid=pref;
-        deferred.resolve(dato);
-    },
-    function(error){
-      deferred.reject(error);
-      console.log(error.status);
-    });
-  },function(error){
-    deferred.reject(error);
-  });
-  return deferred.promise;
-};
 
   var getPaymentMethodSearch=function(){
     return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key, {}, {
@@ -196,44 +165,64 @@ angular.module('mercadopago.services', [])
         timeout: 10800,
     }});
   };
+
+  var getPaymentMethods=function(){
+    return $resource("https://api.mercadopago.com/v1/payment_methods?public_key="+public_key, {}, {
+    get: {
+        method: 'GET',
+        timeout: 10000,
+        isArray:true,
+    }});
+  }
+
+  var getIdentificationTypes=function(){
+    return $resource("https://api.mercadopago.com/v1/identification_types?public_key="+public_key, {}, {
+    get: {
+        method: 'GET',
+        timeout: 10000,
+        isArray: true
+    }});
+  }
+
+  var getIssuers=function(payment_method_id,bin){
+    return $resource("https://api.mercadopago.com/v1/payment_methods/card_issuers?public_key="+public_key+"&payment_method_id="+payment_method_id+"&bin="+bin,{}, {
+    get: {
+        method: 'GET',
+        timeout: 10000,
+        isArray: true
+    }});
+  }
+
+  var getInstallments=function(payment_method_id,issuer_id,amount){
+    return $resource("https://api.mercadopago.com/v1/payment_methods/installments?public_key="+public_key+"&payment_method_id=:pmid&issuer.id=:issuer&amount=:ammount",{ pmid: payment_method_id,ammount:amount,issuer:issuer_id},{
+    get: {
+        method: 'GET',
+        timeout: 10000,
+        isArray: true
+    }});
+  }
+
+  var getBankDeals=function(){
+    return $resource("https://api.mercadopago.com/v1/payment_methods/deals?public_key="+public_key, {}, {
+    get: {
+        method: 'GET',
+        timeout: 10000,
+        isArray: true
+    }});
+  }
+
   var getInstructions= function(payment_id, payment_type){
-    console.log(payment_id+" "+ payment_type);
     return $resource("https://api.mercadopago.com/beta/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_type="+payment_type, {}, {
     get: {
         method: 'GET',
         timeout: 8100,
     }});
   };
-  var trackingOn=function(data){
-    return $resource("https://api.mercadopago.com/beta/checkout/tracking",data, {
-    save: {
-        method: 'POST',
-        timeout: 1000,
-    }});
-  };
-  var trackingOff=function(data){
-    return $resource("https://api.mercadopago.com/beta/checkout/tracking/off",data, {
-    save: {
-        method: 'POST',
-        timeout: 1000,
-    }});
-  };
-  var postPayment=function(data){
 
-    return $resource("https://api.mercadopago.com/beta/checkout/payments",data, {
-    save: {
-        method: 'POST',
-        timeout: 9800,
-        headers: {'X-Idempotency-Key': getUUID(),'Content-Type':'application/json; charset=UTF-8'},
-    }});
+  var getPublicKey=function(){
+    return public_key;
   };
-  var createToken=function(data){
-    return $resource("https://api.mercadopago.com/v1/card_tokens?public_key="+public_key,data, {
-    save: {
-        method: 'POST',
-        timeout: 1000,
-    }});
-  };
+
   var getPrefId=function(){
     return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token, {}, {
     get: {
@@ -241,11 +230,64 @@ angular.module('mercadopago.services', [])
         timeout: 5800,
     }});
   };
-  var startCheckout=function(callback){
 
+  var createToken=function(data){
+    return $resource("https://api.mercadopago.com/v1/card_tokens?public_key="+public_key,data, {
+    save: {
+        method: 'POST',
+        timeout: 1000,
+    }});
+  };
+
+  var postPayment=function(data){
+    return $resource("https://api.mercadopago.com/beta/checkout/payments",data, {
+    save: {
+        method: 'POST',
+        timeout: 9800,
+        headers: {'X-Idempotency-Key': getUUID(),'Content-Type':'application/json; charset=UTF-8'},
+    }});
+  };
+
+  var createPayment=function(base_url, payment_uri, data){
+    return $resource(base_url+payment_uri,data);
+  }
+
+  var createPrefId=function(base_url, prefid_uri, data){
+    return $resource(base_url+prefid_uri,data);
+  }
+
+  var trackingOn=function(data){
+    return $resource("https://api.mercadopago.com/beta/checkout/tracking",data, {
+    save: {
+        method: 'POST',
+        timeout: 1000,
+    }});
+  };
+
+  var trackingOff=function(data){
+    return $resource("https://api.mercadopago.com/beta/checkout/tracking/off",data, {
+    save: {
+        method: 'POST',
+        timeout: 1000,
+    }});
+  };
+
+  var setPublicKey=function(publicKey){
+    public_key=publicKey;
+  }
+
+  var setPrefId=function(prefId){
+    prefid=prefId;
+  }
+
+  var setAccessToken=function(accessToken){
+    access_token=accessToken;
+  }
+
+  var startCheckout=function(callback){
     $ionicLoading.show({template: 'Cargando...'});
     call=callback;
-    var promise=buscarDatos();
+    var promise=getPaymentMethodsPrefId();
 
     promise.then(function(response){
       errorNum=0;
@@ -271,18 +313,18 @@ angular.module('mercadopago.services', [])
           $ionicLoading.hide();
         }
       }
-  });
-};
-  var startRyc=function(callback, pm){
+    });
+  };
 
+  var startRyc=function(callback, paymentMethod){
     $ionicLoading.show({template: 'Cargando...'});
     call=callback;
-    var promise=buscarDatos();
+    var promise=getPaymentMethodsPrefId();
 
     promise.then(function(){
-      numeros=0;
+      errorNum=0;
       $ionicLoading.hide();
-      $rootScope.selectedPaymentMethod=pm;
+      $rootScope.selectedPaymentMethod=paymentMethod;
 
         $state.go('MercadoPago_Checkout',
         {
@@ -295,7 +337,7 @@ angular.module('mercadopago.services', [])
      if (error.status==-1){
        if(errorNum<3){
          errorNum++;
-         startRyc(callback,pm);
+         startRyc(callback,paymentMethod);
        }
        else {
          $ionicLoading.hide();
@@ -303,13 +345,14 @@ angular.module('mercadopago.services', [])
          errorNum=0;
       }
     }
-  });
-};
+    });
+  };
+
   var startGrupos=function(callback){
     $ionicLoading.show({template: 'Cargando...'});
     call=callback;
 
-    var promise=buscarDatos();
+    var promise=getPaymentMethodsPrefId();
     promise.then(function(){
       errorNum=0;
       $ionicLoading.hide();
@@ -331,14 +374,15 @@ angular.module('mercadopago.services', [])
           $ionicLoading.hide();
         }
       }
-  });
-};
+    });
+  };
+
   var startF2=function(callback){
 
     $ionicLoading.show({template: 'Cargando...'});
     call=callback;
 
-    var promise=buscarDatos();
+    var promise=getPaymentMethodsPrefId();
     promise.then(function(){
       errorNum=0;
       $ionicLoading.hide();
@@ -364,18 +408,18 @@ angular.module('mercadopago.services', [])
       }
     });
   };
-  var startIns=function(callback, datos, f){
-    console.log(datos);
+
+  var startIns=function(callback, paymentInfo, flavour){
     call=callback;
-    getInstructions(datos.id,datos.payment_type_id).get(function(response){
+    getInstructions(paymentInfo.id,paymentInfo.payment_type_id).get(function(response){
       $ionicLoading.hide();
       errorNum=0;
       console.log(response);
 
       $state.go('MercadoPago_Instructions',
       {
-         "flavour":f,
-         "paymentInfo": datos,
+         "flavour":flavour,
+         "paymentInfo": paymentInfo,
          "instructionInfo":response
        });
 
@@ -384,7 +428,7 @@ angular.module('mercadopago.services', [])
       if (error.status==-1){
         if(errorNum<3){
           errorNum++;
-          startIns(callback,datos,f);
+          startIns(callback,paymentInfo,flavour);
         }
         else {
           alert("Intente devuelta");
@@ -394,66 +438,72 @@ angular.module('mercadopago.services', [])
       }
     });
   };
-  var startCongrats=function(callback, datos, f){
+
+  var startCongrats=function(callback, paymentInfo, flavour){
         $ionicLoading.hide();
         call=callback;
-        $state.go('MercadoPago_Congrats', {
-         "flavour":f,
-         "paymentInfo": datos});
+        $state.go('MercadoPago_Congrats',
+        {
+         "flavour":flavour,
+         "paymentInfo": paymentInfo
+       });
   };
 
-  var volver= function(flavour, datos, seguir){
+  var goBack= function(flavour, MpResponse, seguir){
     $rootScope.selectedPaymentMethod=undefined;
     if(flavour==3 && seguir===true){
       $ionicLoading.show({template: 'Cargando...'});
-      if (datos[0]===undefined){ //medio off
-        var pm=datos[1].id;
-        if (datos[1].id=="redlink_bank_transfer"||datos[1].id=="redlink_atm")pm="redlink";
 
-          postPayment().save({
-            "public_key":public_key,
-            "payment_method_id":pm,
-            "pref_id":prefid,
-            "email":"test-email@email.com"},function(response){
-              if (datos[1].id=="redlink_bank_transfer")
-                response.payment_type_id="bank_transfer";
+      if (MpResponse[0]===undefined){ //medio off
+        var paymentMethod=MpResponse[1].id;
 
-              trackingOff().save({
-                "public_key":getPublickey(),
-                "payment_id":response.id,
-                "sdk_flavor":flavour,
-                "sdk_platform":$rootScope.platform,
-                "sdk_type":"hybrid",
-                "sdk_framework":"ionic",
-                "sdk_version":"1.0"
-              },function(response){
-                console.log("tracking",response);
-              },function(error){
-                console.log(error);
-              });
-              startIns(call,response,3);
+        if (MpResponse[1].id=="redlink_bank_transfer"||MpResponse[1].id=="redlink_atm")
+          paymentMethod="redlink";
 
-          }, function(error){
-              $ionicLoading.hide();
-              if (error.status==400){
-                console.log(error.data.message);
-                alert(error.data.message);
-              }
-              else {
-                console.log(eror);
-                alert("Intente nuevamente");
-              }
-          });
+        postPayment().save({
+          "public_key": public_key,
+          "payment_method_id": paymentMethod,
+          "pref_id": prefid,
+          "email": "test-email@email.com"},function(response){
+            if (MpResponse[1].id=="redlink_bank_transfer")
+              response.payment_type_id="bank_transfer";
+
+            trackingOff().save({
+              "public_key": getPublicKey(),
+              "payment_id": response.id,
+              "sdk_flavor": flavour,
+              "sdk_platform": $rootScope.platform,
+              "sdk_type": "hybrid",
+              "sdk_framework": "ionic",
+              "sdk_version": "1.0"
+            },function(response){
+              console.log("tracking",response);
+            },function(error){
+              console.log(error);
+            });
+            startIns(call,response,3);
+
+        }, function(error){
+            $ionicLoading.hide();
+            if (error.status==400){
+              console.log(error.data.message);
+              alert(error.data.message);
+            }
+            else {
+              console.log(error);
+              alert("Intente nuevamente");
+            }
+        });
         }
     else {
           postPayment().save({ //online
-            "public_key":public_key,
-            "payment_method_id":datos[1].id,
-            "pref_id":prefid,
-            "email":$rootScope.prefid.payer.email,
-            "token":datos[0].id,
-            "issuer_id":datos[2].id,
-            "installments":datos[3]},function(response){
+            "public_key": public_key,
+            "payment_method_id": MpResponse[1].id,
+            "pref_id": prefid,
+            "email": $rootScope.prefid.payer.email,
+            "token": MpResponse[0].id,
+            "issuer_id": MpResponse[2].id,
+            "installments": MpResponse[3]},function(response){
               startCongrats(call,response,3);
 
             }, function(error){
@@ -463,97 +513,75 @@ angular.module('mercadopago.services', [])
                 alert(error.data.message);
               }
               else {
-                console.log(eror);
+                console.log(error);
                 alert("Intente nuevamente");
               }
             });
         }
       }
 
-  else{
-    $ionicHistory.goBack(-1*($ionicHistory.currentView().index));
-    if (call!==null)
-      call(datos);
+      else{
+        $ionicHistory.goBack(-1*($ionicHistory.currentView().index));
+        if (call!==null)
+          call(MpResponse);
+      }
+  };
+
+  var getPaymentMethodsPrefId=function(){
+    var deferred= $q.defer();
+    getPrefId().get(function(pref){
+      getPaymentMethodSearch().get(function(dato){
+        $rootScope.datos=dato;
+        $rootScope.prefid=pref;
+        deferred.resolve(dato);
+      },function(error){
+        deferred.reject(error);
+      });
+    },function(error){
+      deferred.reject(error);
+    });
+    return deferred.promise;
+  };
+
+  var getTotal=function(prefid){
+    var price=0;
+    for(i=0;i<prefid.items.length;i++)
+      price+=prefid.items[i].unit_price;
+    return price;
   }
-};
 
-    return {
-      getPaymentMethods:function(){
-        return $resource("https://api.mercadopago.com/v1/payment_methods?public_key="+public_key, {}, {
-        get: {
-            method: 'GET',
-            timeout: 10000,
-            isArray:true,
-        }});
-      },
-      getIssuers:function(pmid,bin){
-        return $resource("https://api.mercadopago.com/v1/payment_methods/card_issuers?public_key="+public_key+"&payment_method_id="+pmid+"&bin="+bin,{}, {
-        get: {
-            method: 'GET',
-            timeout: 10000,
-            isArray: true
-        }});
-      },
-      getInstallments:function(pmid,issuid,amm){
-        return $resource("https://api.mercadopago.com/v1/payment_methods/installments?public_key="+public_key+"&payment_method_id=:payment_method_id&issuer.id=:issuer&amount=:ammount",{ payment_method_id: pmid,ammount:amm,issuer:issuid},{
-        get: {
-            method: 'GET',
-            timeout: 10000,
-            isArray: true
-        }});
-      },
-      getIdentificationTypes:function(){
-        return $resource("https://api.mercadopago.com/v1/identification_types?public_key="+public_key, {}, {
-        get: {
-            method: 'GET',
-            timeout: 10000,
-            isArray: true
-        }});
-      },
-      getBankDeals:function(){
-        return $resource("https://api.mercadopago.com/v1/payment_methods/deals?public_key="+public_key, {}, {
-        get: {
-            method: 'GET',
-            timeout: 10000,
-            isArray: true
-        }});
-      },
+  var getUUID= function () {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
+  };
 
-      createPayment:function(YOUR_BASE_URL, YOUR_PAYMENT_URI,data){
-        return $resource(YOUR_BASE_URL+YOUR_PAYMENT_URI,data);
-      },
-      createPrefId:function(YOUR_BASE_URL, YOUR_PAYMENT_URI,data){
-        return $resource(YOUR_BASE_URL+YOUR_PAYMENT_URI,data);
-      },
+  return {
       getPaymentMethodSearch:getPaymentMethodSearch,
-      setPrefId:function(dato){
-        prefid=dato;
-      },
-      getPublickey:getPublickey,
-      setAccessToken:function(dato){
-        access_token=dato;
-      },
-      setPublicKey:function(dato){
-        public_key=dato;
-      },
+      getPaymentMethods:getPaymentMethods,
+      getIdentificationTypes:getIdentificationTypes,
+      getIssuers:getIssuers,
+      getInstallments:getInstallments,
+      getBankDeals:getBankDeals,
+      setPublicKey:setPublicKey,
+      setPrefId:setPrefId,
+      setAccessToken:setAccessToken,
+      getPublicKey:getPublicKey,
       postPayment:postPayment,
       getInstructions:getInstructions,
       getPrefId:getPrefId,
       startIns:startIns,
       createToken:createToken,
+      createPayment:createPayment,
       trackingOn:trackingOn,
       trackingOff:trackingOff,
-      getTotal:function(prefid){
-        var precio=0;
-        for(i=0;i<prefid.items.length;i++)
-          precio+=prefid.items[i].unit_price;
-        return precio;
-      },
+      getTotal:getTotal,
       startCheckout:startCheckout,
       startF2:startF2,
       startGrupos:startGrupos,
       startRyc:startRyc,
-      volver:volver,
+      goBack:goBack,
   };
 });
 
@@ -606,7 +634,7 @@ angular.module('mercadopago.controllers', [])
   var errorNum=0;
   $scope.total=MercadoPagoService.getTotal($rootScope.prefid);
 
-  MercadoPagoService.getInstallments($stateParams.paymentMethod.id, $stateParams.issuer.id, $scope.total).get(function(data) {
+  MercadoPagoService.getInstallments($stateParams.paymentMethod.id, $stateParams.cardIssuer.id, $scope.total).get(function(data) {
     $scope.installments = data[0];
     console.log(data);
     errorNum=0;
@@ -627,12 +655,12 @@ angular.module('mercadopago.controllers', [])
     var datos=[];
     datos.push($stateParams.token);
     datos.push($stateParams.paymentMethod);
-    datos.push($stateParams.issuer);
+    datos.push($stateParams.cardIssuer);
     datos.push(installment.installments);
     datos.push(installment);
     $rootScope.MpCheckoutInfo=datos;
     if ($stateParams.flavour==2)
-      MercadoPagoService.volver($stateParams.flavour,datos,true);
+      MercadoPagoService.goBack($stateParams.flavour,datos,true);
     else {
       $rootScope.selectedPaymentMethod=$stateParams.paymentMethod; //si es f3 vuelvo a ryc
       $ionicHistory.goBack(-1*($ionicHistory.currentView().index-1));
@@ -795,7 +823,7 @@ MercadoPagoService.createToken().save(token,function(token){
   console.log(token);
   var body={
      //online
-      "public_key":MercadoPagoService.getPublickey(),
+      "public_key":MercadoPagoService.getPublicKey(),
       "token":token.id,
       "sdk_flavor":$stateParams.flavour,
       "sdk_platform":$rootScope.platform,
@@ -848,13 +876,13 @@ MercadoPagoService.createToken().save(token,function(token){
   };
 
   $scope.Salir=function(){
-    MercadoPagoService.volver($stateParams.flavour,"cancelo"); //cancelar y salir
+    MercadoPagoService.goBack($stateParams.flavour,"cancelo"); //cancelar y salir
   };
   $scope.selectedGrupo = function(pm) {
 
     if(pm.children==null){
       if($stateParams.flavour==1)
-        MercadoPagoService.volver($stateParams.flavour, pm); //devuelvo el resultado sino hay childs y f2 gris
+        MercadoPagoService.goBack($stateParams.flavour, pm); //devuelvo el resultado sino hay childs y f2 gris
 
     else if (pm.id=="credit_card"){
         $state.go('MercadoPago_CardForm', {
@@ -896,12 +924,12 @@ MercadoPagoService.createToken().save(token,function(token){
   };
 
   $scope.Salir=function(){ //cancelar
-    MercadoPagoService.volver($stateParams.flavour,"cancelo");
+    MercadoPagoService.goBack($stateParams.flavour,"cancelo");
   };
 
   $scope.elegir=function(pm){
     if ($stateParams.flavour==1)
-      MercadoPagoService.volver($stateParams.flavour, pm); //volver si es f2 gris
+      MercadoPagoService.goBack($stateParams.flavour, pm); //volver si es f2 gris
 
     else if ($stateParams.flavour==2){ //datos de f2
       var datos=[];
@@ -909,7 +937,7 @@ MercadoPagoService.createToken().save(token,function(token){
       datos.push(pm);
       datos.push($scope.issuer);
       datos.push($scope.payer_cost);
-      MercadoPagoService.volver($stateParams.flavour,datos);
+      MercadoPagoService.goBack($stateParams.flavour,datos);
     }
     else {
       $rootScope.selectedPaymentMethod=pm; //si es f3 vuelvo a ryc
@@ -961,11 +989,11 @@ MercadoPagoService.createToken().save(token,function(token){
     }
   };
   $scope.Salir=function(){ //volver si cancelo
-    MercadoPagoService.volver($stateParams.flavour,"cancelo");
+    MercadoPagoService.goBack($stateParams.flavour,"cancelo");
   };
   $scope.goBack = function() {
     if($stateParams.flavour==1) //editar paymentMethod elegida si es f2 gris, devuelvo false
-      MercadoPagoService.volver($stateParams.flavour,"false");
+      MercadoPagoService.goBack($stateParams.flavour,"false");
     else{
       $rootScope.MpShowBack=true; //mostrar atras si es f3
       $state.go('MercadoPago_PaymentMethodSearch', {
@@ -985,7 +1013,7 @@ MercadoPagoService.createToken().save(token,function(token){
     $rootScope.MpShowBack=true; //mostrar flecha atras
 
     if($stateParams.flavour==1) // devuelvo true si es f2 gris
-      MercadoPagoService.volver($stateParams.flavour,"true");
+      MercadoPagoService.goBack($stateParams.flavour,"true");
 
     else{
       var datos=[]; //ir a pagar
@@ -994,7 +1022,7 @@ MercadoPagoService.createToken().save(token,function(token){
       datos.push($rootScope.MpCheckoutInfo[2]);
       datos.push($rootScope.MpCheckoutInfo[3]);
 
-      MercadoPagoService.volver($stateParams.flavour,datos,true);
+      MercadoPagoService.goBack($stateParams.flavour,datos,true);
     }
   };
 })
@@ -1022,7 +1050,7 @@ MercadoPagoService.createToken().save(token,function(token){
     return resultado;
   };
   $scope.Salir=function(){ //salir de la pantalla
-    MercadoPagoService.volver($stateParams.flavour,$stateParams.paymentInfo,false);
+    MercadoPagoService.goBack($stateParams.flavour,$stateParams.paymentInfo,false);
   };
 })
 .controller('MpCongratsCtrl', function($scope, MercadoPagoService,$state, $stateParams,$ionicHistory, $rootScope){
@@ -1130,7 +1158,7 @@ MercadoPagoService.createToken().save(token,function(token){
   };
 
   $scope.Salir=function(){
-    MercadoPagoService.volver($stateParams.flavour,$rootScope.datos,false);
+    MercadoPagoService.goBack($stateParams.flavour,$rootScope.datos,false);
   };
   if ($stateParams.paymentInfo.status_detail=="cc_rejected_call_for_authorize")
   $scope.HTML="<ion-view hide-nav-bar='true'><ion-content style=' background-color:rgb(244,244,244)'><div class='textoinstru' style=' background-color:rgb(228,242,249);border-bottom: 2pt;border-bottom-color: rgb(222,222,222); border-style:solid;line-height: 28pt;text-align: center;padding: 10px 16pt 16pt 16pt;color:rgb(102,102,102)!important;font-size:18pt!important' class='textoinstru'><i class='icon ion-android-call tic' style='color:rgb(57,135,173); margin:0pt 0pt 5pt 0pt'></i><br class='textoinstru'>Debes autorizar ante {{pmid}} el pago de {{total | currency}} a MercadoPago<br class='textoinstru'><div class='textoinstru' style='line-height: 15pt; font-size: 11pt!important; font-weight: 300!important; padding: 10px 30px; color:rgb(102,102,102)'>El teléfono está al dorso de tu tarjeta.</div></div><br><br><div class='footer'><a class='link' ng-click='Salir()'>Ya hablé con Visa y me autorizó</a></div><br><div class='footer' style='padding: 10px 0'>¿No pudiste autorizarlo?</div><div class='footer' style='line-height: 15pt;'><a class='link' ng-click='Salir()'>Elige otro medio de pago</a></div><br><footer></footer></ion-content></ion-view>";
