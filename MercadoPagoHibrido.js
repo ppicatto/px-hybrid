@@ -31,10 +31,10 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
     document.getElementsByTagName('head')[0].appendChild(MpCss);
 
     //Agrego Js de Google Analytics
-    var GoogleAnalyticsJs = document.createElement('script');
-    GoogleAnalyticsJs.type = "text/javascript";
-    GoogleAnalyticsJs.innerHTML = "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', 'UA-46085787-6', 'auto');ga('send', 'pageview');";
-    document.getElementsByTagName('head')[0].appendChild(GoogleAnalyticsJs);
+    // var GoogleAnalyticsJs = document.createElement('script');
+    // GoogleAnalyticsJs.type = "text/javascript";
+    // GoogleAnalyticsJs.innerHTML = "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', 'UA-46085787-6', 'auto');ga('send', 'pageview');";
+    // document.getElementsByTagName('head')[0].appendChild(GoogleAnalyticsJs);
 
     $rootScope.MpPrefIdVisible = false;
     $rootScope.MpShowBack = true;
@@ -161,7 +161,7 @@ angular.module('mercadopago.services', [])
   var errorNum = 0;
 
   var getPaymentMethodSearch = function () {
-    return $resource("https://api.mercadopago.com/beta/checkout/payment_methods/search/options?public_key="+public_key, {}, {
+    return $resource("https://api.mercadopago.com/v1/checkout/payment_methods/search/options?public_key="+public_key, {}, {
     get: {
         method: 'GET',
         timeout: 10800,
@@ -214,7 +214,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getInstructions = function (payment_id, payment_type) {
-    return $resource("https://api.mercadopago.com/beta/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_type="+payment_type, {}, {
+    return $resource("https://api.mercadopago.com/v1/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_type="+payment_type, {}, {
     get: {
         method: 'GET',
         timeout: 8100,
@@ -238,14 +238,16 @@ angular.module('mercadopago.services', [])
     save: {
         method: 'POST',
         timeout: 1000,
+        cache: false,
     }});
   };
 
   var postPayment = function (data) {
-    return $resource("https://api.mercadopago.com/beta/checkout/payments",data, {
+    return $resource("https://api.mercadopago.com/v1/checkout/payments",data, {
     save: {
         method: 'POST',
         timeout: 9800,
+        cache: false,
         headers: {'X-Idempotency-Key': getUUID(),'Content-Type':'application/json; charset=UTF-8'},
     }});
   };
@@ -259,7 +261,7 @@ angular.module('mercadopago.services', [])
   };
 
   var trackingOn = function (data) {
-    return $resource("https://api.mercadopago.com/beta/checkout/tracking",data, {
+    return $resource("https://api.mercadopago.com/v1/checkout/tracking",data, {
     save: {
         method: 'POST',
         timeout: 1000,
@@ -267,7 +269,7 @@ angular.module('mercadopago.services', [])
   };
 
   var trackingOff = function (data) {
-    return $resource("https://api.mercadopago.com/beta/checkout/tracking/off",data, {
+    return $resource("https://api.mercadopago.com/v1/checkout/tracking/off",data, {
     save: {
         method: 'POST',
         timeout: 1000,
@@ -764,7 +766,7 @@ angular.module('mercadopago.controllers', [])
   };
 })
 
-.controller('MpCardIssuersCtrl', function ($scope, MercadoPagoService,$state, $stateParams){
+.controller('MpCardIssuersCtrl', function ($scope, MercadoPagoService,$state, $stateParams,$rootScope, $ionicHistory){
 
   $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='cardIssuer in cardIssuers' ng-click='selectedCardIssuer(cardIssuer)'><img src='{{cardIssuer.thumbnail}}' width='50' height='19' style='margin-right: 20px;'>{{cardIssuer.name}}</div></div></ion-content>";
   $scope.header = "Selecciona el banco";
@@ -772,10 +774,11 @@ angular.module('mercadopago.controllers', [])
   var errorNum = 0;
 
   ($scope.getIssuer = function () {
+
     MercadoPagoService.getIssuers($stateParams.paymentMethod.id, $stateParams.token.first_six_digits)
     .get(function (response) {
       errorNum = 0;
-      if (response.length == 1){
+      if (response.length <= 1){
           $scope.selectedCardIssuer(response[0]); //si es uno solo que elija ese directo
       } else {
           $scope.cardIssuers = response;
@@ -849,7 +852,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpCardFormCtrl', function ($scope, MercadoPagoService, $state, $stateParams, $rootScope){
 
-  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()'  ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='showCardIcon'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Date</span><input type='Month' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type' ng-options=' identification_type.name for identification_type in identification_types'><option value=''>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
+  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()'  ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='showCardIcon'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Month</span><input type='number' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM'> </label><label class='item item-input'><span class='input-label'>Expiration Year</span><input type='number' id='cardExpirationYear' ng-model='card_token.expiration_year' placeholder='AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type' ng-options=' identification_type.name for identification_type in identification_types'><option value=''>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
   $scope.header = "Datos de tu tarjeta";
 
   $scope.showCardIcon = false; //mostrar que tarjeta es
@@ -960,42 +963,42 @@ angular.module('mercadopago.controllers', [])
   $scope.createToken = function () {
     var month = new Date($scope.card_token.expiration_month);
 
-    var token = {
-        "card_number": "4556364421355272",
-        "security_code": "123",
-        "expiration_month": 4,
-        "expiration_year": 2020,
-        "cardholder": {
-          "name": "APRO",
-          "identification": {
-            "subtype": null,
-            "type": "DNI",
-            "number": "12345678"
-          }
-        }
-    };
-
-    if ($scope.card_token.card_number != undefined){
-        token.card_number=$scope.card_token.card_number;
-    } else {
-        $scope.card_token.card_number = token.card_number;
-    }
-    if ($scope.card_token.cardholder != undefined) {
-        if ($scope.card_token.cardholder.name != undefined) {
-            token.cardholder.name = $scope.card_token.cardholder.name;
-        }
-        if ($scope.card_token.cardholder.identification != undefined) {
-            if ($scope.card_token.cardholder.identification.type != undefined){
-                token.cardholder.identification.type = $scope.card_token.cardholder.identification.type.id;
-            }
-            if ($scope.card_token.cardholder.identification.number != undefined){
-                token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
-            }
-        }
-    }
-    if ($scope.card_token.security_code != undefined) {
-        token.security_code = "" + $scope.card_token.security_code + "";
-    }
+    // var token = {
+    //     "card_number": "4556364421355272",
+    //     "security_code": "123",
+    //     "expiration_month": 4,
+    //     "expiration_year": 2020,
+    //     "cardholder": {
+    //       "name": "APRO",
+    //       "identification": {
+    //         "subtype": null,
+    //         "type": "DNI",
+    //         "number": "12345678"
+    //       }
+    //     }
+    // };
+    //
+    // if ($scope.card_token.card_number != undefined){
+    //     token.card_number=$scope.card_token.card_number;
+    // } else {
+    //     $scope.card_token.card_number = token.card_number;
+    // }
+    // if ($scope.card_token.cardholder != undefined) {
+    //     if ($scope.card_token.cardholder.name != undefined) {
+    //         token.cardholder.name = $scope.card_token.cardholder.name;
+    //     }
+    //     if ($scope.card_token.cardholder.identification != undefined) {
+    //         if ($scope.card_token.cardholder.identification.type != undefined){
+    //             token.cardholder.identification.type = $scope.card_token.cardholder.identification.type.id;
+    //         }
+    //         if ($scope.card_token.cardholder.identification.number != undefined){
+    //             token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
+    //         }
+    //     }
+    // }
+    // if ($scope.card_token.security_code != undefined) {
+    //     token.security_code = "" + $scope.card_token.security_code + "";
+    // }
     // if($scope.card_token.expiration_year!=undefined)
     //   token.expiration_year=$scope.card_token.expiration_year;
     // if($scope.card_token.expiration_month!=undefined)
@@ -1007,8 +1010,12 @@ angular.module('mercadopago.controllers', [])
       // }
 
 
+      $scope.card_token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
+      $scope.card_token.security_code = "" + $scope.card_token.security_code + "";
+      $scope.card_token.cardholder.identification.type = "" +$scope.card_token.cardholder.identification.type.id + "";
+
     MercadoPagoService.createToken()
-    .save(token,function (token){
+    .save($scope.card_token,function (token){
       console.log(token);
       var body = {//online
           "public_key": MercadoPagoService.getPublicKey(),

@@ -30,7 +30,7 @@ angular.module('integrador', ['ionic','starter'])
 
 	var card_issuers = {
 		name: 'card_issuers',
-		// cache:false,
+		cache:false,
 		url: '/:product_id/:payment_method_id/:issuer_id',
 		templateUrl: 'card_issuers.html',
 		controller: 'CardIssuersCtrl'
@@ -81,6 +81,7 @@ angular.module('integrador', ['ionic','starter'])
 	})
 .run(function($ionicPlatform, $rootScope, $state) {
 	$ionicPlatform.ready(function() {});
+	$rootScope.noCardIssuers=false;
 })
 .controller('AppCtrl', function($scope, MercadoPagoService, $rootScope, $state ){
 	MercadoPagoService.setAccessToken("APP_USR-244508097630521-031308-29cafdb25ffb6404fba1f5e24e0c4599__LA_LD__-150216849");
@@ -99,8 +100,10 @@ angular.module('integrador', ['ionic','starter'])
 	}
 })
 
-.controller('PaymentMethodsCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService) {
+.controller('PaymentMethodsCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService,$rootScope) {
 		$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
+
+		$rootScope.noCardIssuers=false;
 		MercadoPagoService.getBankDeals().get(function(response){
 			console.log(response)
 		}, function(error){
@@ -126,20 +129,33 @@ angular.module('integrador', ['ionic','starter'])
 			});
 	};
 })
-.controller('CardIssuersCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService) {
+.controller('CardIssuersCtrl', function($scope, $state, $stateParams, $ionicLoading, MercadoPagoService, $rootScope, $ionicHistory) {
 	$ionicLoading.show({template: 'Cargando...',noBackdrop: true});
+		($scope.goBack = function(){
+			if ($rootScope.noCardIssuers==true){
+				$rootScope.noCardIssuers=false;
+				$ionicHistory.goBack(-1);
+			}
+			else{
+				MercadoPagoService.getIssuers($stateParams.payment_method_id,"").get(function(response) {
+					$ionicLoading.hide();
+					$scope.cardIssuers = response;
+					if (response.length==1){
+						$scope.selectedCardIssuer(response[0]);
+						$rootScope.noCardIssuers=true;
+					} else if (response.length==0){
+						$scope.selectedCardIssuer(undefined);
+						$rootScope.noCardIssuers=true;
+					} else {
+						$rootScope.noCardIssuers=false;
+					}
+				},function(error){
+					alert(JSON.stringify(error));
+					$ionicLoading.hide();
+				});
+			}
+		})();
 
-    MercadoPagoService.getIssuers($stateParams.payment_method_id,"").get(function(response) {
-			$ionicLoading.hide();
-			$scope.cardIssuers = response;
-			if (response.length==1)
-				$scope.selectedCardIssuer(response[0]);
-			else if (response.length==0)
-				$scope.selectedCardIssuer(undefined);
-		},function(error){
-			alert(JSON.stringify(error));
-			$ionicLoading.hide();
-		});
 
 	$scope.selectedCardIssuer = function(issuer) {
 		var issuerid="";
@@ -204,25 +220,18 @@ angular.module('integrador', ['ionic','starter'])
 	});
 
 	$scope.card_token = {};
-	var token={
-		"card_number": "4556364421355272",
-		"security_code": "123",
-		"expiration_month": 4,
-		"expiration_year": 2020,
-		"cardholder": {
-		"name": "APRO",
-		"identification": {
-			"subtype": null,
-			"type": "DNI",
-			"number": "12345678"}}
-	};
 
 	$scope.createToken = function() {
 		$ionicLoading.show({
 	      template: 'Cargando...',
 	      noBackdrop: true
 	    });
-		MercadoPagoService.createToken().save(token,function(response) {
+
+			$scope.card_token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
+			$scope.card_token.securityCode = "" + $scope.card_token.securityCode + "";
+			$scope.card_token.cardholder.identification.type = "" +$scope.card_token.cardholder.identification.type.id + "";
+
+		MercadoPagoService.createToken().save($scope.card_token,function(response) {
 			$ionicLoading.hide();
 			$state.go('payment_result',
 			{
