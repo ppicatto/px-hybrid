@@ -50,7 +50,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
   });
 })
 
-.config(function($stateProvider,$ionicConfigProvider) {
+.config(function($stateProvider, $ionicConfigProvider) {
 
   $ionicConfigProvider.backButton.text('').icon('ion-chevron-left').previousTitleText(false);
   $ionicConfigProvider.navBar.alignTitle('center'); //Alinear header en android
