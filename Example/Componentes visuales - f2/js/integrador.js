@@ -1,4 +1,4 @@
-angular.module('integrador', ['ionic','starter'])
+angular.module('integrador', ['ionic','mercadopago'])
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider,$stateProvider){
 	$urlRouterProvider.otherwise('/integrador');
 
