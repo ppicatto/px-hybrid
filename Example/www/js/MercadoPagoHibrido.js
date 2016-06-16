@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controllers','ngResource', 'ngSanitize'])
+angular.module('mercadopago', ['ionic', 'mercadopago.services','mercadopago.controllers','ngResource' ])
 
 .run(function($ionicPlatform, $rootScope, MercadoPagoService, $ionicLoading) {
   $ionicPlatform.ready(function() {
@@ -57,7 +57,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpPaymentMethodSearch = {
     name: 'MercadoPago_PaymentMethodSearch',
-    url: '/',
+    url: '/mercadopago',
     cache: false,
     params: {
       flavour: {},
@@ -67,7 +67,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpPaymentMethodSearch2 = {
     name: 'MercadoPago_PaymentMethodSearch2',
-    url: '/',
+    url: '/mercadopago',
     cache: false,
     params: {
       flavour: {},
@@ -78,7 +78,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpCheckout = {
     name: 'MercadoPago_Checkout',
-    url: '/',
+    url: '/mercadopago',
     cache: false,
     params: {
       flavour: {},
@@ -88,7 +88,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpInstructions = {
     name: 'MercadoPago_Instructions',
-    url: '/',
+    url: '/mercadopago',
     cache: false,
     params: {
       flavour: {},
@@ -100,7 +100,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpCongrats = {
     name: 'MercadoPago_Congrats',
-    url: '/',
+    url: '/mercadopago',
     cache: false,
     params: {
       flavour: {},
@@ -112,7 +112,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpCardForm = {
     name: 'MercadoPago_CardForm',
-    url: '/',
+    url: '/mercadopago',
     cache: false,
     params: {
       flavour: {},
@@ -123,7 +123,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpCardIssuers = {
     name: 'MercadoPago_CardIssuers',
-    url: '/',
+    url: '/mercadopago',
     params: {
       flavour: {},
       paymentMethod: {},
@@ -134,7 +134,7 @@ angular.module('starter', ['ionic', 'mercadopago.services','mercadopago.controll
 
   var MpInstallments = {
     name: 'MercadoPago_Installments',
-    url: '/',
+    url: '/mercadopago',
     params: {
       flavour: {},
       paymentMethod: {},
@@ -159,9 +159,11 @@ angular.module('mercadopago.services', [])
 .factory('MercadoPagoService', function ($resource, $state, $ionicHistory, $rootScope, $ionicLoading, $q, $timeout) {
   var public_key, call, prefid, flavour, access_token;
   var errorNum = 0;
+  var baseUrl = "https://api.mercadopago.com/";
+  var version = "v1/";
 
   var getPaymentMethodSearch = function () {
-    return $resource("https://api.mercadopago.com/v1/checkout/payment_methods/search/options?public_key="+public_key, {}, {
+    return $resource(baseUrl + version + "checkout/payment_methods/search/options?public_key="+public_key, {}, {
     get: {
         method: 'GET',
         timeout: 10800,
@@ -169,7 +171,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getPaymentMethods = function () {
-    return $resource("https://api.mercadopago.com/v1/payment_methods?public_key="+public_key, {}, {
+    return $resource(baseUrl + version + "payment_methods?public_key="+public_key, {}, {
     get: {
         method: 'GET',
         timeout: 10000,
@@ -178,7 +180,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getIdentificationTypes = function () {
-    return $resource("https://api.mercadopago.com/v1/identification_types?public_key="+public_key, {}, {
+    return $resource(baseUrl + version + "identification_types?public_key="+public_key, {}, {
     get: {
         method: 'GET',
         timeout: 10000,
@@ -187,7 +189,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getIssuers = function (payment_method_id, bin) {
-    return $resource("https://api.mercadopago.com/v1/payment_methods/card_issuers?public_key="+public_key+"&payment_method_id="+payment_method_id+"&bin="+bin,{}, {
+    return $resource(baseUrl + version + "payment_methods/card_issuers?public_key="+public_key+"&payment_method_id="+payment_method_id+"&bin="+bin,{}, {
     get: {
         method: 'GET',
         timeout: 10000,
@@ -196,7 +198,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getInstallments = function (payment_method_id, issuer_id, amount) {
-    return $resource("https://api.mercadopago.com/v1/payment_methods/installments?public_key="+public_key+"&payment_method_id=:pmid&issuer.id=:issuer&amount=:ammount",{ pmid: payment_method_id,ammount:amount,issuer:issuer_id},{
+    return $resource(baseUrl + version + "payment_methods/installments?public_key="+public_key+"&payment_method_id=:pmid&issuer.id=:issuer&amount=:ammount",{ pmid: payment_method_id,ammount:amount,issuer:issuer_id},{
     get: {
         method: 'GET',
         timeout: 10000,
@@ -205,7 +207,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getBankDeals = function () {
-    return $resource("https://api.mercadopago.com/v1/payment_methods/deals?public_key="+public_key, {}, {
+    return $resource(baseUrl + version + "payment_methods/deals?public_key="+public_key, {}, {
     get: {
         method: 'GET',
         timeout: 10000,
@@ -214,7 +216,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getInstructions = function (payment_id, payment_type) {
-    return $resource("https://api.mercadopago.com/v1/checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_type="+payment_type, {}, {
+    return $resource(baseUrl + version + "checkout/payments/"+payment_id+"/results?public_key="+public_key+"&payment_type="+payment_type, {}, {
     get: {
         method: 'GET',
         timeout: 8100,
@@ -226,7 +228,7 @@ angular.module('mercadopago.services', [])
   };
 
   var getPrefId = function () {
-    return $resource("https://api.mercadolibre.com/checkout/preferences/"+prefid+"?access_token="+access_token, {}, {
+    return $resource(baseUrl + version + "checkout/preferences/"+prefid+"?public_key="+public_key, {}, {
     get: {
         method: 'GET',
         timeout: 5800,
@@ -234,7 +236,7 @@ angular.module('mercadopago.services', [])
   };
 
   var createToken = function (data) {
-    return $resource("https://api.mercadopago.com/v1/card_tokens?public_key="+public_key,data, {
+    return $resource(baseUrl + version + "card_tokens?public_key="+public_key,data, {
     save: {
         method: 'POST',
         timeout: 1000,
@@ -243,7 +245,7 @@ angular.module('mercadopago.services', [])
   };
 
   var postPayment = function (data) {
-    return $resource("https://api.mercadopago.com/v1/checkout/payments",data, {
+    return $resource(baseUrl + version + "checkout/payments",data, {
     save: {
         method: 'POST',
         timeout: 9800,
@@ -261,7 +263,7 @@ angular.module('mercadopago.services', [])
   };
 
   var trackingOn = function (data) {
-    return $resource("https://api.mercadopago.com/v1/checkout/tracking",data, {
+    return $resource(baseUrl + version + "checkout/tracking",data, {
     save: {
         method: 'POST',
         timeout: 1000,
@@ -269,7 +271,7 @@ angular.module('mercadopago.services', [])
   };
 
   var trackingOff = function (data) {
-    return $resource("https://api.mercadopago.com/v1/checkout/tracking/off",data, {
+    return $resource(baseUrl + version + "checkout/tracking/off",data, {
     save: {
         method: 'POST',
         timeout: 1000,
@@ -590,7 +592,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpPaymentMethodSearchCtrl', function ($scope, MercadoPagoService, $state, $stateParams, $rootScope, $ionicHistory, $ionicLoading){
 
-  $scope.HTML= "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-android-arrow-back carrito' ng-click='irparaatras()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' style='background-color:rgb(244,244,244)'><div ng-show='MpPrefIdVisible==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{prefIdTitle}}<img ng-src='{{prefIdImage}}'><br>{{prefIdTotal | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in paymentMethods' ng-click='selectedPaymentMethod(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content>";
+  $scope.HTML= "<ion-content class='has-header' style='background-color:rgb(244,244,244)'><div ng-show='MpPrefIdVisible==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{prefIdTitle}}<img ng-src='{{prefIdImage}}'><br>{{prefIdTotal | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-left item-icon-right opciones' ng-repeat='grupo in paymentMethods' ng-click='selectedPaymentMethod(grupo)'><i class=' icon {{grupo.icon}} custom-icon'></i>{{grupo.description}}<i class='icon ion-ios-arrow-right flecha'></i></div></div><br><footer></footer></ion-content>";
   $scope.header= "¿Comó quieres pagar?";
 
   $scope.prefIdTitle = $rootScope.prefid.items[0].title;
@@ -614,7 +616,7 @@ angular.module('mercadopago.controllers', [])
   };
 
   $scope.exit = function () {
-    MercadoPagoService.goBack($stateParams.flavour,"cancel"); //cancelar y salir
+    MercadoPagoService.goBack($stateParams.flavour, "cancel"); //cancelar y salir
   };
 
   $scope.selectedPaymentMethod = function (selectedPaymentMethod) {
@@ -640,7 +642,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpPaymentMethodSearch2Ctrl', function ($scope, MercadoPagoService, $state, $stateParams, $ionicHistory, $rootScope){
 
-  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'style='background-color:rgb(244,244,244)'><div ng-show='MpPrefIdVisible==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{prefIdTitle}}<img ng-src='{{prefIdImage}}'><br>{{prefIdTotal| currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-right' ng-repeat='grupo in paymentMethods' ng-click='selectedPaymentMethod(grupo)' style='padding: 10px'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones' ><img id= 'im' ng-src='{{getImage(grupo)}}' style='padding: 0px 10px 0px 0px'>{{grupo.description}}</div><br><div class='footer' style='text-align: left'>{{grupo.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div></div><footer></footer></ion-content>";
+  $scope.HTML = "<ion-content class='has-header'style='background-color:rgb(244,244,244)'><div ng-show='MpPrefIdVisible==true'class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{prefIdTitle}}<img ng-src='{{prefIdImage}}'><br>{{prefIdTotal| currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px'><div  id= 'l'class='item item-icon-right' ng-repeat='grupo in paymentMethods' ng-click='selectedPaymentMethod(grupo)' style='padding: 10px'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones' ><img id= 'im' ng-src='{{getImage(grupo)}}' style='padding: 0px 10px 0px 0px'>{{grupo.description}}</div><br><div class='footer' style='text-align: left'>{{grupo.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div></div><footer></footer></ion-content>";
   $scope.header = $stateParams.paymentMethod.children_header;
 
   $scope.prefIdTitle = $rootScope.prefid.items[0].title; //preferencia
@@ -689,7 +691,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpCheckoutCtrl', function ($scope, MercadoPagoService, $state, $stateParams, $ionicHistory, $rootScope) {
 
-  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons></ion-nav-bar><ion-content class='has-header' style='background-color:rgb(244,244,244)'><div class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{prefIdTitle}}<img ng-src='{{prefIdImage}}'><br>{{prefIdTotal | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px;border-bottom: none'><div  id= 'l'class='item item-icon-right' ng-click='goBack()' style='padding: 10px;border: none'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones'><img id= 'im' ng-src='{{getImage(selectedPaymentMethod)}}' style='padding: 0px 10px 0px 0px'>{{selectedPaymentMethod.description}}</div><br><div class='footer' style='text-align: left'>{{selectedPaymentMethod.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div><div  id= 'l'class='item item-icon-right' ng-if='paymentOn==true' style='padding: 10px;'><div class='opciones'style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px;font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>{{installments}}<i class='texto' style='color:rgb(67,176,0);text-align: left;'ng-show='installmentRate'>Sin intereses</i></div><br><div class='footer' style='text-align: left'> </div></div></div><div class='opciones'style='height: 40pt;background-color:rgb(244,244,244);vertical-align: middle; font-size: 16pt;line-height: 40pt; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222);  border-style:solid; text-align: center;font-weight: 200;word-spacing-spacing: 1.5px'>Total a pagar: {{total| currency}}</div><br><div class='copy' style='padding: 0px 20px'><p>    Al pagar, afirmo que soy mayor de edad y acepto los <a class='link'>Términos y Condiciones</a> de MercadoPago.</p></div><div style='padding: 0px 10px 0px 10px'><button class='button button-block button-positive pagar' style='background-color:rgb(0,159,222)' ng-click='pay()'>Pagar</button></div><footer></footer></ion-content>";
+  $scope.HTML = "<ion-content class='has-header' style='background-color:rgb(244,244,244)'><div class=' item-thumbnail-left header'style='height: 80pt; background-color:rgb(90,190,231); word-wrap:break-word!important;line-height: 20pt'>{{prefIdTitle}}<img ng-src='{{prefIdImage}}'><br>{{prefIdTotal | currency}}</div><div class='list list-inset' style=' margin:20px 0px 0px 0px;border-bottom: none'><div  id= 'l'class='item item-icon-right' ng-click='goBack()' style='padding: 10px;border: none'><div style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px' class='opciones'><img id= 'im' ng-src='{{getImage(selectedPaymentMethod)}}' style='padding: 0px 10px 0px 0px'>{{selectedPaymentMethod.description}}</div><br><div class='footer' style='text-align: left'>{{selectedPaymentMethod.comment}} </div><i class='icon ion-ios-arrow-right flecha'></i></div><div  id= 'l'class='item item-icon-right' ng-if='paymentOn==true' style='padding: 10px;'><div class='opciones'style='padding: 0px 0px 0px 0px; margin:0px 0px -15px 0px;font-weight: 200; text-align: left;color:rgb(0,159,222)!important'>{{installments}}<i class='texto' style='color:rgb(67,176,0);text-align: left;'ng-show='installmentRate'>Sin intereses</i></div><br><div class='footer' style='text-align: left'> </div></div></div><div class='opciones'style='height: 40pt;background-color:rgb(244,244,244);vertical-align: middle; font-size: 16pt;line-height: 40pt; border-bottom: 2pt;border-bottom-color: rgb( 222,222,222);  border-style:solid; text-align: center;font-weight: 200;word-spacing-spacing: 1.5px'>Total a pagar: {{total| currency}}</div><br><div class='copy' style='padding: 0px 20px'><p>    Al pagar, afirmo que soy mayor de edad y acepto los <a class='link'>Términos y Condiciones</a> de MercadoPago.</p></div><div style='padding: 0px 10px 0px 10px'><button class='button button-block button-positive pagar' style='background-color:rgb(0,159,222)' ng-click='pay()'>Pagar</button></div><footer></footer></ion-content>";
   $scope.header = "Revisa si está todo bien…";
 
   $rootScope.MpShowBack = false; //no mostrar flecha atras
@@ -768,7 +770,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpCardIssuersCtrl', function ($scope, MercadoPagoService,$state, $stateParams,$rootScope, $ionicHistory){
 
-  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='cardIssuer in cardIssuers' ng-click='selectedCardIssuer(cardIssuer)'><img src='{{cardIssuer.thumbnail}}' width='50' height='19' style='margin-right: 20px;'>{{cardIssuer.name}}</div></div></ion-content>";
+  $scope.HTML = "<ion-content class='has-header'<div class='list'><div class='item' ng-repeat='cardIssuer in cardIssuers' ng-click='selectedCardIssuer(cardIssuer)'><img src='{{cardIssuer.thumbnail}}' width='50' height='19' style='margin-right: 20px;'>{{cardIssuer.name}}</div></div></ion-content>";
   $scope.header = "Selecciona el banco";
 
   var errorNum = 0;
@@ -808,7 +810,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpInstallmentsCtrl', function ($scope, MercadoPagoService, $stateParams, $rootScope, $ionicHistory) {
 
-  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header'<div class='list'><div class='item' ng-repeat='installment in installments.payer_costs' ng-click='selectedInstallment(installment)'>{{installment.recommended_message}}</div></div></ion-content>";
+  $scope.HTML = "<ion-content class='has-header'<div class='list'><div class='item' ng-repeat='installment in installments.payer_costs' ng-click='selectedInstallment(installment)'>{{installment.recommended_message}}</div></div></ion-content>";
   $scope.header = "Selecciona las cuotas";
 
   $scope.prefIdTotal = MercadoPagoService.getTotal($rootScope.prefid);
@@ -852,7 +854,7 @@ angular.module('mercadopago.controllers', [])
 
 .controller('MpCardFormCtrl', function ($scope, MercadoPagoService, $state, $stateParams, $rootScope){
 
-  $scope.HTML = "<ion-nav-bar class='MpBarra bar-positive'><ion-nav-title>{{header}}</ion-nav-title><ion-nav-buttons side='right'><i class='ion-ios-cart-outline carrito' style='padding: 5px' ng-click='MpShowPrefId()'></i></ion-nav-buttons><ion-nav-buttons side='left' class='button-clear' ng-show='MpShowBack'><i class='ion-ios-arrow-back carrito' ng-click='$ionicGoBack()' style='padding:5px; display:block;width:200px'></i></ion-nav-buttons><ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()'  ><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='showCardIcon'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Month</span><input type='number' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM'> </label><label class='item item-input'><span class='input-label'>Expiration Year</span><input type='number' id='cardExpirationYear' ng-model='card_token.expiration_year' placeholder='AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type' ng-options=' identification_type.name for identification_type in identification_types'><option value=''>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
+  $scope.HTML = "<ion-content class='has-header' animation='slide-left-right'  scroll='true' has-bouncing='true'><form ng-submit='createToken()'><div class='list'><label class='item item-input'><span class='input-label'>Card Number</span><img ng-show='showCardIcon'ng-src='{{keyPress().thumbnail}}'style='padding: 0px 10px'><input type='number' id='cardNumber' ng-model='card_token.card_number' ng-keyup='keyPress($event.keyCode)' placeholder='4509 9535 6623 3704'></label><label class='item item-input'><span class='input-label'>Cardholder Name</span><input type='text' id='cardholderName' ng-model='card_token.cardholder.name' placeholder='APRO'></label><label class='item item-input'><span class='input-label'>Expiration Month</span><input type='number' id='cardExpirationMonth' ng-model='card_token.expiration_month' placeholder='MM'> </label><label class='item item-input'><span class='input-label'>Expiration Year</span><input type='number' id='cardExpirationYear' ng-model='card_token.expiration_year' placeholder='AAAA'> </label><label class='item item-input item-select'><div class='input-label'>Document Type</div><select id='docType' ng-model='card_token.cardholder.identification.type' ng-options=' identification_type.name for identification_type in identification_types'><option value=''>Seleccionar</option></select></label><label class='item item-input'><span class='input-label'>Document number</span><input type='number' id='docNumber' ng-model='card_token.cardholder.identification.number' placeholder='12345678'></label><label class='item item-input'><span class='input-label'>Security Code</span><input type='number' id='securityCode' ng-model='card_token.security_code' placeholder='123'></label><center><br><button type='submit' class='button   button-balanced' style='padding:0px 100px;'>Pagar</button></center></div></form></ion-content>";
   $scope.header = "Datos de tu tarjeta";
 
   $scope.showCardIcon = false; //mostrar que tarjeta es
@@ -961,36 +963,39 @@ angular.module('mercadopago.controllers', [])
   };
 
   $scope.createToken = function () {
-    var month = new Date($scope.card_token.expiration_month);
 
-      $scope.card_token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
-      $scope.card_token.security_code = "" + $scope.card_token.security_code + "";
-      $scope.card_token.cardholder.identification.type = "" +$scope.card_token.cardholder.identification.type.id + "";
+    $scope.card_token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
+    $scope.card_token.security_code = "" + $scope.card_token.security_code + "";
+    $scope.card_token.cardholder.identification.type = "" +$scope.card_token.cardholder.identification.type.id + "";
 
     MercadoPagoService.createToken()
-    .save($scope.card_token,function (token){
+    .save($scope.card_token, function (token){
       console.log(token);
-      var body = {//online
-          "public_key": MercadoPagoService.getPublicKey(),
-          "token": token.id,
-          "sdk_flavor": $stateParams.flavour,
-          "sdk_platform": $rootScope.platform,
-          "sdk_type": "hybrid",
-          "sdk_framework": "ionic",
-          "sdk_version": "1.0"
-      };
-      MercadoPagoService.trackingOn()
-      .save(body,function (response) {
-        console.log("tracking", response);
-      },function (error) {
-        console.log(error);
-      });
+      if ($rootScope.platform == "android" || $rootScope.platform == "ios"){
+        var body = {//online
+            "public_key": MercadoPagoService.getPublicKey(),
+            "token": token.id,
+            "sdk_flavor": $stateParams.flavour,
+            "sdk_platform": $rootScope.platform,
+            "sdk_type": "hybrid",
+            "sdk_framework": "ionic",
+            "sdk_version": "1.0"
+        };
+        MercadoPagoService.trackingOn()
+        .save(body,function (response) {
+          console.log("tracking", response);
+        },function (error) {
+          console.log(error);
+        });
+      }
       $state.go('MercadoPago_CardIssuers',
       {
         'paymentMethod': $scope.keyPress(),
         'token': token,
         "flavour": $stateParams.flavour,
       });
+    }, function(error){
+      alert("Intente nuevamente");
     });
   };
 })
