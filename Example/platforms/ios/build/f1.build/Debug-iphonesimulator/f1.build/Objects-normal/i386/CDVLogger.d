@@ -1,0 +1,24 @@
+dependencies: \
+  /Users/etorres/px-hybrid/f1/platforms/ios/f1/Plugins/cordova-plugin-console/CDVLogger.m \
+  /Users/etorres/px-hybrid/f1/platforms/ios/f1/Plugins/cordova-plugin-console/CDVLogger.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVPlugin.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVPluginResult.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVAvailability.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVAvailabilityDeprecated.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/NSMutableArray+QueueAdditions.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVCommandDelegate.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVInvokedUrlCommand.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDV.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVViewController.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVCommandQueue.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVWhitelist.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVScreenOrientationDelegate.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVURLProtocol.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVDebug.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVLocalStorage.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVTimer.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/NSArray+Comparisons.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/NSData+Base64.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/NSDictionary+Extensions.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/UIDevice+Extensions.h \
+  /Users/etorres/px-hybrid/f1/platforms/ios/build/emulator/include/Cordova/CDVJSON.h

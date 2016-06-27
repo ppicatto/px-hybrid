@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/etorres/px-hybrid/Example/platforms/android/build/intermediates/res/merged/debug/drawable-hdpi-v4/icon.png",
+        "source": "/Users/etorres/px-hybrid/Example/platforms/android/res/drawable-hdpi/icon.png"
+    },
+    {
+        "merged": "/Users/etorres/f1/platforms/android/build/intermediates/res/merged/debug/drawable-hdpi-v4/icon.png",
+        "source": "/Users/etorres/f1/platforms/android/res/drawable-hdpi/icon.png"
+    },
+    {
+        "merged": "/Users/etorres/px-hybrid/f1/platforms/android/build/intermediates/res/merged/debug/drawable-hdpi-v4/icon.png",
+        "source": "/Users/etorres/px-hybrid/f1/platforms/android/res/drawable-hdpi/icon.png"
+    }
+]
