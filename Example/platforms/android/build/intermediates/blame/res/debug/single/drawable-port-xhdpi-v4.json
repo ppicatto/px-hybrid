@@ -1,14 +1,6 @@
 [
     {
-        "merged": "/Users/etorres/f1/platforms/android/build/intermediates/res/merged/debug/drawable-port-xhdpi-v4/screen.png",
-        "source": "/Users/etorres/f1/platforms/android/res/drawable-port-xhdpi/screen.png"
-    },
-    {
         "merged": "/Users/etorres/px-hybrid/Example/platforms/android/build/intermediates/res/merged/debug/drawable-port-xhdpi-v4/screen.png",
         "source": "/Users/etorres/px-hybrid/Example/platforms/android/res/drawable-port-xhdpi/screen.png"
-    },
-    {
-        "merged": "/Users/etorres/px-hybrid/f1/platforms/android/build/intermediates/res/merged/debug/drawable-port-xhdpi-v4/screen.png",
-        "source": "/Users/etorres/px-hybrid/f1/platforms/android/res/drawable-port-xhdpi/screen.png"
     }
 ]

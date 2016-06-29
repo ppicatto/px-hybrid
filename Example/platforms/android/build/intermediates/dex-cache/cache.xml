@@ -2,17 +2,10 @@
 <items version="2" >
 
     <item
-        jar="/Users/etorres/f1/platforms/android/build/intermediates/exploded-aar/android/CordovaLib/unspecified/debug/jars/classes.jar"
-        jumboMode="false"
-        revision="23.0.3"
-        sha1="be9124e7685244e2ad4c97b3180444a27a2c8b34">
-        <dex dex="/Users/etorres/f1/platforms/android/build/intermediates/pre-dexed/debug/CordovaLib-unspecified-debug_fbe77f215805bcda0213e76688b9744ed2f1d96a.jar" />
-    </item>
-    <item
         jar="/Users/etorres/px-hybrid/Example/platforms/android/build/intermediates/exploded-aar/android/CordovaLib/unspecified/debug/jars/classes.jar"
         jumboMode="false"
         revision="23.0.3"
-        sha1="2ed9160a698808675ab8cf345dd1ebf68b57eb55">
+        sha1="4140755a2afdc437554b7e18fad6fa37dde59c42">
         <dex dex="/Users/etorres/px-hybrid/Example/platforms/android/build/intermediates/pre-dexed/debug/CordovaLib-unspecified-debug_93941419e4799dbe0ad888584f37c59d340e6b03.jar" />
     </item>
 
