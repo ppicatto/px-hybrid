@@ -37,17 +37,17 @@
          <div class="container" style="
     padding-top: 120px;
 ">
-            <h3>MercadoPago Hybrid SDK</h3>
+            <h3>MercadoPago Android SDK</h3>
             <h4>La manera más rápida de cobrar en una app con la mejor experiencia.</h4>
          </div>
-         
+
       </div>
       <div id="mati_header" style="height: 500px;margin: 0 auto;padding: 0;position: relative;width: 100%;top: -276px;overflow-x: hidden;OVERFLOW-Y: hidden;z-index: -100;background: url('./img/landing_f2.jpg');background-size: cover;background-position-x: 0px;background-position-y: -100px;">
          <div style="background: rgba(0,0,0,0.5);height: 500px;"></div>
       </div>
       <div class="container content-container" style="margin-top: -250px;">
          <div class="row">
-            <div class="col-md-3 col-sm-2 aside-menu">
+            <div class="col-md-2 col-sm-3 aside-menu">
                <div class="docked-menu" style="top: 20px;">
                   <ul class="nav left-menu">
                      <li class="menu-title">
@@ -108,21 +108,25 @@
                   </ul>
                </div>
             </div>
-            <div class="col-md-9 col-sm-8 main-content">
+            <div class="col-md-10 col-sm-9 main-content device-preview-page">
+               <div class="device-preview ionic" style="background: url('./img/phone-case.png') no-repeat right top;">
+                  <div class="screen-bg"></div>
+                  <div class="default-screen ionic-body">
+                     <div class="content-wrapper">
+                        <div class="content padding has-header"></div>
+                     </div>
+                  </div>
+               </div>
                   <section class="docs-section" id="f2_payment_vault">
-                    <h3 class="title">Nuestros componentes visuales en tu checkout</h3>
-
-                    <p>Ups! Los componentes visuales para aplicaciones híbridas están en camino. Para más información envía un mail a matias.gualino@mercadolibre.com</p>
-
-                  </section>
-                  <!--<p>¿Usas Gradle? Agrégala en el build.gradle del módulo donde nos integres.</p>
+                  <h3 class="title">Nuestros componentes visuales en tu checkout</h3>
+                  <p>¿Usas Gradle? Agrégala en el build.gradle del módulo donde nos integres.</p>
                   <p>Sino <a href="https://github.com/mercadopago/px-android/releases" target="_blank">descarga el SDK</a> de MercadoPago.</p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">dependencies {
-   compile ('com.mercadopago:sdk:WORKSHOP@aar') { transitive = true }
-}
-                        </code>
+                       <code id="flavor_2_step_1" class="line-numbers language-html">
+                      &lt;script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.min.js"&gt;&lt;/script&gt;
+                      &lt;script src="js/MercadoPagoHibrido.js"&gt;&lt;/script&gt;
+                       </code>
                         <button class="copy-button" alt="Copiar código">
                            <img src="./img/clippy.svg" width="13">
                         </button>
@@ -135,15 +139,44 @@
                   <section class="docs-section" id="f2_payment_vault">
                   <h3 class="title">UI para la recolección de datos</h3>
                   <p>
-                     El más completo de nuestros componentes visuales es <b>PaymentVault</b> con el cual estarás en condiciones de enviar los datos a tu servidor. Con este componente tendrás a disposición el medio de pago seleccionado (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PaymentMethod.java" target="_blank">PaymentMethod</a>) y si tu usuario paga con tarjeta, el banco (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Issuer.java" target="_blank">Issuer</a>), las cuotas (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PayerCost.java" target="_blank">PayerCost</a>) y la información de la tarjeta encriptada (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Token.java" target="_blank">Token</a>). 
+                     El más completo de nuestros componentes visuales es <b>PaymentVault</b> con el cual estarás en condiciones de enviar los datos a tu servidor. Con este componente tendrás a disposición el medio de pago seleccionado (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PaymentMethod.java" target="_blank">PaymentMethod</a>) y si tu usuario paga con tarjeta, el banco (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Issuer.java" target="_blank">Issuer</a>), las cuotas (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PayerCost.java" target="_blank">PayerCost</a>) y la información de la tarjeta encriptada (<a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Token.java" target="_blank">Token</a>).
                      <br />
                      Para utilizarlo, agrega un botón:
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code id="flavor_3_step_2" class="line-numbers language-xml">
+                        <code id="flavor_2_step_2" class="line-numbers language-xml">
+                          &lt;body ng-app="AppCtrl"&gt;
+
+                            &lt;!-- Barra de Mercado Pago --&gt;
+                              &lt;ion-nav-bar class='MpBarra bar-positive'&gt;
+                               &lt;ion-nav-back-button class="button-clear"&gt;
+                                &lt;i class="ion-ios-arrow-back carrito"&gt;&lt;/i&gt;
+                                &lt;/ion-nav-back-button&gt;
+                                &lt;ion-nav-buttons side="right"&gt;
+                                  &lt;i class="ion-ios-cart-outline carrito" style="padding: 5px" ng-click="MpShowPrefId()"&gt;&lt;/i&gt;
+                                  &lt;/ion-nav-buttons&gt;
+                              &lt;/ion-nav-bar&gt;
+                              &lt;ion-nav-view animation="slide-left-right"&gt;&lt;/ion-nav-view&gt;
+
+                            &lt;!-- Script de Mercado Pago --&gt;
+                              &lt;script type="text/ng-template" id="mercadopago.html"&gt;
+                                &lt;ion-view compile-html="HTML" title='{{header}}'>&lt;/ion-view&gt;
+                              &lt;/script&gt;
+
+                            &lt;!-- Tu Script --&gt;
+                              &lt;script type="text/ng-template" id="app.html"&gt;
+                                &lt;ion-view title="{{header}}" cache-view="false"&gt;
+                                  &lt;!-- Tu Barra --&gt;
+                                  &lt;ion-nav-bar class='bar-positive'&gt;&lt;/ion-nav-bar&gt;
+                                  &lt;ion-content&gt;
+                                    &lt;button class="button button-full button-positive MercadoPago" ng-click="startCheckout()"&gt;Pagar&lt;/button&gt;
+                                  &lt;/ion-content&gt;
+                                &lt;/ion-view&gt;
+                              &lt;/script&gt;
+                          &lt;body&gt;
                         </code>
-         
+
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -154,7 +187,7 @@
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startPaymentVaultComponent(View view) {
   new MercadoPago.StartActivityBuilder()
     .setActivity(this)
@@ -166,7 +199,7 @@ public void startPaymentVaultComponent(View view) {
 
 // Espera los resultados
 @Override
-protected void onActivityResult(int requestCode, int resultCode, 
+protected void onActivityResult(int requestCode, int resultCode,
 Intent data) {
   if(requestCode == MercadoPago.PAYMENT_VAULT_REQUEST_CODE) {
     if(resultCode == RESULT_OK) {
@@ -177,10 +210,10 @@ Intent data) {
 
       createPayment(paymentMethod, issuer, payerCost, token);
     } else {
-      if ((data != null) && 
+      if ((data != null) &&
         (data.getSerializableExtra("mpException") != null)) {
-          MPException exception 
-            = (MPException) data.getSerializableExtra("mpException");                
+          MPException exception
+            = (MPException) data.getSerializableExtra("mpException");
       }
     }
   }
@@ -198,13 +231,13 @@ Intent data) {
                <section class="docs-section" id="f2_card_form">
                   <h3 class="title">Cobra con tarjeta</h3>
                   <p>
-                     Para recolectar sólamente los datos de la tarjeta de tu usuario te brindamos un componente que resuelve esta necesidad de una forma intuitiva y segura. Sólo tienes que invocar el formulario de tarjeta y esperar el resultado: <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PaymentMethod.java" target="_blank">PaymentMethod</a> (marca de la tarjeta), <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Issuer.java" target="_blank">Issuer</a> (banco de la tarjeta) y <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Token.java" target="_blank">Token</a> (información encriptada de la tarjeta). 
+                     Para recolectar sólamente los datos de la tarjeta de tu usuario te brindamos un componente que resuelve esta necesidad de una forma intuitiva y segura. Sólo tienes que invocar el formulario de tarjeta y esperar el resultado: <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PaymentMethod.java" target="_blank">PaymentMethod</a> (marca de la tarjeta), <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Issuer.java" target="_blank">Issuer</a> (banco de la tarjeta) y <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Token.java" target="_blank">Token</a> (información encriptada de la tarjeta).
                      <br />
                      <b>Sigue navegando si quieres ver cómo cobrar en cuotas.</b>
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startCardWithoutInstallmentsComponent(View view) {
   new MercadoPago.StartActivityBuilder()
     .setActivity(this)
@@ -213,7 +246,7 @@ public void startCardWithoutInstallmentsComponent(View view) {
 }
 
 @Override
-protected void onActivityResult(int requestCode, int resultCode, 
+protected void onActivityResult(int requestCode, int resultCode,
 Intent data) {
 
   if(requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
@@ -221,16 +254,16 @@ Intent data) {
       PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
       Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
       Token token = (Token) data.getSerializableExtra("token");
-      
+
       // Listo! Envía los datos a tu servidor!
 
     } else {
-      if ((data != null) && 
+      if ((data != null) &&
         (data.getSerializableExtra("mpException") != null)) {
-          MPException exception 
-            = (MPException) data.getSerializableExtra("mpException");                
+          MPException exception
+            = (MPException) data.getSerializableExtra("mpException");
       }
-    } 
+    }
   }
 }
                         </code>
@@ -255,9 +288,9 @@ Intent data) {
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startCardWithInstallmentsComponent(View view) {
-        
+
   new MercadoPago.StartActivityBuilder()
     .setActivity(this)
     .setPublicKey(TU_PUBLIC_KEY)
@@ -267,7 +300,7 @@ public void startCardWithInstallmentsComponent(View view) {
 }
 
 @Override
-protected void onActivityResult(int requestCode, int resultCode, 
+protected void onActivityResult(int requestCode, int resultCode,
 Intent data) {
 
   if(requestCode == MercadoPago.CARD_VAULT_REQUEST_CODE) {
@@ -276,15 +309,15 @@ Intent data) {
           Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
           Token token = (Token) data.getSerializableExtra("token");
           PayerCost payerCost = (PayerCost) data.getSerializableExtra("payerCost");
-          
+
           // Listo! Envía los datos a tu servidor!
       } else {
-        if ((data != null) && 
+        if ((data != null) &&
           (data.getSerializableExtra("mpException") != null)) {
-            MPException exception 
-              = (MPException) data.getSerializableExtra("mpException");                
+            MPException exception
+              = (MPException) data.getSerializableExtra("mpException");
         }
-      } 
+      }
   }
 }
                         </code>
@@ -300,13 +333,13 @@ Intent data) {
                <section class="docs-section" id="f2_payment_methods">
                   <h3 class="title">Medios de pago</h3>
                   <p>
-                     Es la entidad participante del pago en sí misma. Desde la marca de la tarjeta, pasando por la entidad de cobro en efectivo hasta el lugar dónde se encuentra el cajero automático para que el usuario realice el pago. 
+                     Es la entidad participante del pago en sí misma. Desde la marca de la tarjeta, pasando por la entidad de cobro en efectivo hasta el lugar dónde se encuentra el cajero automático para que el usuario realice el pago.
                      <br />
                      Si el medio de pago pertenece a una <b>tarjeta</b> te brindamos la información necesaria para armar tu formulario de tarjeta y sus validaciones, por ejemplo la longitud del número de tarjeta, si el código de seguridad está al frente o al dorso de la tarjeta, su longitud, entre otros. Pero también, el medio de pago puede ser <b>offline</b>. En este caso te indicamos, entre otros, el tiempo de acreditación ya que el pago quedará en un estado pendiente que cambiará cuando el usuario se acerque a la entidad correspondiente a finalizar el pago en efectivo.
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startPaymentMethodsComponent(View view) {
   new MercadoPago.StartActivityBuilder()
     .setActivity(this)
@@ -315,7 +348,7 @@ public void startPaymentMethodsComponent(View view) {
 }
 
 @Override
-protected void onActivityResult(int requestCode, int resultCode, 
+protected void onActivityResult(int requestCode, int resultCode,
 Intent data) {
 
     if(requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
@@ -324,12 +357,12 @@ Intent data) {
             // Ahora puedes continuar con tu flujo.
             // Recuerda verificar si el medio de pago es offline!
         } else {
-          if ((data != null) && 
+          if ((data != null) &&
             (data.getSerializableExtra("mpException") != null)) {
-              MPException exception 
-                = (MPException) data.getSerializableExtra("mpException");                
+              MPException exception
+                = (MPException) data.getSerializableExtra("mpException");
           }
-        } 
+        }
     }
 }
                         </code>
@@ -352,7 +385,7 @@ Intent data) {
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startIssuersComponent(View view) {
   PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
 
@@ -364,7 +397,7 @@ public void startIssuersComponent(View view) {
 }
 
 @Override
-protected void onActivityResult(int requestCode, int resultCode, 
+protected void onActivityResult(int requestCode, int resultCode,
 Intent data) {
 
     if(requestCode == MercadoPago.ISSUERS_REQUEST_CODE) {
@@ -372,10 +405,10 @@ Intent data) {
             Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
             // Ahora puedes continuar con tu flujo.
         } else {
-          if ((data != null) && 
+          if ((data != null) &&
             (data.getSerializableExtra("mpException") != null)) {
-              MPException exception 
-                = (MPException) data.getSerializableExtra("mpException");                
+              MPException exception
+                = (MPException) data.getSerializableExtra("mpException");
           }
         }
     }
@@ -399,7 +432,7 @@ Intent data) {
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startInstallmentsActivity(View view) {
   PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
   Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
@@ -415,7 +448,7 @@ public void startInstallmentsActivity(View view) {
 }
 
 @Override
-protected void onActivityResult(int requestCode, int resultCode, 
+protected void onActivityResult(int requestCode, int resultCode,
 Intent data) {
 
     if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
@@ -423,10 +456,10 @@ Intent data) {
         PayerCost payerCost = (PayerCost) data.getSerializableExtra("payerCost");
         // Ahora puedes continuar con tu flujo.
       } else {
-          if ((data != null) && 
+          if ((data != null) &&
             (data.getSerializableExtra("mpException") != null)) {
-              MPException exception 
-                = (MPException) data.getSerializableExtra("mpException");                
+              MPException exception
+                = (MPException) data.getSerializableExtra("mpException");
           }
       }
     }
@@ -448,7 +481,7 @@ Intent data) {
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void submit(View view) {
   new MercadoPago.StartActivityBuilder()
     .setActivity(this)
@@ -472,7 +505,7 @@ public void submit(View view) {
                      <br />
                      Junto con el token creado necesitas enviar también el medio de pago, cuotas y banco seleccionados por el usuario, además de un identificador del artículo o servicio que se está pagando y del usuario que está presente en tu aplicación.
                      <br />
-                     En este caso, el método <b>createPayment</b> hace un POST y envía como cuerpo del mensaje el objeto <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/core/MerchantPayment.java">MerchantPayment</a> que agrupa toda la información que precisas tener en tu servidor para conectarte con el nuestro. Por eso debes indicarnos tu URL base (https://api.tunombre.com) y la uri (/create_payment) donde esperas los datos para crear el pago. 
+                     En este caso, el método <b>createPayment</b> hace un POST y envía como cuerpo del mensaje el objeto <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/core/MerchantPayment.java">MerchantPayment</a> que agrupa toda la información que precisas tener en tu servidor para conectarte con el nuestro. Por eso debes indicarnos tu URL base (https://api.tunombre.com) y la uri (/create_payment) donde esperas los datos para crear el pago.
                      <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/core/MerchantServer.java" target="_blank">MerchantServer</a> se encargará de transformar la respuesta de tu servicio (la misma que los servicios de MercadoPago) en un objeto <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Payment.java" target="_blank">Payment</a>.
                   </p>
                   <p>
@@ -483,10 +516,10 @@ public void submit(View view) {
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 import com.mercadopago.callbacks.Callback;
 
-public void createPayment(final Activity activity, String token, 
+public void createPayment(final Activity activity, String token,
 Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
 
    if (paymentMethod != null) {
@@ -494,41 +527,41 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
       // Crear el item que se está cobrando
       Item item = new Item(DUMMY_ITEM_ID, DUMMY_ITEM_QUANTITY,
       DUMMY_ITEM_UNIT_PRICE);
-      
+
       // Obtener el ID del medio de pago
       String paymentMethodId = paymentMethod.getId();
-      
+
       /*    Crear el body del request que va a llegar a tu servidor.
       *  Debes indicar el item, la cantidad de cuotas, el banco,
       *  el token de la tarjeta, el medio de pago y cómo identificas
       *  a tu usuario para que puedas asignarle a éste el movimiento
       */
-      MerchantPayment payment = new MerchantPayment(item, installments, 
-      cardIssuerId, token, paymentMethodId, DUMMY_MERCHANT_ACCESS_TOKEN);
-      
+      MerchantPayment payment = new MerchantPayment(item, installments,
+      cardIssuerId, token, paymentMethodId, DUMMY_CAMPAIGN_ID, DUMMY_MERCHANT_ACCESS_TOKEN);
+
       // Enviar los datos a tu servidor
-      MerchantServer.createPayment(activity, TU_BASE_URL, TU_CREATE_PAYMENT_URI, 
+      MerchantServer.createPayment(activity, TU_BASE_URL, TU_CREATE_PAYMENT_URI,
       payment, new Callback&lt;Payment&gt;() {
          @Override
-         public void success(Payment payment, Response response) {
+         public void success(Payment payment) {
             // Ya se realizó el pago.
             // Verifica si el pago es con tarjeta, sino es un medio offline.
             if (MercadoPagoUtil.isCardPaymentType(paymentMethod.getPaymentTypeId())) {
-               // Si es un medio con tarjeta, 
+               // Si es un medio con tarjeta,
                // debes mostrarle una pantalla de felicitaciones o de error
                startCongratsActivity(payment, paymentMethod);
             } else {
-               // Pero si es un medio offline, debes 
+               // Pero si es un medio offline, debes
                // instruir al usuario a finalizar el pago.
                startInstructionsActivity(payment, paymentMethod);
             }
          }
-         
+
          @Override
-         public void failure(RetrofitError error) {
-         
+         public void failure(ApiException apiException) {
+
             // Ups, ha ocurrido un error.
-            Toast.makeText(activity, error.getMessage(), Toast.LENGTH_LONG).show();
+
          }
       });
    } else {
@@ -555,9 +588,9 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startCongratsActivity(Payment payment, PaymentMethod paymentMethod) {
-  
+
    new MercadoPago.StartActivityBuilder()
       .setPublicKey(TU_PUBLIC_KEY)
       .setActivity(this)
@@ -588,9 +621,9 @@ public void startCongratsActivity(Payment payment, PaymentMethod paymentMethod) 
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 public void startInstructionsActivity(Payment payment, PaymentMethod paymentMethod) {
-  
+
   new MercadoPago.StartActivityBuilder()
     .setPublicKey(TU_PUBLIC_KEY)
     .setActivity(this)
@@ -615,7 +648,7 @@ public void startInstructionsActivity(Payment payment, PaymentMethod paymentMeth
                      <br />
                      Junto con el token creado necesitas enviar también el medio de pago, cuotas y banco seleccionados por el usuario, además de un identificador del artículo o servicio que se está pagando y del usuario que está presente en tu aplicación.
                      <br />
-                     En este caso, el método <b>createPayment</b> hace un POST y envía como cuerpo del mensaje el objeto <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/core/MerchantPayment.java">MerchantPayment</a> que agrupa toda la información que precisas tener en tu servidor para conectarte con el nuestro. Por eso debes indicarnos tu URL base (https://api.tunombre.com) y la uri (/create_payment) donde esperas los datos para crear el pago. 
+                     En este caso, el método <b>createPayment</b> hace un POST y envía como cuerpo del mensaje el objeto <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/core/MerchantPayment.java">MerchantPayment</a> que agrupa toda la información que precisas tener en tu servidor para conectarte con el nuestro. Por eso debes indicarnos tu URL base (https://api.tunombre.com) y la uri (/create_payment) donde esperas los datos para crear el pago.
                      <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/core/MerchantServer.java" target="_blank">MerchantServer</a> transformará la respuesta de tu servicio (la misma que los servicios de MercadoPago) en un objeto <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/Payment.java" target="_blank">Payment</a>.
                   </p>
                   <p>
@@ -625,11 +658,11 @@ public void startInstructionsActivity(Payment payment, PaymentMethod paymentMeth
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-java">
+                        <code class="line-numbers language-javascript">
 private void createPayment(final PaymentMethod paymentMethod, Issuer issuer, PayerCost payerCost, Token token) {
    Item item = new Item("id", 5);
    MerchantPayment payment = new MerchantPayment(item, payerCost.getInstallments(), issuer.getId(), token.getId(), paymentMethod.getId(), null, "mla-at");
-   
+
    MerchantServer.createPayment(this, "mauro.com", "createPayment", payment, new Callback<Payment>() {
       @Override
       public void success(Payment payment) {
@@ -666,11 +699,11 @@ private void createPayment(final PaymentMethod paymentMethod, Issuer issuer, Pay
                   <p class="advanced-panel">
                         <em>*</em> <a href="https://www.mercadopago.com.ar/developers/es/related/custom-additional-info/" target="_blank">Envía tantos datos del pago como puedas</a>. Mientras más información nos envíes, mejor será tu experiencia y la de tus usuarios.
                   </p>
-               </section>-->
+               </section>
             </div>
          </div>
       </div>
-      
+
       <footer class="footer">
 
          <div class="copy">
@@ -686,9 +719,7 @@ private void createPayment(final PaymentMethod paymentMethod, Issuer issuer, Pay
       <script src="./js/cookies.min.js"></script>
           <script src="./js/clipboard.js"></script>
    <script>
-
    (function() {
-
     new Clipboard('.copy-button');
     var pre = document.getElementsByTagName('pre');
     for (var i = 0; i < pre.length; i++) {
@@ -699,14 +730,13 @@ private void createPayment(final PaymentMethod paymentMethod, Issuer issuer, Pay
         pre[i].appendChild(button);
       }
     }
-
 var copyCode = new Clipboard('.copy-button', {
     target: function(trigger) {
         return trigger.previousElementSibling;
     }
 });
-    
-   
+
+
     $("#flavor_3_step_2").html("&lt;LinearLayout");
     $("#flavor_3_step_2").append("\n\txmlns:android='http://schemas.android.com/apk/res/android'");
     $("#flavor_3_step_2").append("\n\txmlns:tools='http://schemas.android.com/tools'");
