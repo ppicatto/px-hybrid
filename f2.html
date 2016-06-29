@@ -131,6 +131,22 @@
                            <img src="./img/clippy.svg" width="13">
                         </button>
                      </pre>
+                     <br>
+                     <pre class="snippet">
+                       <code id="flavor_2_step_15" class="line-numbers language-javascript">
+                         angular.module('starter', ['ionic','mercadopago'])
+
+                           // Iniciar el checkout de MercadoPago
+                           .controller('AppCtrl', function($scope, MercadoPagoService){
+                               MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
+                               MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
+
+                           })
+                       </code>
+                        <button class="copy-button" alt="Copiar código">
+                           <img src="./img/clippy.svg" width="13">
+                        </button>
+                     </pre>
                   </p>
                   <div class="doc-example ionic">
                      <img src="./img/phone/payment_vault.gif" class="img-phone-case"></img>
@@ -169,8 +185,17 @@
                                 &lt;ion-view title="{{header}}" cache-view="false"&gt;
                                   &lt;!-- Tu Barra --&gt;
                                   &lt;ion-nav-bar class='bar-positive'&gt;&lt;/ion-nav-bar&gt;
+                                  &lt;!-- Tu HTML --&gt;
                                   &lt;ion-content&gt;
-                                    &lt;button class="button button-full button-positive MercadoPago" ng-click="startCheckout()"&gt;Pagar&lt;/button&gt;
+                                    &lt;button class="button" ng-click="startPaymentVault()"&gt;Componentes Completo&lt;/button&gt;&lt;br&gt;
+                                    &lt;button class="button" ng-click="startCardWithoutInstallments()"&gt;Cobra con tarjeta&lt;/button&gt;
+                                    &lt;button class="button" ng-click="startCardWithInstallments()"&gt;Cobra con tarjeta con cuotas&lt;/button&gt;&lt;br&gt;
+                                    &lt;button class="button" ng-click="startPaymentMethod()"&gt;Medios de pago&lt;/button&gt;
+                                    &lt;button class="button" ng-click="startIssuers()"&gt;Bancos&lt;/button&gt;
+                                    &lt;button class="button" ng-click="startInstallments()"&gt;Cuotas&lt;/button&gt;
+                                    &lt;button class="button" ng-click="startBankDeals()"&gt;Promociones&lt;/button&gt;&lt;br&gt;
+                                    &lt;button class="button" ng-click="startInstructions()"&gt;Resultado de pago en efectivo&lt;/button&gt;
+                                    &lt;button class="button" ng-click="startCongrats()"&gt;Resultado de pago con tarjeta&lt;/button&gt;&lt;br&gt;
                                   &lt;/ion-content&gt;
                                 &lt;/ion-view&gt;
                               &lt;/script&gt;
@@ -188,36 +213,19 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startPaymentVaultComponent(View view) {
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(TU_PUBLIC_KEY)
-    .setAmount(MONTO_A_COBRAR)
-    .setSite(Sites.ARGENTINA)
-    .startPaymentVaultActivity();
-}
-
-// Espera los resultados
-@Override
-protected void onActivityResult(int requestCode, int resultCode,
-Intent data) {
-  if(requestCode == MercadoPago.PAYMENT_VAULT_REQUEST_CODE) {
-    if(resultCode == RESULT_OK) {
-      PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
-      Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
-      Token token = (Token) data.getSerializableExtra("token");
-      PayerCost payerCost = (PayerCost) data.getSerializableExtra("payerCost");
-
-      createPayment(paymentMethod, issuer, payerCost, token);
-    } else {
-      if ((data != null) &&
-        (data.getSerializableExtra("mpException") != null)) {
-          MPException exception
-            = (MPException) data.getSerializableExtra("mpException");
-      }
-    }
-  }
-}
+                        $scope.startPaymentVault = function () {
+                          MercadoPagoService.startPaymentVault(callback);
+                        }
+                        var callback = function (response) {
+                          if (response != null) {
+                              var token = response[0];
+                              var paymentMethod = response[1];
+                              var issuer = response[2];
+                              var payerCosts = response[3];
+                          } else {
+                              // El usuario corto el flujo
+                          }
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -238,34 +246,18 @@ Intent data) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startCardWithoutInstallmentsComponent(View view) {
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(TU_PUBLIC_KEY)
-    .startGuessingCardActivity();
-}
-
-@Override
-protected void onActivityResult(int requestCode, int resultCode,
-Intent data) {
-
-  if(requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
-    if(resultCode == RESULT_OK) {
-      PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
-      Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
-      Token token = (Token) data.getSerializableExtra("token");
-
-      // Listo! Envía los datos a tu servidor!
-
-    } else {
-      if ((data != null) &&
-        (data.getSerializableExtra("mpException") != null)) {
-          MPException exception
-            = (MPException) data.getSerializableExtra("mpException");
-      }
-    }
-  }
-}
+                        $scope.startCardWithoutInstallments = function (){
+                          MercadoPagoService.startCardWithoutInstallments(callback);
+                        }
+                        var callback = function (response) {
+                          if (response != null) {
+                              var token = response[0];
+                              var paymentMethod = response[1];
+                              var issuer = response[2];
+                          } else {
+                              // El usuario corto el flujo
+                          }
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -289,37 +281,19 @@ Intent data) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startCardWithInstallmentsComponent(View view) {
-
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(TU_PUBLIC_KEY)
-    .setAmount(MONTO_A_COBRAR)
-    .setSite(Sites.ARGENTINA)
-    .startCardVaultActivity();
-}
-
-@Override
-protected void onActivityResult(int requestCode, int resultCode,
-Intent data) {
-
-  if(requestCode == MercadoPago.CARD_VAULT_REQUEST_CODE) {
-      if(resultCode == RESULT_OK) {
-          PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
-          Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
-          Token token = (Token) data.getSerializableExtra("token");
-          PayerCost payerCost = (PayerCost) data.getSerializableExtra("payerCost");
-
-          // Listo! Envía los datos a tu servidor!
-      } else {
-        if ((data != null) &&
-          (data.getSerializableExtra("mpException") != null)) {
-            MPException exception
-              = (MPException) data.getSerializableExtra("mpException");
-        }
-      }
-  }
-}
+                        $scope.startCardWithoutInstallments = function (){
+                          MercadoPagoService.startCardWithInstallments(callback);
+                        }
+                        var callback = function (response) {
+                          if (response != null) {
+                              var token = response[0];
+                              var paymentMethod = response[1];
+                              var issuer = response[2];
+                              var payerCosts = response[3];
+                          } else {
+                              // El usuario corto el flujo
+                          }
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -340,32 +314,16 @@ Intent data) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startPaymentMethodsComponent(View view) {
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(mMyPublicKey)
-    .startPaymentMethodsActivity();
-}
-
-@Override
-protected void onActivityResult(int requestCode, int resultCode,
-Intent data) {
-
-    if(requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
-        if(resultCode == RESULT_OK) {
-            PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
-            // Ahora puedes continuar con tu flujo.
-            // Recuerda verificar si el medio de pago es offline!
-        } else {
-          if ((data != null) &&
-            (data.getSerializableExtra("mpException") != null)) {
-              MPException exception
-                = (MPException) data.getSerializableExtra("mpException");
-          }
-        }
-    }
-}
-                        </code>
+                        $scope.startPaymentMethod = function () {
+                          MercadoPagoService.startPaymentMethod(callback);
+                        }
+                        var callback = function (response) {
+                          if (response != null) {
+                              var paymentMethod = response;
+                          } else {
+                              // El usuario corto el flujo
+                          }
+                        }</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -386,34 +344,20 @@ Intent data) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startIssuersComponent(View view) {
-  PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
-
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(TU_PUBLIC_KEY)
-    .setPaymentMethod(paymentMethod)
-    .startIssuersActivity();
-}
-
-@Override
-protected void onActivityResult(int requestCode, int resultCode,
-Intent data) {
-
-    if(requestCode == MercadoPago.ISSUERS_REQUEST_CODE) {
-        if(resultCode == RESULT_OK) {
-            Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
-            // Ahora puedes continuar con tu flujo.
-        } else {
-          if ((data != null) &&
-            (data.getSerializableExtra("mpException") != null)) {
-              MPException exception
-                = (MPException) data.getSerializableExtra("mpException");
-          }
-        }
-    }
-}
-                        </code>
+                        $scope.startIssuers = function () {
+                          var paymentMethod = [];
+                          paymentMethod.id = "master";
+                          var bin = [];
+                          bin.first_six_digits = "";
+                          MercadoPagoService.startIssuers(callback, paymentMethod, bin);
+                        }
+                        var callback = function (response) {
+                          if (response != null) {
+                              var issuer = response;
+                          } else {
+                              // El usuario corto el flujo
+                          }
+                        }</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -433,38 +377,24 @@ Intent data) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startInstallmentsActivity(View view) {
-  PaymentMethod paymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
-  Issuer issuer = (Issuer) data.getSerializableExtra("issuer");
 
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(TU_PUBLIC_KEY)
-    .setSite(Sites.ARGENTINA)
-    .setAmount(MONTO_A_COBRAR)
-    .setIssuer(issuer)
-    .setPaymentMethod(paymentMethod)
-    .startInstallmentsActivity();
+$scope.startInstallments = function (){
+  var cardIssuer = [];
+  cardIssuer.id = "3";
+  var paymentMethod = [];
+  paymentMethod.id = "master";
+  var bin = [];
+  bin.first_six_digits = "";
+  var ammount = 200;
+  MercadoPagoService.startInstallments(callback, paymentMethod, cardIssuer, bin, ammount);
 }
-
-@Override
-protected void onActivityResult(int requestCode, int resultCode,
-Intent data) {
-
-    if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
-      if(resultCode == RESULT_OK) {
-        PayerCost payerCost = (PayerCost) data.getSerializableExtra("payerCost");
-        // Ahora puedes continuar con tu flujo.
-      } else {
-          if ((data != null) &&
-            (data.getSerializableExtra("mpException") != null)) {
-              MPException exception
-                = (MPException) data.getSerializableExtra("mpException");
-          }
-      }
-    }
-}
-                        </code>
+var callback = function (response) {
+  if (response != null) {
+      var issuer = response;
+  } else {
+      // El usuario corto el flujo
+  }
+}</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -589,15 +519,9 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startCongratsActivity(Payment payment, PaymentMethod paymentMethod) {
-
-   new MercadoPago.StartActivityBuilder()
-      .setPublicKey(TU_PUBLIC_KEY)
-      .setActivity(this)
-      .setPayment(payment)
-      .setPaymentMethod(paymentMethod)
-      .startCongratsActivity();
-}
+$scope.startCongrats = function () {
+  MercadoPagoService.startCongrats(callback, cardPaymentInfo);
+};
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -622,15 +546,10 @@ public void startCongratsActivity(Payment payment, PaymentMethod paymentMethod) 
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void startInstructionsActivity(Payment payment, PaymentMethod paymentMethod) {
 
-  new MercadoPago.StartActivityBuilder()
-    .setPublicKey(TU_PUBLIC_KEY)
-    .setActivity(this)
-    .setPayment(payment)
-    .setPaymentMethod(paymentMethod)
-    .startInstructionsActivity();
-}
+$scope.startInstructions = function () {
+  MercadoPagoService.startInstructions(callback, cashPaymentInfo);
+};
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
