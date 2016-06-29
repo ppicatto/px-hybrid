@@ -447,7 +447,7 @@ angular.module('mercadopago.services', [])
       if (error.status == -1) {
           if (errorNum < 3){
               errorNum++;
-              startIns(callback,paymentInfo,flavour);
+              startInstructions(callback,paymentInfo,flavour);
         } else {
               alert("Intente devuelta");
               errorNum = 0;
@@ -571,7 +571,7 @@ angular.module('mercadopago.services', [])
                   data.payment_type_id = "bank_transfer";
                 }
                 console.log(data);
-                startIns(call, data, 3);
+                startInstructions(call, data, 3);
 
                 trackingOff().save({
                   "public_key": getPublicKey(),
