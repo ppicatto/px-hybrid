@@ -23,6 +23,7 @@ angular.module('mercadopago', ['ionic', 'mercadopago.services','mercadopago.cont
 
     // Saber plataforma para tracking
     $rootScope.platform=ionic.Platform.platform();
+    alert(JSON.stringify(ionic.Platform.device()));
 
     //Agrego css
     var MpCss = document.createElement('style');

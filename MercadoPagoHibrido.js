@@ -1114,57 +1114,17 @@ angular.module('mercadopago.controllers', [])
   };
 
   $scope.createToken = function () {
-    var token = {
-        "card_number": 5031755734530604,
-        "security_code": "123",
-        "expiration_month": 4,
-        "expiration_year": 2020,
-        "cardholder": {
-          "name": "APRO",
-          "identification": {
-            "subtype": null,
-            "type": "DNI",
-            "number": "12345678"
-          }
-        }
-    };
 
-    if ($scope.card_token.card_number != undefined){
-        token.card_number=$scope.card_token.card_number;
-    } else {
-        $scope.card_token.card_number = token.card_number;
+     if ($scope.card_token.cardholder!=undefined){
+      $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
+      $scope.card_token.security_code=""+$scope.card_token.security_code+"";
     }
-    if ($scope.card_token.cardholder != undefined) {
-        if ($scope.card_token.cardholder.name != undefined) {
-            token.cardholder.name = $scope.card_token.cardholder.name;
-        }
-        if ($scope.card_token.cardholder.identification != undefined) {
-            if ($scope.card_token.cardholder.identification.type != undefined){
-                token.cardholder.identification.type = $scope.card_token.cardholder.identification.type.id;
-            }
-            if ($scope.card_token.cardholder.identification.number != undefined){
-                token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
-            }
-        }
-    }
-    if ($scope.card_token.security_code != undefined) {
-        token.security_code = "" + $scope.card_token.security_code + "";
-    }
-    if($scope.card_token.expiration_year!=undefined)
-      token.expiration_year=$scope.card_token.expiration_year;
-    if($scope.card_token.expiration_month!=undefined)
-      token.expiration_month=$scope.card_token.expiration_month;
-
-    //  if ($scope.card_token.cardholder!=undefined){
-    //   $scope.card_token.cardholder.identification.number=""+$scope.card_token.cardholder.identification.number+"";
-    //   $scope.card_token.security_code=""+$scope.card_token.security_code+"";
-    // }
-    // $scope.card_token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
-    // $scope.card_token.security_code = "" + $scope.card_token.security_code + "";
-    // $scope.card_token.cardholder.identification.type = "" +$scope.card_token.cardholder.identification.type.id + "";
+    $scope.card_token.cardholder.identification.number = "" + $scope.card_token.cardholder.identification.number + "";
+    $scope.card_token.security_code = "" + $scope.card_token.security_code + "";
+    $scope.card_token.cardholder.identification.type = "" +$scope.card_token.cardholder.identification.type.id + "";
 
     MercadoPagoService.createToken()
-    .save(token, function (token){
+    .save($scope.card_token, function (token){
       console.log(token);
       if ($rootScope.platform == "android" || $rootScope.platform == "ios"){
         var body = {//online
