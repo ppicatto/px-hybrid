@@ -1,0 +1,17 @@
+android {
+   defaultConfig {
+       multiDexEnabled true
+   }
+}
+repositories{
+	maven {
+           url 'https://dl.bintray.com/matiasromar/maven'
+     }
+
+}
+ 
+
+
+dependencies {
+    compile ('com.mercadopago:sdk:WORKSHOP@aar') { transitive = true }
+}
