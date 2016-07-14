@@ -1,49 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-        id="com.example.hello"
-        version="0.7.0">
 
-  <name>Hello</name>
-
-  <engines>
-    <engine name="cordova" version=">=3.4.0"/>
-  </engines>
-
-  <asset src="www/mercadopago.js" target="js/mercadopago.js"/>
-
-  <js-module src="www/mercadopago.js" name="mercadopago">
-    <clobbers target="mercadopago" />
-  </js-module>
-  
-
-  <platform name="android">
-      <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
-
-    <config-file target="res/xml/config.xml" parent="/*">
-      <feature name="MercadoPagoPlugin">
-        <param name="android-package" value="com.example.plugin.MercadoPagoPlugin"/>
-      </feature>
-    </config-file>
-
-    <source-file src="src/android/MercadoPagoPlugin.java" target-dir="src/com/example/plugin/"/>
-    <config-file target="AndroidManifest.xml" parent="/manifest/application"> <activity android:name="com.instabug.library.InstabugFeedbackActivity"> </activity> </config-file> <config-file target="AndroidManifest.xml" parent="/manifest"> <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <uses-permission android:name="android.permission.INTERNET" />
-    </config-file>
-  </platform>
-
-  <platform name="ios">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="mercadopago.cordova.mobilesdk"
+    version="0.9.0">
     
-    <config-file target="config.xml" parent="/widget">
-      <feature name="Hello">
-        <param name="ios-package" value="HWPHello" />
-      </feature>
-    </config-file>
+    <name>MercadoPago</name>
+    
+    <description>This plugin allows to add MercadoPago to your application using MercadoPago Native library</description>
+    
+    <license>MIT License, see LICENSE.md for details</license>
+    
+    <engines>
+            <engine name="cordova" version="&gt;=3.0.0" />
+    </engines>
 
-    <header-file src="src/ios/HWPHello.h" target-dir="HelloPlugin"/>
-    <source-file src="src/ios/HWPHello.m" target-dir="HelloPlugin"/>
-  </platform>
+    <js-module src="www/cdv-plugin-mercadopago.js" name="MercadoPago">
+        <clobbers target="MercadoPago" />
+    </js-module>
 
-  <platform name="wp7">
-    <source-file src="src/wp7/Hello.cs"/>
-  </platform>
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="MercadoPago">
+                <param name="android-package" value="mercadopago.cordova.sdk.MercadoPagoPlugin" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/MercadoPagoPlugin.java" target-dir="src/mercadopago/cordova/sdk" />
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+
+    </platform>
 
 </plugin>
