@@ -1,4 +1,4 @@
-package com.example.plugin;
+package com.mercadopago.cordova.sdk;
 
 
 import android.app.Activity;

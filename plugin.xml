@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="mercadopago.cordova.mobilesdk"
+    id="com.mercadopago.cordova.sdk"
     version="0.9.0">
     
     <name>MercadoPago</name>
@@ -23,11 +23,11 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="MercadoPago">
-                <param name="android-package" value="mercadopago.cordova.sdk.MercadoPagoPlugin" />
+                <param name="android-package" value="com.mercadopago.cordova.sdk.MercadoPagoPlugin" />
             </feature>
         </config-file>
 
-        <source-file src="src/android/MercadoPagoPlugin.java" target-dir="src/mercadopago/cordova/sdk" />
+        <source-file src="src/android/MercadoPagoPlugin.java" target-dir="src/com/mercadopago/cordova/sdk" />
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
 
     </platform>
