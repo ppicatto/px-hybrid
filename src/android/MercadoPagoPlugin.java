@@ -1,4 +1,4 @@
-package com.mercadopago.cordova.sdk;
+package com.example.plugin;
 
 
 import android.app.Activity;
@@ -9,7 +9,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mercadopago.callbacks.Callback;
 import com.mercadopago.core.MercadoPago;
+import com.mercadopago.model.ApiException;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PayerCost;
 import com.mercadopago.model.Payment;
@@ -24,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class MercadoPagoPlugin extends CordovaPlugin {
@@ -51,14 +54,82 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         } else if (action.equals("startPaymentVault")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
-            BigDecimal b = new BigDecimal(data.getInt(1));
+            BigDecimal ammount = new BigDecimal(data.getInt(1));
             new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
             .setPublicKey(data.getString(0))
-            .setAmount(b)
+            .setAmount(ammount)
             .setSite(Sites.ARGENTINA)
             .startPaymentVaultActivity();
-            
+
+            return true;
+
+        } else if (action.equals("startCardWithoutInstallments")){
+            cordova.setActivityResultCallback (this);
+            callback = callbackContext;
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this.cordova.getActivity())
+                    .setPublicKey(data.getString(0))
+                    .startGuessingCardActivity();
+
+            return true;
+
+        } else if (action.equals("startCardWithInstallments")){
+            cordova.setActivityResultCallback (this);
+            callback = callbackContext;
+            BigDecimal ammount = new BigDecimal(data.getInt(1));
+
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this.cordova.getActivity())
+                    .setPublicKey(data.getString(0))
+                    .setAmount(ammount)
+                    .setSite(Sites.ARGENTINA)
+                    .startCardVaultActivity();
+
+            return true;
+
+        } else if (action.equals("startPaymentMethodsComponent")){
+            cordova.setActivityResultCallback (this);
+            callback = callbackContext;
+
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this.cordova.getActivity())
+                    .setPublicKey(data.getString(0))
+                    .startPaymentMethodsActivity();
+
+            return true;
+
+        } else if (action.equals("startPaymentMethodsComponent")) {
+            cordova.setActivityResultCallback(this);
+            callback = callbackContext;
+            PaymentMethod paymentMethod = new PaymentMethod();
+
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this.cordova.getActivity())
+                    .setPublicKey(data.getString(0))
+                    .setPaymentMethod(paymentMethod)
+                    .startIssuersActivity();
+
+            return true;
+
+        } else if (action.equals("getPaymentMethods")){
+            MercadoPago mercadoPago = new MercadoPago.Builder()
+                    .setContext(this.cordova.getActivity())
+                    .setPublicKey(data.getString(0))
+                    .build();
+
+            mercadoPago.getPaymentMethods(new Callback<List<PaymentMethod>>() {
+                @Override
+                public void success(List<PaymentMethod> paymentMethods) {
+                    callback.success(paymentMethods.toArray().toString());
+                }
+
+                @Override
+                public void failure(ApiException error) {
+                   callback.success("error");
+                }
+            });
+
             return true;
         } else {
             
