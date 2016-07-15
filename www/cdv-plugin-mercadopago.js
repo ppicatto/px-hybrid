@@ -1,13 +1,13 @@
 /*global cordova, module*/
 
-function MercadoPagoPlugin() {}
+function MercadoPago() {}
 
-MercadoPagoPlugin.prototype.startActivity = function(successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPagoPlugin", "startActivity");
+MercadoPago.prototype.startActivity = function(successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "startActivity");
 };
 
-MercadoPagoPlugin.prototype.startPaymentVault = function(pk, ammount , successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPagoPlugin", "startPaymentVault", [pk, ammount]);
+MercadoPago.prototype.startPaymentVault = function(pk, amount, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "startPaymentVault", [pk, amount]);
 };
 
-module.exports = new MercadoPagoPlugin();
+module.exports = new MercadoPago();
