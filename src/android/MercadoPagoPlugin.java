@@ -58,7 +58,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             return true;
             
             
-        } else if (action.equals("startPaymentVault")){
+        } else if (action.equals("showPaymentVault")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
             BigDecimal b = new BigDecimal(data.getInt(1));
@@ -71,7 +71,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             
             return true;
 
-        } else if (action.equals("startCardWithoutInstallments")){
+        } else if (action.equals("showCardWithoutInstallments")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
             new MercadoPago.StartActivityBuilder()
@@ -80,7 +80,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startGuessingCardActivity();
 
             return true;
-        } else if (action.equals("startCardWithInstallments")){
+        } else if (action.equals("showCardWithInstallments")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -93,7 +93,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startCardVaultActivity();
 
             return true;
-        } else if (action.equals("startPaymentMethods")){
+        } else if (action.equals("showPaymentMethods")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -103,7 +103,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startPaymentMethodsActivity();
 
             return true;
-        } else if (action.equals("startIssuers")){
+        } else if (action.equals("showIssuers")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -117,7 +117,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startIssuersActivity();
 
             return true;
-        } else if (action.equals("startInstallments")){
+        } else if (action.equals("showInstallments")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -135,7 +135,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startInstallmentsActivity();
 
             return true;
-        } else if (action.equals("startBankDeals")){
+        } else if (action.equals("showBankDeals")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -145,7 +145,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startBankDealsActivity();
 
             return true;
-        } else if (action.equals("startCongrats")){
+        } else if (action.equals("showCongrats")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -161,7 +161,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .startCongratsActivity();
 
             return true;
-        } else if (action.equals("startInstructions")){
+        } else if (action.equals("showInstructions")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
 
@@ -234,8 +234,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
 
                             @Override
                             public void failure(ApiException apiException) {
-
-                                // Ups, ha ocurrido un error.
+                                callback.success(apiException.getError());
 
                             }
                         });
