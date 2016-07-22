@@ -2,9 +2,6 @@
 
 function MercadoPago() {}
 
-MercadoPago.prototype.startActivity = function(successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPago", "startActivity");
-};
 
 MercadoPago.prototype.showPaymentVault = function(pk, amount, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "showPaymentVault", [publicKey, amount]);
