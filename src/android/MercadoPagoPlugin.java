@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.mercadopago.callbacks.Callback;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.core.MerchantServer;
+import com.mercadopago.exceptions.MPException;
 import com.mercadopago.model.ApiException;
 import com.mercadopago.model.BankDeal;
 import com.mercadopago.model.CardToken;
@@ -48,7 +49,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
         
         
-        if (action.equals("startActivity")) {
+        if (action.equals("startCheckout")) {
             cordova.setActivityResultCallback (this);
             new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
@@ -253,50 +254,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 }
             });
             return true;
-
-        } else if (action.equals("createPayment")){
-            cordova.setActivityResultCallback (this);
-            callback = callbackContext;
-
-            Gson gson = new Gson();
-            final PaymentMethod paymentMethod = gson.fromJson(data.getString(1), PaymentMethod.class);
-            Long issuerId = data.getLong(2);
-            int payerCostInstallments = data.getInt(3);
-            String tokenId = data.getString(4);
-
-            final String pk = data.getString(0);
-
-
-            Item item = new Item("id", 5);
-            MerchantPayment payment = new MerchantPayment(item, payerCostInstallments,  issuerId, tokenId, paymentMethod.getId(), null, "mla-at");
-
-            MerchantServer.createPayment(this.cordova.getActivity(), data.getString(5), data.getString(6), payment, new Callback<Payment>() {
-                @Override
-                public void success(Payment payment) {
-                    if(MercadoPagoUtil.isCardPaymentType(paymentMethod.getPaymentTypeId())) {
-                        new MercadoPago.StartActivityBuilder()
-                                .setPublicKey(pk)
-                                .setActivity(cordova.getActivity())
-                                .setPayment(payment)
-                                .setPaymentMethod(paymentMethod)
-                                .startCongratsActivity();
-                    }
-                    else {
-                        new MercadoPago.StartActivityBuilder()
-                                .setPublicKey(pk)
-                                .setActivity(cordova.getActivity())
-                                .setPayment(payment)
-                                .setPaymentMethod(paymentMethod)
-                                .startInstructionsActivity();
-                    }
-                }
-
-                @Override
-                public void failure(ApiException apiException) {
-
-                }
-            });
-            return true;
             
         } else {
             
@@ -338,6 +295,13 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 Gson gson = new Gson();
                 String json = gson.toJson(payment);
                 callback.success(json);
+            }
+            else {
+                if ((data != null) &&
+                    (data.getSerializableExtra("mpException") != null)) {
+                    MPException mpException = (MPException) data.getSerializableExtra("mpException");
+                    callback.success(mpException.getMessage());
+                }
             }
         }
         
