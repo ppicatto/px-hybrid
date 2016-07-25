@@ -439,14 +439,11 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 }
             });
             return true;
-            
->>>>>>> plugin
         } else {
-
             return false;
-
         }
     }
+    
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == MercadoPago.PAYMENT_VAULT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
@@ -558,7 +555,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                             = (MPException) data.getSerializableExtra("mpException");
                 }
             }
-        }else if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
+        } else if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK) {
                 PayerCost payerCost = (PayerCost) data.getSerializableExtra("payerCost");
 
@@ -579,6 +576,5 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 }
             }
         }
-        
     }
 }
