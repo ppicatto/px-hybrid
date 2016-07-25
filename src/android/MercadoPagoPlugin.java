@@ -568,12 +568,11 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                             = (MPException) data.getSerializableExtra("mpException");
                 }
             }
-            else {
-                if ((data != null) &&
-                    (data.getSerializableExtra("mpException") != null)) {
-                    MPException mpException = (MPException) data.getSerializableExtra("mpException");
-                    callback.success(mpException.getMessage());
-                }
+        } else {
+            if ((data != null) &&
+                (data.getSerializableExtra("mpException") != null)) {
+                MPException mpException = (MPException) data.getSerializableExtra("mpException");
+                callback.success(mpException.getMessage());
             }
         }
     }
