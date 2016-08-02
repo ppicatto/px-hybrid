@@ -2,8 +2,13 @@
 
 function MercadoPago() {}
 
+<<<<<<< HEAD
 MercadoPago.prototype.showPaymentVault = function(publicKey, amount, color, blackFont, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "showPaymentVault", [publicKey, amount, color, blackFont]);
+=======
+MercadoPago.prototype.showPaymentVault = function(publicKey, amount, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "showPaymentVault", [publicKey, amount]);
+>>>>>>> origin/plugin
 };
 MercadoPago.prototype.showCardWithoutInstallments = function(publicKey, color, blackFont, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "showCardWithoutInstallments", [publicKey, color, blackFont]);
