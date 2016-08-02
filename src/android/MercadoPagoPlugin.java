@@ -67,13 +67,13 @@ public class MercadoPagoPlugin extends CordovaPlugin {
 
             DecorationPreference decorationPreference = new DecorationPreference();
 
-            if (data.getString(2) != "null") {
-                decorationPreference.setBaseColor(data.getString(2));
-
-            }
-            if (data.getBoolean(3) == true){
-                decorationPreference.enableDarkFont();
-            }
+//            if (data.getString(2) != "null") {
+//                decorationPreference.setBaseColor(data.getString(2));
+//
+//            }
+//            if (data.getBoolean(3) == true){
+//                decorationPreference.enableDarkFont();
+//            }
 
             new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
@@ -361,6 +361,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                                  js.put("payment", mpPayment);
                                  js.put("payment_methods", mpPaymentMethod);
                              } catch (JSONException e) {
+                                 // TODO Auto-generated catch block
                                  // TODO Auto-generated catch block
                                  e.printStackTrace();
                              }
