@@ -13,5 +13,5 @@ repositories{
 
 
 dependencies {
-    compile ('com.mercadopago:sdk:WORKSHOP@aar') { transitive = true }
+    compile ('com.mercadopago:sdk:1.0.0-rc1') { transitive = true }
 }
