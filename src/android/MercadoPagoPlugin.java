@@ -3,14 +3,10 @@ package com.mercadopago.cordova.sdk;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.text.BidiFormatter;
-import android.util.StringBuilderPrinter;
 import android.widget.Toast;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.mercadopago.callbacks.Callback;
 import com.mercadopago.constants.Sites;
 import com.mercadopago.core.MercadoPago;
@@ -18,7 +14,6 @@ import com.mercadopago.core.MerchantServer;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.model.ApiException;
 
-import com.mercadopago.model.CardIssuer;
 import com.mercadopago.model.DecorationPreference;
 import com.mercadopago.model.Installment;
 import com.mercadopago.model.Issuer;
@@ -27,16 +22,10 @@ import com.mercadopago.model.MerchantPayment;
 import com.mercadopago.model.BankDeal;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
-import com.mercadopago.model.Installment;
 import com.mercadopago.model.Instruction;
-import com.mercadopago.model.Issuer;
-import com.mercadopago.model.Item;
-import com.mercadopago.model.MerchantPayment;
-import com.mercadopago.model.Payer;
 import com.mercadopago.model.PayerCost;
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
-//import com.mercadopago.model.Sites;
 import com.mercadopago.model.Token;
 
 import com.mercadopago.util.JsonUtil;
@@ -67,13 +56,13 @@ public class MercadoPagoPlugin extends CordovaPlugin {
 
             DecorationPreference decorationPreference = new DecorationPreference();
 
-//            if (data.getString(2) != "null") {
-//                decorationPreference.setBaseColor(data.getString(2));
-//
-//            }
-//            if (data.getBoolean(3) == true){
-//                decorationPreference.enableDarkFont();
-//            }
+            if (data.getString(2) != "null") {
+                decorationPreference.setBaseColor(data.getString(2));
+
+            }
+            if (data.getBoolean(3) == true){
+                decorationPreference.enableDarkFont();
+            }
 
             new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
@@ -203,6 +192,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             .setDecorationPreference(decorationPreference)
             .setPaymentMethod(paymentMethod)
             .startIssuersActivity();
+
+
 
             return true;
 
