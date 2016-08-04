@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+  <body ng-app="starter" ng-controller="StarterCtrl">
+
+    <ion-pane>
+      <ion-header-bar class="bar-stable">
+        <h1 class="title">Probando MercadoPago Plugin</h1>
+      </ion-header-bar>
+      <ion-content>
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Color</span>
+          <input type="text" ng-model="myStyle.color">
+        </label>
+        <ion-toggle ng-model=blackFont ng-change="toggleChange()">Fuente Negra</ion-toggle>
+      </div>
+
+          <a class="item" align="center" style="border:none" href="#">
+            <img src="img/PlugNplay.png">
+            Nuestro Checkout
+          </a>
+        <button class="button button-block button-positive" ng-click="startCheckout()">
+          Nuestro checkout
+        </button>
+        <br>
+          <a class="item icon-left" align="center" style="border:none"  href="#">
+            <img src="img/Puzzle.png">
+            Componentes visuales
+          </a>
+        <button class="button button-block button-positive" ng-click="startPaymentVault()">
+          Componente completo
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showCardWithoutInstallments()">
+          Cobro con tarjeta
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showCardWithInstallments()">
+          Cobro con tarjeta en cuotas
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showPaymentMethods()">
+          Pantalla Medios de pago
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showIssuers()">
+          Pantalla Bancos
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showInstallments()">
+          Pantalla Cuotas
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showBankDeals()">
+          Pantalla Promociones
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showInstructions()">
+          Pantalla Instrucciones
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="showCongrats()">
+          Pantalla Congrats
+        </button>
+        <br>
+
+        <a class="item icon-left"  align="center" style="border:none" href="#">
+            <img src="img/Ninja.png">
+            Nuestros servicios
+        </a>
+        <button class="button button-block button-positive" ng-click="getPaymentMethods()">
+          Servicio medios de pago
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="getIssuers()">
+          Servicio bancos
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="getInstallments()">
+          Servicio cuotas
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="getIdentificationTypes()">
+          Serivicio tipos de Documento
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="createToken()">
+          Servicio tokenización de datos
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="getBankDeals()">
+          Servicio promociones
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="getInstructions()">
+          Servicio instrucciones
+        </button>
+        <br>
+        <button class="button button-block button-positive" ng-click="createPayment()">
+          Serivicio merchant Server
+        </button>
+
+      </ion-content>
+    </ion-pane>
+  </body>
+</html>
