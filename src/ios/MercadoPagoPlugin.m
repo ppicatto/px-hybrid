@@ -5,7 +5,7 @@
 @end
 @implementation UIColor (fromHex)
 
-#define MERCADO_PAGO_BASE_COLOR @"#30afe2"
+#define MERCADO_PAGO_BASE_COLOR @"#30AFE2"
 
 + (UIColor *)colorwithHexString:(NSString *)hexStr alpha:(CGFloat)alpha;
 {
@@ -49,7 +49,7 @@
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:100];
         [MercadoPagoContext setupPrimaryColor:color];
     }
     if ([[[command arguments] objectAtIndex:3]boolValue]){
