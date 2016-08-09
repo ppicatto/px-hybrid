@@ -118,7 +118,7 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-html">
-                               &lt;script src="js/MercadoPagoHibrido.js"&gt;&lt;/script&gt;
+                        $ cordova plugin add px-mercadopago
                         </code>
                         <button class="copy-button" alt="Copiar código">
                            <img src="./img/clippy.svg" width="13">
@@ -131,7 +131,7 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-                               MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
+                               var publicKey = "TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a";
                         </code>
                         <button class="copy-button" alt="Copiar código">
                            <img src="./img/clippy.svg" width="13">
@@ -154,12 +154,17 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-MercadoPagoService.getPaymentMethods().get(function(response){
-   // Listo, armá tu UI para el listado de medios de pago
-   $scope.paymentMethods = response;
-},function(error){
-   // UPS! Algo salió mal.
-});
+                        $scope.getPaymentMethods = function(){
+                          MercadoPago.getPaymentMethods(publicKey, success, failure);
+                         }
+                        var success = function(response) {
+                           // Listo, armá tu UI para el listado de pagos
+                           console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
 
                         </code>
                         <button class="copy-button">
@@ -180,17 +185,19 @@ MercadoPagoService.getPaymentMethods().get(function(response){
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-var paymentMethodId = "master";
-var bin = ""; // Primeros seis dígitos de la tarjeta (si los conocieras)
-
-MercadoPagoService.getIssuers(paymentMethodId, bin)
-   .get(function(response) {
-      // Listo, armá tu UI para el listado de bancos
-      $scope.cardIssuers = response;
-   },function(error){   
-      // UPS! Algo salió mal.
-   }
-);
+                        $scope.getIssuers = function(){
+                           var paymentMethod = "visa";
+                           var bin = null;
+                           MercadoPago.getIssuers(publicKey, paymentMehtod, bin, success, failure);
+                        }
+                        var success = function(response) {
+                           // Listo, armá tu UI para el listado de bancos
+                           console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -217,23 +224,21 @@ MercadoPagoService.getIssuers(paymentMethodId, bin)
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-// Medio de pago seleccionado
-var paymentMethodId = "master";
-
-// Banco seleccionado en el paso anterior
-var issuerId = "326";
-
-// Monto que vas a cobrar
-var amount = 100.0;
-
-MercadoPagoService.getInstallments(paymentMethodId, issuerId, amount)
-   .get(function(response) {
-      // Listo, armá tu UI para el listado de cuotas
-      $scope.installments = response[0]["payer_costs"];
-   },function(error){
-      // UPS! Algo salió mal.
-   }
-);
+                        $scope.getInstallments = function(){
+                           var paymentMethod = "master";
+                           var bin = "503175";
+                           var issuerId = 326;
+                           var amount = 200;
+                           MercadoPago.getInstallments(publicKey, paymentMethod, bin, issuerId, amount,  success, failure);
+                        }
+                        var success = function(response) {
+                           // Listo, armá tu UI para el listado de cuotas
+                           console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -254,14 +259,17 @@ MercadoPagoService.getInstallments(paymentMethodId, issuerId, amount)
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-MercadoPagoService.getIdentificationTypes()
-   .get(function(response) {
-      // Listo, armá tu UI para el listado de tipos de documento
-      $scope.identification_types = response;
-   },function(error){
-      // Ups, ha ocurrido un error.
-   }
-);
+                        $scope.getIdentificationTypes = function(){
+                          MercadoPago.getIdentificationTypes(publicKey, success, failure);
+                        }
+                        var success = function(response) {
+                           // Listo, armá tu UI para el listado de tipos de documentos
+                           console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -279,20 +287,25 @@ MercadoPagoService.getIdentificationTypes()
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-var card_token = {
-   "card_number": "NUMERO_DE_TARJETA",
-   "security_code": "CODIGO_DE_SEGURIDAD",
-   "expiration_month": MES_VENCIMIENTO_INT,
-   "expiration_year": ANIO_VENCIMIENTO_INT,
-   "cardholder": {
-      "name": "NOMBRE_PORTADOR_TARJETA",
-      "identification": {
-         "subtype": null,
-         "type": "IDENTIFICATION_TYPE_ID",
-         "number": "NUMERO_DOCUMENTO"
-      }
-   }
-};
+                        $scope.createToken = function(){
+                           var cardNumber = "5031755734530604";
+                           var expMonth = 11;
+                           var expYear = 2019;
+                           var securityCode = 123;
+                           var name = "APROJuan";
+                           var docType = "DNI";
+                           var docNumber = "12345678";
+                           
+                           MercadoPago.createToken(publicKey, cardNumer, expMonth, expYear, securityCode, name, docType, docNumber, success, failure);
+                        }
+                        var success = function(response) {
+                           // Ahora podes hacer un pago!
+                           console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -318,15 +331,7 @@ var card_token = {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-MercadoPagoService.createCardToken()
-   .save(card_token, function(response) {
-      // Listo, ya tenes el token disponible. 
-      // Ahora podes hacer un pago!
-      $scope.token = response;
-   }, function(error){
-      // Ups, ha ocurrido un error.
-   }
-);
+
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -346,14 +351,17 @@ MercadoPagoService.createCardToken()
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-MercadoPagoService.getBankDeals()
-   .get(function(response) {
-      // Listo, armá tu UI para el listado de promociones
-      $scope.bank_deals = response;
-   },function(error){
-      // Ups, ha ocurrido un error.
-   }
-);
+                        $scope.getBankDeals = function(){
+                           MercadoPago.getBankDeals(publicKey, success, failure);
+                        }
+                        var success = function(response) {
+                           // Listo, armá tu UI para el listado de promociones
+                           console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -388,39 +396,22 @@ MercadoPagoService.getBankDeals()
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-var base_url = "http://api.tunombre.com";
-var create_payment_uri = "/create_payment";
 
-var item_id = "item_id";
-var item_quantity = 1;
-var item_unit_price = 100;
-
-var payment_method_id = "master";
-var installments = 6;
-var card_issuer_id = 326;
-var token = "abcdef123456";
-
-var merchant_payment = {
-   "payment_method_id": payment_method_id,
-   "card_issuer_id": card_issuer_id,
-   "installments": installments,
-   "card_token": token,
-   "merchant_access_token": "ID_DE_TU_USER",
-   "item": {
-      "id": item_id,
-      "quantity": item_quantity,
-      "unit_price": item_unit_price
-   }
-};
-
-MercadoPagoService.createPayment(base_url, create_payment_uri, merchant_payment)
-   .save(function(response) {
-      // Listo, ya está el pago creado. 
-      // Podes mostrar una pantalla de resultados.
-   }, function(error) {
-      // Ups, ocurrió un error
-   }
-);
+                           $scope.createPayment = function(){
+                              var base_url = "http://api.tunombre.com";
+                              var create_payment_uri = "/create_payment";
+                              var paymentMethod = "visa";
+                              var installments = 12;
+                              var cardIssuer = 3;
+                              var tokenId = 123456678;
+                              MercadoPago.createPayment(publicKey, itemI, itemQuantity, itemPrice, campaignId, "access_token", base_url, create_payment_uri, paymentMethod, installment, cardIssuer, tokenId);
+                           }
+                           var success = function(payment) {
+                            console.log(JSON.parse(payment).id);
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">

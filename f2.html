@@ -124,24 +124,17 @@
                   <p>
                      <pre class="snippet">
                        <code id="flavor_2_step_1" class="line-numbers language-html">
-                      &lt;script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.min.js"&gt;&lt;/script&gt;
-                      &lt;script src="js/MercadoPagoHibrido.js"&gt;&lt;/script&gt;
+                       $ cordova plugin add px-mercadopago
                        </code>
                         <button class="copy-button" alt="Copiar código">
                            <img src="./img/clippy.svg" width="13">
                         </button>
                      </pre>
                      <br>
-                     <pre class="snippet">
-                       <code id="flavor_2_step_15" class="line-numbers language-javascript">
-                         angular.module('starter', ['ionic','mercadopago'])
-
-                           // Iniciar el checkout de MercadoPago
-                           .controller('AppCtrl', function($scope, MercadoPagoService){
-                               MercadoPagoService.setPublicKey("TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a");
-                               MercadoPagoService.setPrefId("150216849-9fa110ac-8351-4526-b874-00871f9f94ef");
-
-                           })
+                     <p>El segundo paso es indicarnos tu clave pública. </p>
+                    <pre class="snippet">
+                       <code id="flavor_2_step_1" class="line-numbers language-javascript">
+                       var publicKey = "TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a";
                        </code>
                         <button class="copy-button" alt="Copiar código">
                            <img src="./img/clippy.svg" width="13">
@@ -162,44 +155,9 @@
                   <p>
                      <pre class="snippet">
                         <code id="flavor_2_step_2" class="line-numbers language-html">
-                          &lt;body ng-app="AppCtrl"&gt;
-
-                            &lt;!-- Barra de Mercado Pago --&gt;
-                              &lt;ion-nav-bar class='MpBarra bar-positive'&gt;
-                               &lt;ion-nav-back-button class="button-clear"&gt;
-                                &lt;i class="ion-ios-arrow-back carrito"&gt;&lt;/i&gt;
-                                &lt;/ion-nav-back-button&gt;
-                                &lt;ion-nav-buttons side="right"&gt;
-                                  &lt;i class="ion-ios-cart-outline carrito" style="padding: 5px" ng-click="MpShowPrefId()"&gt;&lt;/i&gt;
-                                  &lt;/ion-nav-buttons&gt;
-                              &lt;/ion-nav-bar&gt;
-                              &lt;ion-nav-view animation="slide-left-right"&gt;&lt;/ion-nav-view&gt;
-
-                            &lt;!-- Script de Mercado Pago --&gt;
-                              &lt;script type="text/ng-template" id="mercadopago.html"&gt;
-                                &lt;ion-view compile-html="HTML" title='{{header}}'>&lt;/ion-view&gt;
-                              &lt;/script&gt;
-
-                            &lt;!-- Tu Script --&gt;
-                              &lt;script type="text/ng-template" id="app.html"&gt;
-                                &lt;ion-view title="{{header}}" cache-view="false"&gt;
-                                  &lt;!-- Tu Barra --&gt;
-                                  &lt;ion-nav-bar class='bar-positive'&gt;&lt;/ion-nav-bar&gt;
-                                  &lt;!-- Tu HTML --&gt;
-                                  &lt;ion-content&gt;
-                                    &lt;button class="button" ng-click="startPaymentVault()"&gt;Componentes Completo&lt;/button&gt;&lt;br&gt;
-                                    &lt;button class="button" ng-click="startCardWithoutInstallments()"&gt;Cobra con tarjeta&lt;/button&gt;
-                                    &lt;button class="button" ng-click="startCardWithInstallments()"&gt;Cobra con tarjeta con cuotas&lt;/button&gt;&lt;br&gt;
-                                    &lt;button class="button" ng-click="startPaymentMethod()"&gt;Medios de pago&lt;/button&gt;
-                                    &lt;button class="button" ng-click="startIssuers()"&gt;Bancos&lt;/button&gt;
-                                    &lt;button class="button" ng-click="startInstallments()"&gt;Cuotas&lt;/button&gt;
-                                    &lt;button class="button" ng-click="startBankDeals()"&gt;Promociones&lt;/button&gt;&lt;br&gt;
-                                    &lt;button class="button" ng-click="startInstructions()"&gt;Resultado de pago en efectivo&lt;/button&gt;
-                                    &lt;button class="button" ng-click="startCongrats()"&gt;Resultado de pago con tarjeta&lt;/button&gt;&lt;br&gt;
-                                  &lt;/ion-content&gt;
-                                &lt;/ion-view&gt;
-                              &lt;/script&gt;
-                          &lt;body&gt;
+                      &lt;body ng-app="AppCtrl"&gt;
+                        &lt;button ng-click="startPaymentVault()"&gt;Pagar&lt;/button&gt;
+                      &lt;body&gt;
                         </code>
 
                         <button class="copy-button">
@@ -213,19 +171,27 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-                        $scope.startPaymentVault = function () {
-                          MercadoPagoService.startPaymentVault(callback);
-                        }
-                        var callback = function (response) {
-                          if (response != null) {
-                              var token = response[0];
-                              var paymentMethod = response[1];
-                              var issuer = response[2];
-                              var payerCosts = response[3];
-                          } else {
-                              // El usuario corto el flujo
-                          }
-                        };
+
+                          $scope.startPaymentVault = function() {
+                            var amount = 200;
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showPaymentVault(publicKey, amount, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var token = JSON.parse(response).token;
+                                var paymentMethod = JSON.parse(response).paymentMethod;
+                                var issuer = JSON.parse(response).issuer;
+                                var payerCost = JSON.parse(response).payerCost;
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -245,19 +211,25 @@
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-javascript">
-                        $scope.startCardWithoutInstallments = function (){
-                          MercadoPagoService.startCardWithoutInstallments(callback);
-                        }
-                        var callback = function (response) {
-                          if (response != null) {
-                              var token = response[0];
-                              var paymentMethod = response[1];
-                              var issuer = response[2];
-                          } else {
-                              // El usuario corto el flujo
-                          }
-                        };
+                     <code class="line-numbers language-javascript">
+                          $scope.showCardWithoutInstallments = function() {
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showCardWithoutInstallments(publicKey, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var token = JSON.parse(response).token;
+                                var paymentMethod = JSON.parse(response).paymentMethod;
+                                var issuer = JSON.parse(response).issuer;
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -280,20 +252,27 @@
                   </p>
                   <p>
                      <pre class="snippet">
-                        <code class="line-numbers language-javascript">
-                        $scope.startCardWithoutInstallments = function (){
-                          MercadoPagoService.startCardWithInstallments(callback);
-                        }
-                        var callback = function (response) {
-                          if (response != null) {
-                              var token = response[0];
-                              var paymentMethod = response[1];
-                              var issuer = response[2];
-                              var payerCosts = response[3];
-                          } else {
-                              // El usuario corto el flujo
-                          }
-                        };
+                     <code class="line-numbers language-javascript">
+                          $scope.showCardWithInstallments = function() {
+                            var amount = 200;
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showCardWithInstallments(publicKey, amount, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var token = JSON.parse(response).token;
+                                var paymentMethod = JSON.parse(response).paymentMethod;
+                                var issuer = JSON.parse(response).issuer;
+                                var payerCost = JSON.parse(response).payerCost;
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -314,16 +293,22 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-                        $scope.startPaymentMethod = function () {
-                          MercadoPagoService.startPaymentMethod(callback);
-                        }
-                        var callback = function (response) {
-                          if (response != null) {
-                              var paymentMethod = response;
-                          } else {
-                              // El usuario corto el flujo
-                          }
-                        }</code>
+                          $scope.showPaymentMethods = function() {
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showPaymentMethods(publicKey, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var paymentMethod = JSON.parse(response);
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -344,20 +329,23 @@
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-                        $scope.startIssuers = function () {
-                          var paymentMethod = [];
-                          paymentMethod.id = "master";
-                          var bin = [];
-                          bin.first_six_digits = "";
-                          MercadoPagoService.startIssuers(callback, paymentMethod, bin);
-                        }
-                        var callback = function (response) {
-                          if (response != null) {
-                              var issuer = response;
-                          } else {
-                              // El usuario corto el flujo
-                          }
-                        }</code>
+                          $scope.showIssuers = function() {
+                            var paymentMethod = "visa";
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showIssuers(publicKey, paymentMethod, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var issuer = JSON.parse(response);
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -378,23 +366,25 @@
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
 
-$scope.startInstallments = function (){
-  var cardIssuer = [];
-  cardIssuer.id = "3";
-  var paymentMethod = [];
-  paymentMethod.id = "master";
-  var bin = [];
-  bin.first_six_digits = "";
-  var ammount = 200;
-  MercadoPagoService.startInstallments(callback, paymentMethod, cardIssuer, bin, ammount);
-}
-var callback = function (response) {
-  if (response != null) {
-      var issuer = response;
-  } else {
-      // El usuario corto el flujo
-  }
-}</code>
+                          $scope.showInstallments = function() {
+                            var paymentMethod = "visa";
+                            var issuerId = "326";
+                            var amount = 200;
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showInstallments(publicKey, amount, paymentMethod, issuerId, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var instalments = JSON.parse(response);
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
                         </button>
@@ -412,12 +402,22 @@ var callback = function (response) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-public void submit(View view) {
-  new MercadoPago.StartActivityBuilder()
-    .setActivity(this)
-    .setPublicKey(TU_PUBLIC_KEY)
-    .startBankDealsActivity();
-}
+                          $scope.showBankDeals = function() {
+                            var color = "ABCDEF";
+                            var blackFont = true;
+
+                            MercadoPago.showBankDeals(publicKey, color, blackFont, success, failure);
+                          };
+                          var success = function(response) {
+                            if (response != null){
+                                var bankDeals = JSON.parse(response);
+                            } else {
+                                // El usuario corto el flujo
+                            }
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -519,9 +519,16 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-$scope.startCongrats = function () {
-  MercadoPagoService.startCongrats(callback, cardPaymentInfo);
-};
+                        $scope.showPaymentResult = function(){
+                          var paymentId = 1200753;
+                          var paymentTypeId = "ticket";
+                          MercadoPago.showPaymentResult(publicKey, paymentId, paymentTypeId, success, failure);
+                        };
+                        var success = function(response) {
+                        };
+                        var failure = function() {
+                          alert("Error calling MercadoPago Plugin");
+                        };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -578,37 +585,21 @@ $scope.startInstructions = function () {
                   <p>
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
-private void createPayment(final PaymentMethod paymentMethod, Issuer issuer, PayerCost payerCost, Token token) {
-   Item item = new Item("id", 5);
-   MerchantPayment payment = new MerchantPayment(item, payerCost.getInstallments(), issuer.getId(), token.getId(), paymentMethod.getId(), null, "mla-at");
-
-   MerchantServer.createPayment(this, "mauro.com", "createPayment", payment, new Callback<Payment>() {
-      @Override
-      public void success(Payment payment) {
-         if(MercadoPagoUtil.isCardPaymentType(paymentMethod.getPaymentTypeId())) {
-            new MercadoPago.StartActivityBuilder()
-            .setPublicKey(mMyPublicKey)
-            .setActivity(mActivity)
-            .setPayment(payment)
-            .setPaymentMethod(paymentMethod)
-            .startCongratsActivity();
-         }
-         else {
-            new MercadoPago.StartActivityBuilder()
-            .setPublicKey(mMyPublicKey)
-            .setActivity(mActivity)
-            .setPayment(payment)
-            .setPaymentMethod(paymentMethod)
-            .startInstructionsActivity();
-         }
-      }
-
-      @Override
-      public void failure(ApiException apiException) {
-
-      }
-   });
-}
+                          $scope.createPayment = function(){
+                              var base_url = "http://api.tunombre.com";
+                              var create_payment_uri = "/create_payment";
+                              var paymentMethod = "visa";
+                              var installments = 12;
+                              var cardIssuer = 3;
+                              var tokenId = 123456678;
+                              MercadoPago.createPayment(publicKey, itemI, itemQuantity, itemPrice, campaignId, "access_token", base_url, create_payment_uri, paymentMethod, installment, cardIssuer, tokenId);
+                          }
+                          var success = function(payment) {
+                            console.log(JSON.parse(payment).id);
+                          };
+                          var failure = function() {
+                            alert("Error calling MercadoPago Plugin");
+                          };
                         </code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
