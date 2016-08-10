@@ -94,7 +94,7 @@
                                  <li><a href="f1.html#f1_identification_types">Tipos de documento</a></li>
                                  <li><a href="f1.html#f1_card_tokens">Tokenización de datos</a></li>
                                  <li><a href="f1.html#f1_bank_deals">Promociones</a></li>
-                                 <li><a href="f1.html#f1_instructions">Instrucciones</a></li>
+                                 <li><a href="f1.html#f1_instructions">Resultado de Pago</a></li>
                                  <li>
                                     <a href="f1.html#f1_merchant_server">MerchantServer</a>
                                     <ul>
@@ -357,6 +357,37 @@
                         var success = function(response) {
                            // Listo, armá tu UI para el listado de promociones
                            console.log(response);
+                        };
+                        var failure = function() {
+                           // UPS! Algo salió mal.
+                           alert("Error calling MercadoPago Plugin");
+                        };
+                        </code>
+                        <button class="copy-button">
+                           <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
+                        </button>
+                     </pre>
+                  </p>
+               </section>
+               <section class="docs-section" id="f1_instructions">
+                  <h3 class="title">Resultado de Pago</h3>
+                  <p>
+               Cuando el usuario elige pagar con tarjeta pueden ocurrir diferentes escenarios a la hora de procesar el pago. El pago puede estar aprobado, pero también pueden haber varios motivos por los cuales el pago puede ser rechazado. Estos casos pueden representar una carga errónea en el número de tarjeta, en el código de seguridad, la fecha de vencimiento, la falta de fondos para completar el pago, que la tarjeta no esté habilitada, que tu usuario deba llamar al emisor de la tarjeta para autorizar el pago, entre otros.
+
+               A su vez, cuando se elige otro tipo de medio de pago, este quedará pendiente a una acción a realizar por el usuario.
+
+               Ofrecemos un método en nuestra SDK que, dependiendo el tipo y estado del pago, mostramos una pantalla de resultados con toda la información necesaria para que tu usuario entienda si el pago fue aprobado, el por qué fue rechazado o qué debe hacer si el mismo se encuentra pendiente.
+                     El siguiente código hace el llamado a la API y convierte la respuesta en un listado de <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/BankDeal.java" target="_blank">BankDeal</a>.
+                  </p>
+                  <p>
+                     <pre class="snippet">
+                        <code class="line-numbers language-javascript">
+                        $scope.getPaymentResult = function(){
+                           var paymentId = 1202870;
+                           var paymentTypeId = "ticket";
+                           MercadoPago.getPaymentResult(publicKey, paymentId, paymentTypeId, success, failure);
+                        }
+                        var success = function(response) {
                         };
                         var failure = function() {
                            // UPS! Algo salió mal.

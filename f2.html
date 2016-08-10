@@ -509,7 +509,7 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                   </div>
                </section>
                <section class="docs-section" id="f2_payment_results_cards">
-                  <h3 class="title">Resultados de pago - Tarjetas</h3>
+                  <h3 class="title">Resultados de pago</h3>
                   <p>
                      Cuando el usuario elige pagar con tarjeta pueden ocurrir diferentes escenarios a la hora de procesar el pago. El pago puede estar aprobado, pero también pueden haber varios motivos por los cuales el pago puede ser rechazado. Estos casos pueden representar una carga errónea en el número de tarjeta, en el código de seguridad, la fecha de vencimiento, la falta de fondos para completar el pago, que la tarjeta no esté habilitada, que tu usuario deba llamar al emisor de la tarjeta para autorizar el pago, entre otros.
                   </p>
@@ -520,7 +520,7 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
                         $scope.showPaymentResult = function(){
-                          var paymentId = 1200753;
+                          var payment; // respuesta de pago
                           var paymentTypeId = "ticket";
                           MercadoPago.showPaymentResult(publicKey, paymentId, paymentTypeId, success, failure);
                         };
@@ -539,34 +539,7 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                      <img src="./img/phone/payment_results_cards.gif" class="img-phone-case"></img>
                   </div>
                </section>
-               <section class="docs-section" id="f2_instructions">
-                  <h3 class="title">Resultados de pago - Medios offline</h3>
-                  <p>
-                     Si el usuario eligió un medio de pago offline (efectivo o transferencia bancaria) te aconsejamos que le indiques los pasos que debe realizar para poder completar el pago, ya que el mismo se encuentra en estado pendiente.
-                  </p>
-                  <p>
-                     Hace un tiempo le contábamos los pasos en un mail al usuario, pero ahora te damos la posibilidad de que vos mismo puedas contarle dentro de tu aplicación cómo puede hacer para concretar el pago y tener más rápido su producto.
-                  </p>
-                  <p>
-                     Ofrecemos una pantalla de instrucciones que recibe un pago y obtiene los pasos a seguir para el medio de pago que seleccionó el usuario.
-                  </p>
-                  <p>
-                     <pre class="snippet">
-                        <code class="line-numbers language-javascript">
-
-$scope.startInstructions = function () {
-  MercadoPagoService.startInstructions(callback, cashPaymentInfo);
-};
-                        </code>
-                        <button class="copy-button">
-                           <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
-                        </button>
-                     </pre>
-                  </p>
-                  <div class="doc-example ionic">
-                     <img src="./img/phone/instructions.png" class="img-phone-case"></img>
-                  </div>
-               </section>
+               
                <section class="docs-section" id="f2_create_payment">
                   <h3 class="title">Crear pagos</h3>
                   <p>
