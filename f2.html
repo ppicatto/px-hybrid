@@ -176,8 +176,9 @@
                             var amount = 200;
                             var color = "ABCDEF";
                             var blackFont = true;
+                            var site = "ARGENTINA";
 
-                            MercadoPago.showPaymentVault(publicKey, amount, color, blackFont, success, failure);
+                            MercadoPago.showPaymentVault(publicKey, site, amount, color, blackFont, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
@@ -257,8 +258,9 @@
                             var amount = 200;
                             var color = "ABCDEF";
                             var blackFont = true;
+                            var site = "ARGENTINA";
 
-                            MercadoPago.showCardWithInstallments(publicKey, amount, color, blackFont, success, failure);
+                            MercadoPago.showCardWithInstallments(publicKey, site, amount, color, blackFont, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
@@ -372,8 +374,9 @@
                             var amount = 200;
                             var color = "ABCDEF";
                             var blackFont = true;
+                            var site = "ARGENTINA";
 
-                            MercadoPago.showInstallments(publicKey, amount, paymentMethod, issuerId, color, blackFont, success, failure);
+                            MercadoPago.showInstallments(publicKey, site, amount, paymentMethod, issuerId, color, blackFont, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
