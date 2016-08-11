@@ -26,6 +26,7 @@ import com.mercadopago.model.Instruction;
 import com.mercadopago.model.PayerCost;
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.model.PaymentResult;
 import com.mercadopago.model.Token;
 
 import com.mercadopago.util.JsonUtil;
@@ -81,24 +82,41 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             
             DecorationPreference decorationPreference = new DecorationPreference();
             
-            if (data.getString(2) != "null") {
-                decorationPreference.setBaseColor(data.getString(2));
+            if (data.getString(3) != "null") {
+                decorationPreference.setBaseColor(data.getString(3));
                 
             }
-            if (data.getBoolean(3)){
+            if (data.getBoolean(4)){
                 decorationPreference.enableDarkFont();
             }
-            
+
+
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
-            BigDecimal b = new BigDecimal(data.getInt(1));
-            new MercadoPago.StartActivityBuilder()
+            BigDecimal amount = new BigDecimal(data.getInt(2));
+            MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
             .setPublicKey(data.getString(0))
             .setDecorationPreference(decorationPreference)
-            .setAmount(b)
-            .setSite(Sites.ARGENTINA)
-            .startPaymentVaultActivity();
+            .setAmount(amount);
+
+            if (data.getString(1).toUpperCase().equals("ARGENTINA")){
+                mp.setSite(Sites.ARGENTINA);
+            } else if (data.getString(1).toUpperCase().equals("BRASIL")){
+                mp.setSite(Sites.BRASIL);
+            } else if (data.getString(1).toUpperCase().equals("CHILE")){
+                mp.setSite(Sites.CHILE);
+            } else if (data.getString(1).toUpperCase().equals("COLOMBIA")){
+                mp.setSite(Sites.COLOMBIA);
+            } else if (data.getString(1).toUpperCase().equals("MEXICO")){
+                mp.setSite(Sites.MEXICO);
+            } else if (data.getString(1).toUpperCase().equals("USA")){
+                mp.setSite(Sites.USA);
+            } else if (data.getString(1).toUpperCase().equals("VENEZUELA")){
+                mp.setSite(Sites.VENEZUELA);
+            }
+
+            mp.startPaymentVaultActivity();
             
             return true;
             
@@ -130,22 +148,36 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             
             DecorationPreference decorationPreference = new DecorationPreference();
             
-            if (data.getString(2) != "null") {
-                decorationPreference.setBaseColor(data.getString(2));
+            if (data.getString(3) != "null") {
+                decorationPreference.setBaseColor(data.getString(3));
                 
             }
-            if (data.getBoolean(3)){
+            if (data.getBoolean(4)){
                 decorationPreference.enableDarkFont();
             }
             
-            BigDecimal amount = new BigDecimal(data.getInt(1));
-            new MercadoPago.StartActivityBuilder()
+            BigDecimal amount = new BigDecimal(data.getInt(2));
+            MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
             .setPublicKey(data.getString(0))
             .setDecorationPreference(decorationPreference)
-            .setAmount(amount)
-            .setSite(Sites.ARGENTINA)
-            .startCardVaultActivity();
+            .setAmount(amount);
+            if (data.getString(1).toUpperCase().equals("ARGENTINA")){
+                mp.setSite(Sites.ARGENTINA);
+            } else if (data.getString(1).toUpperCase().equals("BRASIL")){
+                mp.setSite(Sites.BRASIL);
+            } else if (data.getString(1).toUpperCase().equals("CHILE")){
+                mp.setSite(Sites.CHILE);
+            } else if (data.getString(1).toUpperCase().equals("COLOMBIA")){
+                mp.setSite(Sites.COLOMBIA);
+            } else if (data.getString(1).toUpperCase().equals("MEXICO")){
+                mp.setSite(Sites.MEXICO);
+            } else if (data.getString(1).toUpperCase().equals("USA")){
+                mp.setSite(Sites.USA);
+            } else if (data.getString(1).toUpperCase().equals("VENEZUELA")){
+                mp.setSite(Sites.VENEZUELA);
+            }
+            mp.startCardVaultActivity();
             
             return true;
             
@@ -202,29 +234,43 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             callback = callbackContext;
             DecorationPreference decorationPreference = new DecorationPreference();
             
-            if (data.getString(4) != "null") {
-                decorationPreference.setBaseColor(data.getString(4));
+            if (data.getString(5) != "null") {
+                decorationPreference.setBaseColor(data.getString(5));
                 
             }
-            if (data.getBoolean(5)){
+            if (data.getBoolean(6)){
                 decorationPreference.enableDarkFont();
             }
             
             PaymentMethod paymentMethod = new PaymentMethod();
-            paymentMethod.setId(data.getString(2));
+            paymentMethod.setId(data.getString(3));
             Issuer issuer = new Issuer();
-            issuer.setId(data.getLong(3));
-            BigDecimal amount = new BigDecimal(data.getInt(1));
+            issuer.setId(data.getLong(4));
+            BigDecimal amount = new BigDecimal(data.getInt(2));
             
-            new MercadoPago.StartActivityBuilder()
+            MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
             .setActivity(this.cordova.getActivity())
             .setPublicKey(data.getString(0))
-            .setSite(Sites.ARGENTINA)
             .setDecorationPreference(decorationPreference)
             .setAmount(amount)
             .setIssuer(issuer)
-            .setPaymentMethod(paymentMethod)
-            .startInstallmentsActivity();
+            .setPaymentMethod(paymentMethod);
+            if (data.getString(1).toUpperCase().equals("ARGENTINA")){
+                mp.setSite(Sites.ARGENTINA);
+            } else if (data.getString(1).toUpperCase().equals("BRASIL")){
+                mp.setSite(Sites.BRASIL);
+            } else if (data.getString(1).toUpperCase().equals("CHILE")){
+                mp.setSite(Sites.CHILE);
+            } else if (data.getString(1).toUpperCase().equals("COLOMBIA")){
+                mp.setSite(Sites.COLOMBIA);
+            } else if (data.getString(1).toUpperCase().equals("MEXICO")){
+                mp.setSite(Sites.MEXICO);
+            } else if (data.getString(1).toUpperCase().equals("USA")){
+                mp.setSite(Sites.USA);
+            } else if (data.getString(1).toUpperCase().equals("VENEZUELA")){
+                mp.setSite(Sites.VENEZUELA);
+            }
+            mp.startInstallmentsActivity();
             
             return true;
         } else {
@@ -277,32 +323,20 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .startCongratsActivity();
                 
                 return true;
-            } else if (action.equals("showInstructions")) {
+            } else if (action.equals("showPaymentResult")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
-                DecorationPreference decorationPreference = new DecorationPreference();
-                
-                if (data.getString(3) != "null") {
-                    decorationPreference.setBaseColor(data.getString(3));
-                    
-                }
-                if (data.getBoolean(4)) {
-                    decorationPreference.enableDarkFont();
-                }
-                
-                Payment payment = new Payment();
-                payment.setId(data.getLong(1));
+
+                Payment payment =JsonUtil.getInstance().fromJson(data.getString(1), Payment.class);
                 PaymentMethod paymentMethod = new PaymentMethod();
                 paymentMethod.setPaymentTypeId(data.getString(2));
-                
+
                 new MercadoPago.StartActivityBuilder()
                 .setActivity(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .setPayment(payment)
-                .setDecorationPreference(decorationPreference)
                 .setPaymentMethod(paymentMethod)
-                .startInstructionsActivity();
+                .startPaymentResultActivity();
                 
                 return true;
             } else if (action.equals("createPayment")) {
@@ -522,7 +556,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 });
                 return true;
                 
-            } else if (action.equals("getInstructions")) {
+            } else if (action.equals("getPaymentResult")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
                 
@@ -534,13 +568,13 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(data.getString(0))
                 .build();
                 
-                mercadoPago.getInstructions(paymentId, paymentTypeId, new Callback<Instruction>() {
+                mercadoPago.getPaymentResult(paymentId, paymentTypeId, new Callback<PaymentResult>() {
                     @Override
-                    public void success(Instruction instruction) {
+                    public void success(PaymentResult paymentResult) {
                         
                         Gson gson = new Gson();
-                        String mpinstruction = gson.toJson(instruction);
-                        callback.success(mpinstruction);
+                        String mpPaymentResult = gson.toJson(paymentResult);
+                        callback.success(mpPaymentResult);
                     }
                     
                     @Override

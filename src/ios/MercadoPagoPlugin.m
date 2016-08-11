@@ -195,7 +195,7 @@
         
     }];
 }
-- (void)getInstructions:(CDVInvokedUrlCommand*)command
+- (void)getPaymentResult:(CDVInvokedUrlCommand*)command
 {
     [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
     NSString* callbackId = [command callbackId];
@@ -262,8 +262,7 @@
     }else {
         [MercadoPagoContext setLightTextColor];
     }
-    
-    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:1]doubleValue] currencyId:@"ARS" paymentPreference:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
+    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:1]doubleValue] paymentPreference:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
         //NSString *jsonToken = [token toJSONString];
@@ -527,27 +526,22 @@
     
     [self showInNavigationController:promo];
 }
-- (void)showInstructions:(CDVInvokedUrlCommand*)command
+- (void)showPaymentResult:(CDVInvokedUrlCommand*)command
 {
     [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
     NSString* callbackId = [command callbackId];
     
-    if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
-    }
-    if ([[[command arguments] objectAtIndex:4]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    Payment *payment = [[Payment alloc]init];
-    payment._id= [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:1]];
+//    Payment *payment = [[Payment alloc]init];
+//    payment._id= [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:1]];
+    
+
+    
+    NSData *data = [[[command arguments] objectAtIndex:1] dataUsingEncoding:NSUTF8StringEncoding];
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];;
+
+    Payment *payment = [Payment fromJSON:json];
     
     UINavigationController *navInstructions = [MPStepBuilder startInstructionsStep:payment paymentTypeId:@"ticket" callback:^(Payment *  payment) {
         
@@ -555,7 +549,7 @@
     }];
     
     [rootViewController presentViewController:navInstructions animated:YES completion:^{}];
-}
+ }
 
 -(void) showInNavigationController:(UIViewController *)viewControllerBase{
     
