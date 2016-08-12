@@ -64,12 +64,18 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 paymentPreference.setDefaultInstallments(data.getInt(1));
             }
             List<String> excludedPaymentTypes = new ArrayList();
-            excludedPaymentTypes.add("TICKET");
+            JSONArray paymentTypesJson = data.getJSONArray(3);
+            for (int i = 0; i<paymentTypesJson.length(); i++ ){
+                excludedPaymentTypes.add(paymentTypesJson.getString(i));
+            }
 
             paymentPreference.setExcludedPaymentTypeIds(excludedPaymentTypes);
-            
+
             List<String> excludedPaymentMethods = new ArrayList();
-            excludedPaymentMethods.add(PaymentMethods.ARGENTINA.VISA);
+            JSONArray paymentMethodJson = data.getJSONArray(2);
+            for (int i = 0; i<paymentMethodJson.length(); i++ ){
+                excludedPaymentMethods.add(paymentMethodJson.getString(i));
+            }
 
             paymentPreference.setExcludedPaymentMethodIds(excludedPaymentMethods);
             callbackContext.success(JsonUtil.getInstance().toJson(paymentPreference));
@@ -125,6 +131,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(5),PaymentPreference.class))
                     .setAmount(amount);
 
+
             if (data.getString(1).toUpperCase().equals("ARGENTINA")){
                 mp.setSite(Sites.ARGENTINA);
             } else if (data.getString(1).toUpperCase().equals("BRASIL")){
@@ -164,7 +171,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .setDecorationPreference(decorationPreference)
                     .setPublicKey(data.getString(0))
                     .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(3),PaymentPreference.class))
-
                     .setInstallmentsEnabled(false)
                     .startCardVaultActivity();
             
@@ -286,7 +292,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .setAmount(amount)
                     .setIssuer(issuer)
                     .setPaymentMethod(paymentMethod);
-
             if (data.getString(1).toUpperCase().equals("ARGENTINA")){
                 mp.setSite(Sites.ARGENTINA);
             } else if (data.getString(1).toUpperCase().equals("BRASIL")){
@@ -328,6 +333,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         .startBankDealsActivity();
                 
                 return true;
+
             } else if (action.equals("showPaymentResult")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;

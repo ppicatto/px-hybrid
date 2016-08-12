@@ -5,7 +5,7 @@ android {
 }
 repositories{
 	maven {
-           url 'https://dl.bintray.com/matiasgualino/maven'
+           url 'https://dl.bintray.com/matiasromar/maven'
      }
 
 }

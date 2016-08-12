@@ -862,11 +862,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK13MPFlowBuilder")
 @interface MPFlowBuilder : NSObject
 + (VaultViewController * _Nonnull)startVaultViewController:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, NSString * _Nullable tokenId, Issuer * _Nullable issuer, NSInteger installments))callback;
 + (MPNavigationController * _Nonnull)startCheckoutViewController:(NSString * _Nonnull)preferenceId callback:(void (^ _Nonnull)(Payment * _Nonnull))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
-<<<<<<< HEAD
 + (MPNavigationController * _Nonnull)startPaymentVaultViewController:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer, PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
-=======
-+ (MPNavigationController * _Nonnull)startPaymentVaultViewController:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer, PayerCost * _Nullable payerCost))callback;
->>>>>>> origin/plugin
 + (MPNavigationController * _Nonnull)startCardFlow:(PaymentPreference * _Nullable)paymentPreference amount:(double)amount paymentMethods:(NSArray<PaymentMethod *> * _Nullable)paymentMethods callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer, PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -973,11 +969,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK13MPStepBuilder")
 + (InstructionsViewController * _Nonnull)startInstructionsStep:(Payment * _Nonnull)payment paymentTypeId:(NSString * _Nonnull)paymentTypeId callback:(void (^ _Nonnull)(Payment * _Nonnull payment))callback;
 + (PromoViewController * _Nonnull)startPromosStep:(void (^ _Nullable)(void))callback;
 + (MPNavigationController * _Nonnull)startCreditCardForm:(PaymentPreference * _Nullable)paymentSettings amount:(double)amount paymentMethods:(NSArray<PaymentMethod *> * _Nullable)paymentMethods token:(Token * _Nullable)token callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
-<<<<<<< HEAD
 + (PayerCostViewController * _Nonnull)startPayerCostForm:(PaymentMethod * _Nullable)paymentMethod issuer:(Issuer * _Nullable)issuer token:(Token * _Nonnull)token amount:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference installment:(Installment * _Nullable)installment callback:(void (^ _Nonnull)(PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
-=======
-+ (PayerCostViewController * _Nonnull)startPayerCostForm:(PaymentMethod * _Nullable)paymentMethod issuer:(Issuer * _Nullable)issuer token:(Token * _Nonnull)token amount:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference installment:(Installment * _Nullable)installment callback:(void (^ _Nonnull)(PayerCost * _Nullable payerCost))callback;
->>>>>>> origin/plugin
 + (IdentificationViewController * _Nonnull)startIdentificationForm:(void (^ _Nonnull)(Identification * _Nullable identification))callback;
 + (IssuersViewController * _Nonnull)startIssuersStep:(PaymentMethod * _Nonnull)paymentMethod callback:(void (^ _Nonnull)(Issuer * _Nonnull issuer))callback;
 + (IssuerCardViewController * _Nonnull)startIssuerForm:(PaymentMethod * _Nonnull)paymentMethod cardToken:(CardToken * _Nonnull)cardToken issuerList:(NSArray<Issuer *> * _Nullable)issuerList callback:(void (^ _Nonnull)(Issuer * _Nullable issuer))callback;
@@ -1076,7 +1068,8 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK18MercadoPagoContext")
 + (NSString * _Nonnull)getLanguage;
 + (Currency * _Nonnull)getCurrency;
 - (NSString * _Null_unspecified)publicKey;
-+ (void)setupPrimaryColor:(UIColor * _Nonnull)color;
++ (void)setupPrimaryColor:(UIColor * _Nonnull)color complementaryColor:(UIColor * _Nullable)complementaryColor;
++ (void)setupComplementaryColor:(UIColor * _Nonnull)color;
 + (void)setDarkTextColor;
 + (void)setLightTextColor;
 + (void)setPrivateKey:(NSString * _Nonnull)private_key;
@@ -1668,6 +1661,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK18TransactionDetails")
 
 @interface UIColor (SWIFT_EXTENSION(MercadoPagoSDK))
 + (UIColor * _Nonnull)UIColorFromRGB:(NSUInteger)rgbValue;
++ (UIColor * _Nonnull)mpDefaultColor;
 + (UIColor * _Nonnull)errorCellColor;
 + (UIColor * _Nonnull)greenOkColor;
 + (UIColor * _Nonnull)redFailureColor;
@@ -1684,7 +1678,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK18TransactionDetails")
 + (UIColor * _Nonnull)installments;
 + (UIColor * _Nonnull)systemFontColor;
 + (UIColor * _Nonnull)primaryColor;
-+ (UIColor * _Nonnull)secundaryColor;
++ (UIColor * _Nonnull)complementaryColor;
 @end
 
 
