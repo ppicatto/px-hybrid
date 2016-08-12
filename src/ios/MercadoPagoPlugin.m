@@ -601,7 +601,7 @@
     }];
     
     [rootViewController presentViewController:navInstructions animated:YES completion:^{}];
-}
+ }
 
 -(void) showInNavigationController:(UIViewController *)viewControllerBase{
     
