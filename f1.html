@@ -161,9 +161,9 @@
                            // Listo, armá tu UI para el listado de pagos
                            console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
 
                         </code>
@@ -188,15 +188,15 @@
                         $scope.getIssuers = function(){
                            var paymentMethod = "visa";
                            var bin = null;
-                           MercadoPago.getIssuers(publicKey, paymentMehtod, bin, success, failure);
+                           MercadoPago.getIssuers(publicKey, paymentMethod, bin, success, failure);
                         }
                         var success = function(response) {
                            // Listo, armá tu UI para el listado de bancos
                            console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">
@@ -235,9 +235,9 @@
                            // Listo, armá tu UI para el listado de cuotas
                            console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">
@@ -266,9 +266,9 @@
                            // Listo, armá tu UI para el listado de tipos de documentos
                            console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">
@@ -296,15 +296,15 @@
                            var docType = "DNI";
                            var docNumber = "12345678";
                            
-                           MercadoPago.createToken(publicKey, cardNumer, expMonth, expYear, securityCode, name, docType, docNumber, success, failure);
+                           MercadoPago.createToken(publicKey, cardNumber, expMonth, expYear, securityCode, name, docType, docNumber, success, failure);
                         }
                         var success = function(response) {
                            // Ahora podes hacer un pago!
                            console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">
@@ -358,9 +358,9 @@
                            // Listo, armá tu UI para el listado de promociones
                            console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">
@@ -388,10 +388,11 @@
                            MercadoPago.getPaymentResult(publicKey, paymentId, paymentTypeId, success, failure);
                         }
                         var success = function(response) {
+                           console.log(response);
                         };
-                        var failure = function() {
-                           // UPS! Algo salió mal.
-                           alert("Error calling MercadoPago Plugin");
+                        var failure = function(error) {
+                           // Error llamando a MercadoPago Plugin
+                           console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">

@@ -169,7 +169,7 @@
 
                           $scope.startPaymentVault = function() {
                             var amount = 200;
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
                             var site = "ARGENTINA";
                             var paymentPreference = null;
@@ -181,16 +181,17 @@
                           var success = function(response) {
                             if (response != null){
                                 var token = JSON.parse(response).token;
-                                var paymentMethod = JSON.parse(response).paymentMethod;
+                                var paymentMethod = JSON.parse(response).payment_method;
                                 var issuer = JSON.parse(response).issuer;
-                                var payerCost = JSON.parse(response).payerCost;
+                                var payerCost = JSON.parse(response).payer_cost;
                                 // Listo! Envía los datos a tu servidor!
                             } else {
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };
                         </code>
                         <button class="copy-button">
@@ -213,7 +214,7 @@
                      <pre class="snippet">
                      <code class="line-numbers language-javascript">
                           $scope.showCardWithoutInstallments = function() {
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
                             var paymentPreference = null;
 
@@ -222,15 +223,16 @@
                           var success = function(response) {
                             if (response != null){
                                 var token = JSON.parse(response).token;
-                                var paymentMethod = JSON.parse(response).paymentMethod;
+                                var paymentMethod = JSON.parse(response).payment_method;
                                 var issuer = JSON.parse(response).issuer;
                                 // Listo! Envía los datos a tu servidor!
                             } else {
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };
                         </code>
                         <button class="copy-button">
@@ -257,7 +259,7 @@
                      <code class="line-numbers language-javascript">
                           $scope.showCardWithInstallments = function() {
                             var amount = 200;
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
                             var site = "ARGENTINA";
                             var paymentPreference = null;
@@ -267,16 +269,17 @@
                           var success = function(response) {
                             if (response != null){
                                 var token = JSON.parse(response).token;
-                                var paymentMethod = JSON.parse(response).paymentMethod;
+                                var paymentMethod = JSON.parse(response).payment_method;
                                 var issuer = JSON.parse(response).issuer;
-                                var payerCost = JSON.parse(response).payerCost;
+                                var payerCost = JSON.parse(response).payer_cost;
                                 // Listo! Envía los datos a tu servidor!
                             } else {
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };
                         </code>
                         <button class="copy-button">
@@ -299,7 +302,7 @@
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
                           $scope.showPaymentMethods = function() {
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
                             var paymentPreference = null;
 
@@ -307,14 +310,15 @@
                           };
                           var success = function(response) {
                             if (response != null){
-                                var paymentMethod = JSON.parse(response);
+                                var paymentMethodId = JSON.parse(response).id;
                                 // Ahora puedes continuar con tu flujo.
                             } else {
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -338,7 +342,7 @@
                         <code class="line-numbers language-javascript">
                           $scope.showIssuers = function() {
                             var paymentMethod = "visa";
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
 
                             MercadoPago.showIssuers(publicKey, paymentMethod, color, blackFont, success, failure);
@@ -351,8 +355,9 @@
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -378,7 +383,7 @@
                             var paymentMethod = "visa";
                             var issuerId = "326";
                             var amount = 200;
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
                             var site = "ARGENTINA";
                             var paymentPreference = null;
@@ -393,8 +398,9 @@
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };</code>
                         <button class="copy-button">
                            <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
@@ -414,7 +420,7 @@
                      <pre class="snippet">
                         <code class="line-numbers language-javascript">
                           $scope.showBankDeals = function() {
-                            var color = "ABCDEF";
+                            var color = "#ABCDEF";
                             var blackFont = true;
 
                             MercadoPago.showBankDeals(publicKey, color, blackFont, success, failure);
@@ -427,8 +433,9 @@
                                 // El usuario corto el flujo
                             }
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };
                         </code>
                         <button class="copy-button">
@@ -539,7 +546,8 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                         var success = function(response) {
                         };
                         var failure = function() {
-                          alert("Error calling MercadoPago Plugin");
+                            // Error llamando a MercadoPago Plugin
+                            console.log("Error MercadoPagoPlugin : " + error);
                         };
                         </code>
                         <button class="copy-button">
@@ -582,8 +590,9 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                           var success = function(payment) {
                             console.log(JSON.parse(payment).id);
                           };
-                          var failure = function() {
-                            alert("Error calling MercadoPago Plugin");
+                          var failure = function(error) {
+                              // Error llamando a MercadoPago Plugin
+                              console.log("Error MercadoPagoPlugin : " + error);
                           };
                         </code>
                         <button class="copy-button">
@@ -630,7 +639,8 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                           paymentPref = response
                         };
                         var failure = function() {
-                          alert("Error calling MercadoPago Plugin");
+                            // Error llamando a MercadoPago Plugin
+                            console.log("Error MercadoPagoPlugin : " + error);
                         };
 
                         //Agrega el paymentPreference a cualquier componente
