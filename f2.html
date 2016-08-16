@@ -74,14 +74,9 @@
                                  <li><a href="f2.html#f2_card_issuers">Bancos</a></li>
                                  <li><a href="f2.html#f2_payer_costs">Cuotas</a></li>
                                  <li><a href="f2.html#f2_bank_deals">Promociones</a></li>
-                                 <li>
-                                    <a href="f2.html#f2_payment_result">Resultados de pago</a>
-                                    <ul>
-                                       <li><a href="f2.html#f2_payment_results_cards">Pagos con tarjeta</a></li>
-                                       <li><a href="f2.html#f2_instructions">Pagos en efectivo</a></li>
-                                    </ul>
-                                 </li>
-                                 <li><a href="f2.html#f2_create_payment">Crear pagos</a></li>
+                                 <li><a href="f2.html#f2_create_payment">Creación de pago</a></li>
+                                 <li><a href="f2.html#f2_payment_result">Resultado de pagos</a></li>
+                                 <li><a href="f2.html#f2_component_customization">Customiza los componentes</a></li>
                               </ul>
                            </li>
                            <li>
@@ -177,15 +172,19 @@
                             var color = "ABCDEF";
                             var blackFont = true;
                             var site = "ARGENTINA";
+                            var paymentPreference = null;
 
-                            MercadoPago.showPaymentVault(publicKey, site, amount, color, blackFont, success, failure);
+                            MercadoPago.showPaymentVault(publicKey, site, amount, color, blackFont, paymentPreference, success, failure);
                           };
+
+                          // Espera los resultados
                           var success = function(response) {
                             if (response != null){
                                 var token = JSON.parse(response).token;
                                 var paymentMethod = JSON.parse(response).paymentMethod;
                                 var issuer = JSON.parse(response).issuer;
                                 var payerCost = JSON.parse(response).payerCost;
+                                // Listo! Envía los datos a tu servidor!
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -216,14 +215,16 @@
                           $scope.showCardWithoutInstallments = function() {
                             var color = "ABCDEF";
                             var blackFont = true;
+                            var paymentPreference = null;
 
-                            MercadoPago.showCardWithoutInstallments(publicKey, color, blackFont, success, failure);
+                            MercadoPago.showCardWithoutInstallments(publicKey, color, blackFont, paymentPreference, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
                                 var token = JSON.parse(response).token;
                                 var paymentMethod = JSON.parse(response).paymentMethod;
                                 var issuer = JSON.parse(response).issuer;
+                                // Listo! Envía los datos a tu servidor!
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -259,8 +260,9 @@
                             var color = "ABCDEF";
                             var blackFont = true;
                             var site = "ARGENTINA";
+                            var paymentPreference = null;
 
-                            MercadoPago.showCardWithInstallments(publicKey, site, amount, color, blackFont, success, failure);
+                            MercadoPago.showCardWithInstallments(publicKey, site, amount, color, blackFont, paymentPreference, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
@@ -268,6 +270,7 @@
                                 var paymentMethod = JSON.parse(response).paymentMethod;
                                 var issuer = JSON.parse(response).issuer;
                                 var payerCost = JSON.parse(response).payerCost;
+                                // Listo! Envía los datos a tu servidor!
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -298,12 +301,14 @@
                           $scope.showPaymentMethods = function() {
                             var color = "ABCDEF";
                             var blackFont = true;
+                            var paymentPreference = null;
 
-                            MercadoPago.showPaymentMethods(publicKey, color, blackFont, success, failure);
+                            MercadoPago.showPaymentMethods(publicKey, color, blackFont, paymentPreference, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
                                 var paymentMethod = JSON.parse(response);
+                                // Ahora puedes continuar con tu flujo.
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -341,6 +346,7 @@
                           var success = function(response) {
                             if (response != null){
                                 var issuer = JSON.parse(response);
+                                // Ahora puedes continuar con tu flujo.
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -375,12 +381,14 @@
                             var color = "ABCDEF";
                             var blackFont = true;
                             var site = "ARGENTINA";
+                            var paymentPreference = null;
 
-                            MercadoPago.showInstallments(publicKey, site, amount, paymentMethod, issuerId, color, blackFont, success, failure);
+                            MercadoPago.showInstallments(publicKey, site, amount, paymentMethod, issuerId, color, blackFont, paymentPreference, success, failure);
                           };
                           var success = function(response) {
                             if (response != null){
                                 var instalments = JSON.parse(response);
+                                // Ahora puedes continuar con tu flujo.
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -414,6 +422,7 @@
                           var success = function(response) {
                             if (response != null){
                                 var bankDeals = JSON.parse(response);
+                                // Ahora puedes continuar con tu flujo.
                             } else {
                                 // El usuario corto el flujo
                             }
@@ -586,9 +595,82 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                         <em>*</em> <a href="https://www.mercadopago.com.ar/developers/es/related/custom-additional-info/" target="_blank">Envía tantos datos del pago como puedas</a>. Mientras más información nos envíes, mejor será tu experiencia y la de tus usuarios.
                   </p>
                </section>
+               <section class="docs-section" id="f2_component_customization">
+                  <h3 class="title">Customiza los componentes</h3>
+                  <p>
+                     También puedes excluír medios de pago, tipos de medios de pago, elegir un máximo de cuotas o una cantidad de cuotas por default.
+                  </p>
+                  <p>
+                     Puedes cambiar el color de nuestros componentes, y elegir entre una fuente clara u oscura.
+                  </p>
+                  <p><b>Configuraciones de medios de pago</b></p>
+                  <p>
+                    Nuestra SDK cuenta con un objeto "PaymentPreference" el cual puede enviarse a cada componente. Este objeto representa tu configuración de cómo quieres customizar la forma de cobrar. Ejemplos:
+                  </p>
+                  <p>
+                     <pre class="snippet">
+                        <code class="line-numbers language-javascript">
+
+                        var paymentPref = null;
+                        $scope.setPaymentPreference  = function () {
+
+                          //Agrega una cantidad máxima de cuotas aceptadas si lo deseas
+                          var maxIntallments = 3;
+                          //Agrega una cantidad de cuotas por default si lo deseas
+                          var defaultIntallments = 0; //Valor nulo
+                          //Agrega una lista de exclusiones de tipos de medio de pago si lo deseas
+                          var exPaymentMethods = ["visa", "amex"];
+                          //Agrega una lista de exclusiones de tipos de medios de pago si lo deseas
+                          var exPaymentType =["ticket"]; 
+
+                          MercadoPago.setPaymentPreference(maxIntallments, 0, exPaymentMethods, exPaymentType, success, failure);
+                        } 
+                        var success = function(response) {
+                          // Guarda el objeto paymentPreference
+                          paymentPref = response
+                        };
+                        var failure = function() {
+                          alert("Error calling MercadoPago Plugin");
+                        };
+
+                        //Agrega el paymentPreference a cualquier componente
+                        MercadoPago.showPaymentVault(publicKey, site, amount, color, blackFont, paymentPref, success, failure);
+
+                        </code>
+                        <button class="copy-button">
+                           <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
+                        </button>
+                     </pre>
+                  </p>
+                  <p><b>Decoración</b></p>
+                  <p>
+                    Nuestra SDK cuenta con un objeto "DecorationPreference" el cual puede enviarse a cada componente. Este objeto te permite elegir un color base, a partir del cual decoramos las distintas partes de los componentes. Además, si tu color base es claro, puedes habilitar una fuente oscura.
+                  </p>
+                  <p>
+                     <pre class="snippet">
+                        <code class="line-numbers language-javascript">
+
+                        var color = "#ABCDEF";
+                         var blackFont = true;
+
+                        $scope.startCheckout = function(){
+                            MercadoPago.startCheckout(publicKey, prefId, color, blackFont, success, failure);
+                        }
+
+                        </code>
+                        <button class="copy-button">
+                           <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
+                        </button>
+                     </pre>
+                  </p>
+                  <div class="doc-example ionic">
+                     <img src="./img/phone/payment_results_cards.gif" class="img-phone-case"></img>
+                  </div>
+               </section>
             </div>
          </div>
       </div>
+
 
       <footer class="footer">
 

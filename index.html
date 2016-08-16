@@ -163,8 +163,10 @@
                      var publicKey = "TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a";
                      var prefId = "176234066-fc6d5d5e-2671-4073-ab49-362a98b720b5";
 
+                    // Método ejecutado al hacer clic en el botón
                     $scope.startCheckout = function(){
-                        MercadoPago.startCheckout(publicKey, prefId, null, false, success, failure);
+                       // Iniciar el checkout de MercadoPago
+                      MercadoPago.startCheckout(publicKey, prefId, null, false, success, failure);
                     }
                      </code>
                      <button class="copy-button">
@@ -178,7 +180,9 @@
                   <br>
                     <pre class="snippet">
                      <code class="line-numbers language-javascript">
-                    var color = "#ABCDEF";
+                     //Puedes cambiar los colores
+                     var color = "#ABCDEF";
+                     //También puedes habilitar la fuente oscura
                      var blackFont = true;
 
                     $scope.startCheckout = function(){
@@ -221,13 +225,18 @@
                <div class="col-md-6 code">
                   <pre class="snippet">
                      <code class="line-numbers language-javascript">
-    var success = function(payment) {
-      console.log(JSON.parse(payment).id);
-    };
-
-    var failure = function() {
-      alert("Error calling MercadoPago Plugin");
-    };
+                      // Espera los resultados del checkout
+                      var success = function(payment) {
+                        if (payment != null){
+                            // Listo! El pago ya fue procesado por MP.
+                            console.log(JSON.parse(payment).id);
+                        } else {
+                            alert ("El usuario no concretó el pago.");
+                        }
+                      };
+                      var failure = function() {
+                        alert("Error calling MercadoPago Plugin");
+                      };
                      </code>
                      <button class="copy-button">
                         <img src="./img/clippy.svg" width="13" alt="Copy to clipboard">
