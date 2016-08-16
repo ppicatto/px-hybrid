@@ -17,14 +17,14 @@ MercadoPago.prototype.showCardWithInstallments = function(publicKey, site, amoun
 MercadoPago.prototype.showPaymentMethods = function(publicKey, color, blackFont, paymentPreference, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "showPaymentMethods", [publicKey, color, blackFont, paymentPreference]);
 };
-MercadoPago.prototype.showIssuers = function(publicKey, paymentMethod, color, blackFont, paymentPreference, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPago", "showIssuers", [publicKey, paymentMethod, color, blackFont, paymentPreference]);
+MercadoPago.prototype.showIssuers = function(publicKey, paymentMethod, color, blackFont, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "showIssuers", [publicKey, paymentMethod, color, blackFont]);
 };
 MercadoPago.prototype.showInstallments = function(publicKey, site, amount, paymentMethod, Issuer, color, blackFont, paymentPreference, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "showInstallments", [publicKey, site, amount, paymentMethod, Issuer, color, blackFont, paymentPreference]);
 };
-MercadoPago.prototype.showBankDeals = function(publicKey, color, blackFont, paymentPreference, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPago", "showBankDeals", [publicKey, color, blackFont, paymentPreference]);
+MercadoPago.prototype.showBankDeals = function(publicKey, color, blackFont, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "showBankDeals", [publicKey, color, blackFont]);
 };
 MercadoPago.prototype.createPayment = function(publicKey, itemID, itemQuantity, itemPrice, campaignId, accessToken, url, uri, paymentMethod, installment, cardIssuerId, tokenId, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "createPayment", [publicKey, itemID, itemQuantity, itemPrice, campaignId, accessToken, url, uri, paymentMethod, installment, cardIssuerId, tokenId]);

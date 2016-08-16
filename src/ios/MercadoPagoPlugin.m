@@ -47,10 +47,10 @@
     
     if ([[command arguments] objectAtIndex:2]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:100];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:3]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -269,10 +269,10 @@
     
     if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:4]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -332,10 +332,10 @@
     
     if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:4]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -386,10 +386,10 @@
     
     if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:2]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -437,10 +437,10 @@
     
     if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:2]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -472,10 +472,10 @@
     
     if ([[command arguments] objectAtIndex:2]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:3]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -523,10 +523,10 @@
     
     if ([[command arguments] objectAtIndex:5]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:5] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:6]boolValue]){
         [MercadoPagoContext setDarkTextColor];
@@ -559,10 +559,10 @@
     
     if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
-        [MercadoPagoContext setupPrimaryColor:color];
+        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:2]boolValue]){
         [MercadoPagoContext setDarkTextColor];
