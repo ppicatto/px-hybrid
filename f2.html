@@ -632,7 +632,7 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                           //Agrega una lista de exclusiones de tipos de medios de pago si lo deseas
                           var exPaymentType =["ticket"]; 
 
-                          MercadoPago.setPaymentPreference(maxIntallments, 0, exPaymentMethods, exPaymentType, success, failure);
+                          MercadoPago.setPaymentPreference(maxIntallments, defaultIntallments, exPaymentMethods, exPaymentType, success, failure);
                         } 
                         var success = function(response) {
                           // Guarda el objeto paymentPreference
