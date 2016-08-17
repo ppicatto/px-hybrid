@@ -435,7 +435,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -461,7 +461,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -490,7 +490,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -513,7 +513,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -538,7 +538,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -562,7 +562,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -590,7 +590,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     
                     @Override
                     public void failure(ApiException error) {
-                        callback.success(error.toString());
+                        callback.error(error.toString());
                     }
                 });
                 return true;
@@ -628,7 +628,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
                     .fromJson(data.getStringExtra("mpException"), MPException.class);
-                    callback.success(mpException.getMessage());
+                    callback.error(mpException.getMessage());
                 }
             }
         }   else if (requestCode == MercadoPago.CARD_VAULT_REQUEST_CODE) {
@@ -660,7 +660,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
                     .fromJson(data.getStringExtra("mpException"), MPException.class);
-                    callback.success(mpException.getMessage());
+                    callback.error(mpException.getMessage());
                 }
             }
         }else if(requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
@@ -673,7 +673,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
                     .fromJson(data.getStringExtra("mpException"), MPException.class);
-                    callback.success(mpException.getMessage());
+                    callback.error(mpException.getMessage());
                 }
             }
         } else if (requestCode == MercadoPago.ISSUERS_REQUEST_CODE) {
@@ -687,7 +687,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
                     .fromJson(data.getStringExtra("mpException"), MPException.class);
-                    callback.success(mpException.getMessage());
+                    callback.error(mpException.getMessage());
                 }
             }
         } else if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
@@ -701,7 +701,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
                     .fromJson(data.getStringExtra("mpException"), MPException.class);
-                    callback.success(mpException.getMessage());
+                    callback.error(mpException.getMessage());
                 }
             }
             
@@ -722,7 +722,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
                     .fromJson(data.getStringExtra("mpException"), MPException.class);
-                    callback.success(mpException.getMessage());
+                    callback.error(mpException.getMessage());
                 }
             }
         }
