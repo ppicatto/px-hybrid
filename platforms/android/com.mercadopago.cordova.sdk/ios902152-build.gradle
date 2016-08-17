@@ -1,17 +1,1 @@
-android {
-   defaultConfig {
-       multiDexEnabled true
-   }
-}
-repositories{
-	maven {
-           url 'https://dl.bintray.com/matiasromar/maven'
-     }
-
-}
- 
-
-
-dependencies {
-    compile ('com.mercadopago:sdk:1.0.0-rc1') { transitive = true }
-}
+../../../../plugin/src/android/build.gradle
