@@ -9,22 +9,15 @@
 
 + (UIColor *)colorwithHexString:(NSString *)hexStr alpha:(CGFloat)alpha;
 {
-    //-----------------------------------------
-    // Convert hex string to an integer
-    //-----------------------------------------
     unsigned int hexint = 0;
     
     // Create scanner
     NSScanner *scanner = [NSScanner scannerWithString:hexStr];
     
-    // Tell scanner to skip the # character
     [scanner setCharactersToBeSkipped:[NSCharacterSet
                                        characterSetWithCharactersInString:@"#"]];
     [scanner scanHexInt:&hexint];
     
-    //-----------------------------------------
-    // Create color object, specifying alpha
-    //-----------------------------------------
     UIColor *color =
     [UIColor colorWithRed:((CGFloat) ((hexint & 0xFF0000) >> 16))/255
                     green:((CGFloat) ((hexint & 0xFF00) >> 8))/255
@@ -36,7 +29,25 @@
 
 @end
 @implementation MercadoPagoPlugin
-
+- (void)setPaymentPreference:(CDVInvokedUrlCommand*)command
+{
+    NSString* callbackId = [command callbackId];
+    
+    PaymentPreference *pp = [[PaymentPreference alloc]init];
+    
+    NSArray *exPaymentMethods = [[command arguments] objectAtIndex:2];
+    pp.excludedPaymentMethodIds = exPaymentMethods;
+    NSArray *exPaymentTypes = [[command arguments] objectAtIndex:3];
+    pp.excludedPaymentTypeIds = exPaymentTypes;
+    //pp.maxAcceptedInstallments = [[[command arguments] objectAtIndex:0]integerValue];
+    
+    
+    CDVPluginResult* result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_OK
+                               messageAsString:[pp toJSONString]];
+    
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+}
 - (void)startCheckout:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = [command callbackId];
@@ -49,7 +60,7 @@
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:100];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:3]boolValue]){
@@ -98,7 +109,7 @@
     NSString* callbackId = [command callbackId];
     
     PaymentMethod *pm = [[PaymentMethod alloc]init];
-    pm._id=@"visa";
+    pm._id = @"visa";
     [MPServicesBuilder getIssuers:pm bin:nil success:^(NSArray<Issuer *> *issuers) {
         
         CDVPluginResult* result = [CDVPluginResult
@@ -117,10 +128,9 @@
     [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
     NSString* callbackId = [command callbackId];
     
-    Issuer *is =[[ Issuer alloc]init];
+    Issuer *is = [[ Issuer alloc]init];
     
     is._id = [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:3]];
-    
     
     [MPServicesBuilder getInstallments:[[command arguments] objectAtIndex:2] amount:[[[command arguments] objectAtIndex:4] doubleValue ]issuer:is paymentMethodId:[[command arguments] objectAtIndex:1] success:^(NSArray<Installment *> *installments) {
         
@@ -160,16 +170,12 @@
     NSInteger expy = [[[command arguments] objectAtIndex:3] integerValue];
     NSInteger expm = [[[command arguments] objectAtIndex:2] integerValue];
     
-    
     CardToken *cardToken =[[CardToken alloc]initWithCardNumber:[[command arguments] objectAtIndex:1] expirationMonth:expm expirationYear:expy securityCode:[[command arguments] objectAtIndex:4] cardholderName:[[command arguments] objectAtIndex:5] docType:[[command arguments] objectAtIndex:6] docNumber:[[command arguments] objectAtIndex:7]];
     
-    //
     [MPServicesBuilder createNewCardToken:cardToken success:^(Token * token) {
-        NSString *mpToken = [token toJSONString];
-        // printf("token %s",[mpToken UTF8String]);
         CDVPluginResult* result = [CDVPluginResult
                                    resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: mpToken];
+                                   messageAsString: [token toJSONString]];
         
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         
@@ -192,7 +198,7 @@
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         
     } failure:^(NSError * error) {
-        
+        NSLog(@"error: %@ \n",[error localizedDescription]);
     }];
 }
 - (void)getPaymentResult:(CDVInvokedUrlCommand*)command
@@ -202,7 +208,7 @@
     
     int payment = [[[command arguments] objectAtIndex:1] intValue];
     
-    [MPServicesBuilder getInstructions:1202870 paymentTypeId:@"ticket" success:^(InstructionsInfo * instruction) {
+    [MPServicesBuilder getInstructions:payment paymentTypeId:@"ticket" success:^(InstructionsInfo * instruction) {
         
         CDVPluginResult* result = [CDVPluginResult
                                    resultWithStatus:CDVCommandStatus_OK
@@ -210,7 +216,7 @@
         
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
     } failure:^(NSError * error) {
-        
+        NSLog(@"error: %@ \n",[error localizedDescription]);
     }];
 }
 - (void)createPayment:(CDVInvokedUrlCommand*)command
@@ -241,7 +247,7 @@
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         
     } failure:^(NSError * error) {
-        
+        NSLog(@"error: %@ \n",[error localizedDescription]);
     }];
 }
 
@@ -251,27 +257,13 @@
     
     NSString* callbackId = [command callbackId];
     
-    if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"ARGENTINA"]){
-        [MercadoPagoContext setSiteID:@"MLA"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"BRASIL"]){
-        [MercadoPagoContext setSiteID:@"MLC"];
-    }  else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"CHILE"]){
-        [MercadoPagoContext setSiteID:@"MCO"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"COLOMBIA"]){
-        [MercadoPagoContext setSiteID:@"MLM"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"MEXICO"]){
-        [MercadoPagoContext setSiteID:@"MLB"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"USA"]){
-        [MercadoPagoContext setSiteID:@"USA"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"VENEZUELA"]){
-        [MercadoPagoContext setSiteID:@"MLV"];
-    }
+    [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
     
     if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:4]boolValue]){
@@ -279,18 +271,25 @@
     }else {
         [MercadoPagoContext setLightTextColor];
     }
-    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:2]doubleValue] paymentPreference:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
+    
+    NSData *data = [[[command arguments] objectAtIndex:5] dataUsingEncoding:NSUTF8StringEncoding];
+    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *pp = [PaymentPreference fromJSON:paymentPrefJson];
+    
+    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:2]doubleValue] paymentPreference:pp callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
-        NSString *jsonToken = [token toJSONString];
+        
         
         NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
         [mpResponse setObject:jsonPaymentMethod forKey:@"payment_methods"];
-        [mpResponse setObject:jsonToken forKey:@"token"];
         
-        if (payerCost != nil && issuer != nil ){
+        
+        if (payerCost != nil && issuer != nil && token != nil){
             NSString *jsonIssuer = [issuer toJSONString];
             NSString *jsonPayerCost = [payerCost toJSONString];
+            NSString *jsonToken = [token toJSONString];
+            [mpResponse setObject:jsonToken forKey:@"token"];
             [mpResponse setObject:jsonIssuer forKey:@"issuer"];
             [mpResponse setObject:jsonPayerCost forKey:@"payer_cost"];
         }
@@ -314,27 +313,13 @@
     [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
     NSString* callbackId = [command callbackId];
     
-    if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"ARGENTINA"]){
-        [MercadoPagoContext setSiteID:@"MLA"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"BRASIL"]){
-        [MercadoPagoContext setSiteID:@"MLC"];
-    }  else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"CHILE"]){
-        [MercadoPagoContext setSiteID:@"MCO"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"COLOMBIA"]){
-        [MercadoPagoContext setSiteID:@"MLM"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"MEXICO"]){
-        [MercadoPagoContext setSiteID:@"MLB"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"USA"]){
-        [MercadoPagoContext setSiteID:@"USA"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"VENEZUELA"]){
-        [MercadoPagoContext setSiteID:@"MLV"];
-    }
+    [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
     
     if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:4]boolValue]){
@@ -345,14 +330,18 @@
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     
-    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:nil amount:[[[command arguments] objectAtIndex:2]doubleValue] paymentMethods:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
+    NSData *data = [[[command arguments] objectAtIndex:5] dataUsingEncoding:NSUTF8StringEncoding];
+    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
+
+    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:paymentPref amount:[[[command arguments] objectAtIndex:2]doubleValue] paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
-        //NSString *jsonToken = [token toJSONString];
+        NSString *jsonToken = [token toJSONString];
         
         NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
         [mpResponse setObject:jsonPaymentMethod forKey:@"payment_methods"];
-        [mpResponse setObject:@"{a}" forKey:@"token"];
+        [mpResponse setObject:jsonToken forKey:@"token"];
         
         if (payerCost != nil && issuer != nil ){
             NSString *jsonIssuer = [issuer toJSONString];
@@ -388,7 +377,7 @@
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:2]boolValue]){
@@ -398,15 +387,18 @@
     }
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
+    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
     
-    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:nil amount:100.0 paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
+    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:paymentPref amount:100.0 paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
-        //NSString *jsonToken = [token toJSONString];
+        NSString *jsonToken = [token toJSONString];
         
         NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
         [mpResponse setObject:jsonPaymentMethod forKey:@"payment_methods"];
-        [mpResponse setObject:@"{a}" forKey:@"token"];
+        [mpResponse setObject:jsonToken forKey:@"token"];
         
         if (issuer != nil ){
             NSString *jsonIssuer = [issuer toJSONString];
@@ -439,7 +431,7 @@
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:2]boolValue]){
@@ -450,7 +442,11 @@
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     
-    PaymentMethodsViewController *viewPaymentMethods = [MPStepBuilder startPaymentMethodsStep:nil callback:^(PaymentMethod * paymentMethod) {
+    NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
+    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
+    
+    PaymentMethodsViewController *viewPaymentMethods = [MPStepBuilder startPaymentMethodsStep:paymentPref callback:^(PaymentMethod * paymentMethod) {
         CDVPluginResult* result = [CDVPluginResult
                                    resultWithStatus:CDVCommandStatus_OK
                                    messageAsString: [paymentMethod toJSONString]];
@@ -474,7 +470,7 @@
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:3]boolValue]){
@@ -490,14 +486,19 @@
     pm._id = [[command arguments] objectAtIndex:1];
     
     
-    UIViewController *viewIssuers = [MPStepBuilder startIssuersStep:pm callback:^(Issuer * issuer){
+    MercadoPagoUIViewController *viewIssuers = [MPStepBuilder startIssuersStep:pm callback:^(Issuer * issuer){
         CDVPluginResult* result = [CDVPluginResult
                                    resultWithStatus:CDVCommandStatus_OK
                                    messageAsString: [issuer toJSONString]];
         
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         [rootViewController dismissViewControllerAnimated:YES completion:^{}];
+        
     }];
+    [viewIssuers setCallbackCancel:^{
+        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
+    }];
+    
     [self showInNavigationController:viewIssuers];
 }
 - (void)showInstallments:(CDVInvokedUrlCommand*)command
@@ -505,27 +506,13 @@
     [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
     NSString* callbackId = [command callbackId];
     
-    if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"ARGENTINA"]){
-        [MercadoPagoContext setSiteID:@"MLA"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"BRASIL"]){
-        [MercadoPagoContext setSiteID:@"MLC"];
-    }  else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"CHILE"]){
-        [MercadoPagoContext setSiteID:@"MCO"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"COLOMBIA"]){
-        [MercadoPagoContext setSiteID:@"MLM"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"MEXICO"]){
-        [MercadoPagoContext setSiteID:@"MLB"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"USA"]){
-        [MercadoPagoContext setSiteID:@"USA"];
-    } else if ([[[[command arguments] objectAtIndex:1] uppercaseString] isEqual: @"VENEZUELA"]){
-        [MercadoPagoContext setSiteID:@"MLV"];
-    }
+    [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
     
     if ([[command arguments] objectAtIndex:5]!= (id)[NSNull null]){
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:5] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:6]boolValue]){
@@ -539,7 +526,11 @@
     Issuer *issuer =[[Issuer alloc]init];
     issuer._id=[[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:4]];
     
-    UIViewController *navInstallments = [MPStepBuilder startInstallmentsStep:nil paymentPreference:nil amount:[[[command arguments] objectAtIndex:2]doubleValue] issuer:issuer paymentMethodId:[[command arguments] objectAtIndex:3] callback:^(PayerCost * payerCost) {
+    NSData *data = [[[command arguments] objectAtIndex:7] dataUsingEncoding:NSUTF8StringEncoding];
+    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
+    
+    MercadoPagoUIViewController *navInstallments = [MPStepBuilder startInstallmentsStep:nil paymentPreference:paymentPref amount:[[[command arguments] objectAtIndex:2]doubleValue] issuer:issuer paymentMethodId:[[command arguments] objectAtIndex:3] callback:^(PayerCost * payerCost) {
         
         CDVPluginResult* result = [CDVPluginResult
                                    resultWithStatus:CDVCommandStatus_OK
@@ -548,6 +539,10 @@
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         [rootViewController dismissViewControllerAnimated:YES completion:^{}];
     }];
+    [navInstallments setCallbackCancel:^{
+        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
+    }];
+    
     
     [self showInNavigationController:navInstallments];
 }
@@ -561,7 +556,7 @@
         UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     }
     if ([[[command arguments] objectAtIndex:2]boolValue]){
@@ -585,13 +580,9 @@
     
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    //    Payment *payment = [[Payment alloc]init];
-    //    payment._id= [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:1]];
-    
-    
     
     NSData *data = [[[command arguments] objectAtIndex:1] dataUsingEncoding:NSUTF8StringEncoding];
-    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];;
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
     Payment *payment = [Payment fromJSON:json];
     
@@ -620,5 +611,22 @@
     json = [json substringToIndex:[json length] - 1];
     json = [json stringByAppendingString: @"]"];
     return json;
+}
+-(NSString *)getSiteID:(NSString*)site{
+    if ([[site uppercaseString] isEqual: @"ARGENTINA"]){
+        return @"MLA";
+    } else if ([[site uppercaseString] isEqual: @"BRASIL"]){
+        return @"MLC";
+    }  else if ([[site uppercaseString] isEqual: @"CHILE"]){
+        return @"MCO";
+    } else if ([[site uppercaseString] isEqual: @"COLOMBIA"]){
+        return @"MLM";
+    } else if ([[site uppercaseString] isEqual: @"MEXICO"]){
+        return @"MLB";
+    } else if ([[site uppercaseString] isEqual: @"USA"]){
+        return @"USA";
+    } else if ([[site uppercaseString] isEqual: @"VENEZUELA"]){
+        return @"MLV";
+    }
 }
 @end

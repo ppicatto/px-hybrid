@@ -863,7 +863,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK13MPFlowBuilder")
 + (VaultViewController * _Nonnull)startVaultViewController:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, NSString * _Nullable tokenId, Issuer * _Nullable issuer, NSInteger installments))callback;
 + (MPNavigationController * _Nonnull)startCheckoutViewController:(NSString * _Nonnull)preferenceId callback:(void (^ _Nonnull)(Payment * _Nonnull))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
 + (MPNavigationController * _Nonnull)startPaymentVaultViewController:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer, PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
-+ (MPNavigationController * _Nonnull)startCardFlow:(PaymentPreference * _Nullable)paymentPreference amount:(double)amount paymentMethods:(NSArray<PaymentMethod *> * _Nullable)paymentMethods callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer, PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
++ (MPNavigationController * _Nonnull)startCardFlow:(PaymentPreference * _Nullable)paymentPreference amount:(double)amount paymentMethods:(NSArray<PaymentMethod *> * _Nullable)paymentMethods token:(Token * _Nullable)token callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer, PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -962,7 +962,8 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK13MPStepBuilder")
 @interface MPStepBuilder : NSObject
 + (CustomerCardsViewController * _Nonnull)startCustomerCardsStep:(NSArray<Card *> * _Nonnull)cards callback:(void (^ _Nonnull)(Card * _Nullable selectedCard))callback;
 + (NewCardViewController * _Nonnull)startNewCardStep:(PaymentMethod * _Nonnull)paymentMethod requireSecurityCode:(BOOL)requireSecurityCode callback:(void (^ _Nonnull)(CardToken * _Nonnull cardToken))callback;
-+ (PaymentMethodsViewController * _Nonnull)startPaymentMethodsStep:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod))callback;
++ (PaymentMethodsViewController * _Nonnull)startPaymentMethodsStepWithPreference:(PaymentPreference * _Nullable)paymentPreference callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod))callback;
++ (PaymentMethodsViewController * _Nonnull)startPaymentMethodsStep:(NSSet<NSString *> * _Nonnull)supportedPaymentTypes callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod))callback;
 + (InstallmentsViewController * _Nonnull)startInstallmentsStep:(NSArray<PayerCost *> * _Nullable)payerCosts paymentPreference:(PaymentPreference * _Nullable)paymentPreference amount:(double)amount issuer:(Issuer * _Nullable)issuer paymentMethodId:(NSString * _Nullable)paymentMethodId callback:(void (^ _Nonnull)(PayerCost * _Nullable payerCost))callback;
 + (CongratsViewController * _Nonnull)startCongratsStep:(Payment * _Nonnull)payment paymentMethod:(PaymentMethod * _Nonnull)paymentMethod;
 + (PaymentCongratsViewController * _Nonnull)startPaymentCongratsStep:(Payment * _Nonnull)payment paymentMethod:(PaymentMethod * _Nonnull)paymentMethod callback:(void (^ _Nonnull)(Payment * _Nonnull payment, NSString * _Nonnull status))callback;
@@ -1385,9 +1386,14 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK17PaymentPreference")
 @interface PaymentPreference : NSObject
 @property (nonatomic, copy) NSSet<NSString *> * _Nullable excludedPaymentMethodIds;
 @property (nonatomic, copy) NSSet<NSString *> * _Nullable excludedPaymentTypeIds;
+@property (nonatomic, copy) NSString * _Nullable defaultPaymentMethodId;
+@property (nonatomic) NSInteger maxAcceptedInstallments;
+@property (nonatomic) NSInteger defaultInstallments;
+@property (nonatomic, copy) NSString * _Nullable defaultPaymentTypeId;
 - (PayerCost * _Nullable)autoSelectPayerCost:(NSArray<PayerCost *> * _Nonnull)payerCostList;
 - (BOOL)validate;
 + (PaymentPreference * _Nonnull)fromJSON:(NSDictionary * _Nonnull)json;
+- (NSString * _Nonnull)toJSONString;
 @end
 
 
