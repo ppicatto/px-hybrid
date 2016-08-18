@@ -260,7 +260,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(data.getString(0))
                 .setDecorationPreference(decorationPreference)
                 .setPaymentMethod(paymentMethod)
-                .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(4),PaymentPreference.class))
                 .startIssuersActivity();
 
             return true;
@@ -329,7 +328,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         .setActivity(this.cordova.getActivity())
                         .setPublicKey(data.getString(0))
                         .setDecorationPreference(decorationPreference)
-                        .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(3),PaymentPreference.class))
                         .startBankDealsActivity();
                 
                 return true;

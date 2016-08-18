@@ -46,7 +46,6 @@
 
     <header-file src="src/ios/MercadoPagoPlugin.h" target-dir="MercadoPago"/>
     <source-file src="src/ios/MercadoPagoPlugin.m" target-dir="MercadoPago"/>
-<!--    <source-file src="src/ios/MercadoPagoPlugin.swift" />-->
     <framework src="src/ios/MercadoPagoSDK.framework" custom="true" embed="true"/>
   </platform>
 

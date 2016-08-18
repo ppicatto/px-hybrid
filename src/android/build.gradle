@@ -1,17 +1,4 @@
-android {
-   defaultConfig {
-       multiDexEnabled true
-   }
-}
-repositories{
-	maven {
-           url 'https://dl.bintray.com/matiasromar/maven'
-     }
 
-}
- 
-
-
-dependencies {
-    compile ('com.mercadopago:sdk:2.0.0-rc3') { transitive = true }
+ dependencies {
+    compile ('com.mercadopago:sdk:2.0.1@aar') { transitive = true } 
 }

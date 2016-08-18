@@ -318,8 +318,10 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK18CheckoutPreference")
 - (NSString * _Nonnull)toJSONString;
 - (double)getAmount;
 - (NSInteger)getInstallments;
-- (PaymentPreference * _Nonnull)getPaymentSettings;
+- (PaymentPreference * _Nonnull)getPaymentPreference;
 - (NSSet<NSString *> * _Nullable)getExcludedPaymentTypesIds;
+- (NSInteger)getDefaultInstallments;
+- (NSInteger)getMaxAcceptedInstallments;
 - (NSSet<NSString *> * _Nullable)getExcludedPaymentMethodsIds;
 - (NSString * _Nullable)getDefaultPaymentMethodId;
 - (NSString * _Nonnull)getTitle;
@@ -954,6 +956,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK17MPServicesBuilder")
 
 @class NewCardViewController;
 @class PaymentMethodsViewController;
+enum CongratsState : NSInteger;
 @class PaymentCongratsViewController;
 @class PromoViewController;
 @class PayerCostViewController;
@@ -966,8 +969,9 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK13MPStepBuilder")
 + (PaymentMethodsViewController * _Nonnull)startPaymentMethodsStep:(NSSet<NSString *> * _Nonnull)supportedPaymentTypes callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod))callback;
 + (InstallmentsViewController * _Nonnull)startInstallmentsStep:(NSArray<PayerCost *> * _Nullable)payerCosts paymentPreference:(PaymentPreference * _Nullable)paymentPreference amount:(double)amount issuer:(Issuer * _Nullable)issuer paymentMethodId:(NSString * _Nullable)paymentMethodId callback:(void (^ _Nonnull)(PayerCost * _Nullable payerCost))callback;
 + (CongratsViewController * _Nonnull)startCongratsStep:(Payment * _Nonnull)payment paymentMethod:(PaymentMethod * _Nonnull)paymentMethod;
-+ (PaymentCongratsViewController * _Nonnull)startPaymentCongratsStep:(Payment * _Nonnull)payment paymentMethod:(PaymentMethod * _Nonnull)paymentMethod callback:(void (^ _Nonnull)(Payment * _Nonnull payment, NSString * _Nonnull status))callback;
-+ (InstructionsViewController * _Nonnull)startInstructionsStep:(Payment * _Nonnull)payment paymentTypeId:(NSString * _Nonnull)paymentTypeId callback:(void (^ _Nonnull)(Payment * _Nonnull payment))callback;
++ (MercadoPagoUIViewController * _Nonnull)startPaymentResultStep:(Payment * _Nonnull)payment paymentMethod:(PaymentMethod * _Nonnull)paymentMethod callback:(void (^ _Nonnull)(Payment * _Nonnull payment, enum CongratsState status))callback;
++ (PaymentCongratsViewController * _Nonnull)startPaymentCongratsStep:(Payment * _Nonnull)payment paymentMethod:(PaymentMethod * _Nonnull)paymentMethod callback:(void (^ _Nonnull)(Payment * _Nonnull payment, enum CongratsState status))callback;
++ (InstructionsViewController * _Nonnull)startInstructionsStep:(Payment * _Nonnull)payment paymentTypeId:(NSString * _Nonnull)paymentTypeId callback:(void (^ _Nonnull)(Payment * _Nonnull payment, enum CongratsState status))callback;
 + (PromoViewController * _Nonnull)startPromosStep:(void (^ _Nullable)(void))callback;
 + (MPNavigationController * _Nonnull)startCreditCardForm:(PaymentPreference * _Nullable)paymentSettings amount:(double)amount paymentMethods:(NSArray<PaymentMethod *> * _Nullable)paymentMethods token:(Token * _Nullable)token callback:(void (^ _Nonnull)(PaymentMethod * _Nonnull paymentMethod, Token * _Nullable token, Issuer * _Nullable issuer))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
 + (PayerCostViewController * _Nonnull)startPayerCostForm:(PaymentMethod * _Nullable)paymentMethod issuer:(Issuer * _Nullable)issuer token:(Token * _Nonnull)token amount:(double)amount paymentPreference:(PaymentPreference * _Nullable)paymentPreference installment:(Installment * _Nullable)installment callback:(void (^ _Nonnull)(PayerCost * _Nullable payerCost))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
@@ -977,6 +981,12 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK13MPStepBuilder")
 + (ErrorViewController * _Nonnull)startErrorViewController:(MPError * _Nonnull)error callback:(void (^ _Nullable)(void))callback callbackCancel:(void (^ _Nullable)(void))callbackCancel;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
+
+typedef SWIFT_ENUM(NSInteger, CongratsState) {
+  CongratsStateOK = 0,
+  CongratsStateCANCEL_SELECT_OTHER = 1,
+  CongratsStateCANCEL_RETRY = 2,
+};
 
 
 @class NSTextContainer;
@@ -1279,7 +1289,6 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK29PaymentCongratsViewController")
 - (void)didReceiveMemoryWarning;
 - (NSInteger)numberOfSectionsInTableView:(UITableView * _Nonnull)tableView;
 - (UITableViewCell * _Nonnull)tableView:(UITableView * _Nonnull)tableView cellForRowAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-- (void)tableView:(UITableView * _Nonnull)tableView didSelectRowAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 - (CGFloat)tableView:(UITableView * _Nonnull)tableView heightForHeaderInSection:(NSInteger)section;
 - (CGFloat)tableView:(UITableView * _Nonnull)tableView heightForFooterInSection:(NSInteger)section;
 - (NSInteger)tableView:(UITableView * _Nonnull)tableView numberOfRowsInSection:(NSInteger)section;
@@ -1390,6 +1399,7 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK17PaymentPreference")
 @property (nonatomic) NSInteger maxAcceptedInstallments;
 @property (nonatomic) NSInteger defaultInstallments;
 @property (nonatomic, copy) NSString * _Nullable defaultPaymentTypeId;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 - (PayerCost * _Nullable)autoSelectPayerCost:(NSArray<PayerCost *> * _Nonnull)payerCostList;
 - (BOOL)validate;
 + (PaymentPreference * _Nonnull)fromJSON:(NSDictionary * _Nonnull)json;
@@ -1419,7 +1429,6 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK11PaymentType")
 + (NSSet<NSString *> * _Nonnull)allPaymentIDs;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 + (PaymentType * _Nonnull)fromJSON:(NSDictionary * _Nonnull)json;
-- (PaymentPreference * _Nonnull)paymentSettingAssociated;
 @end
 
 
