@@ -1,0 +1,27 @@
+{
+  "name": "px-mercadopago",
+  "version": "0.7.2",
+  "cordova": {
+    "id": "com.example.hello",
+    "platforms": [
+      "android",
+      "ios",
+      "wp7"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-wp7"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.4.0"
+    }
+  ],
+  "author": "etorres",
+  "license": "ISC",
+  "description": ""
+}

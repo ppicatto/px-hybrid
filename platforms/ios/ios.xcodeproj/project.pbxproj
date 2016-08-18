@@ -15,15 +15,14 @@
 		3047A5121AB8059700498E2A /* build-debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A50F1AB8059700498E2A /* build-debug.xcconfig */; };
 		3047A5131AB8059700498E2A /* build-release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5101AB8059700498E2A /* build-release.xcconfig */; };
 		3047A5141AB8059700498E2A /* build.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5111AB8059700498E2A /* build.xcconfig */; };
-		D58861EFFC924C8883F264B4 /* MercadoPagoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = ED34B96350A54758952D87EB /* MercadoPagoPlugin.m */; };
-		8F53B5AE6E3848AC8E827BF3 /* MercadoPagoSDK.framework in Embed Frameworks com.mercadopago.cordova.sdk */ = {isa = PBXBuildFile; fileRef = 09665231F57D4C9A81852A4D /* MercadoPagoSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B25AB0AC5AC443348EDA6F12 /* CDVLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 73700AEE6E534DD191FC6FE3 /* CDVLogger.m */; };
 		E84D9EC67A554CF5845C89AA /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C3884DA42749D18BD27242 /* CDVDevice.m */; };
 		228248CDFCFE4D789876D2BC /* CDVSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7FA826FF584EEF83A4D4AB /* CDVSplashScreen.m */; };
 		05759E88B1814C9C9BB2B73D /* CDVViewController+SplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = DF48CEA2211945C2ABCACAAF /* CDVViewController+SplashScreen.m */; };
 		2017A4B396AB430380B4BA82 /* CDVStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = C55EAA0342AA43809DFCDA90 /* CDVStatusBar.m */; };
 		C9E71B18DF8E4D85BAC959D1 /* IonicKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 103FDB0261BE4FC283F11EFB /* IonicKeyboard.m */; };
-		FA87EB13DD17408781531669 /* MercadoPagoSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09665231F57D4C9A81852A4D /* MercadoPagoSDK.framework */; };
+		DEB2CC3192094EE6AA3F5865 /* MercadoPagoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = BF51600A95D341168BE980E6 /* MercadoPagoPlugin.m */; };
+		D1B74CFC73AC400A810E39CE /* MercadoPagoSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B584FCFABC546BDAC25F46D /* MercadoPagoSDK.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,9 +62,6 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "ios/config.xml"; sourceTree = "<group>"; };
 		ED33DF2A687741AEAF9F8254 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		ED34B96350A54758952D87EB /* MercadoPagoPlugin.m */ = {isa = PBXFileReference; name = "MercadoPagoPlugin.m"; path = "com.mercadopago.cordova.sdk/MercadoPago/MercadoPagoPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
-		33C6C732948A49E68E12EC7A /* MercadoPagoPlugin.h */ = {isa = PBXFileReference; name = "MercadoPagoPlugin.h"; path = "com.mercadopago.cordova.sdk/MercadoPago/MercadoPagoPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		09665231F57D4C9A81852A4D /* MercadoPagoSDK.framework */ = {isa = PBXFileReference; name = "MercadoPagoSDK.framework"; path = "ios/Plugins/com.mercadopago.cordova.sdk/MercadoPagoSDK.framework"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 		73700AEE6E534DD191FC6FE3 /* CDVLogger.m */ = {isa = PBXFileReference; name = "CDVLogger.m"; path = "cordova-plugin-console/CDVLogger.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		FD9A1F5987314C64A4D4FF00 /* CDVLogger.h */ = {isa = PBXFileReference; name = "CDVLogger.h"; path = "cordova-plugin-console/CDVLogger.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		C8C3884DA42749D18BD27242 /* CDVDevice.m */ = {isa = PBXFileReference; name = "CDVDevice.m"; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
@@ -78,6 +74,9 @@
 		9C1994894A8F40E59A1E73F3 /* CDVStatusBar.h */ = {isa = PBXFileReference; name = "CDVStatusBar.h"; path = "cordova-plugin-statusbar/CDVStatusBar.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		103FDB0261BE4FC283F11EFB /* IonicKeyboard.m */ = {isa = PBXFileReference; name = "IonicKeyboard.m"; path = "ionic-plugin-keyboard/IonicKeyboard.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		2EA1054BFBE94E938943DC58 /* IonicKeyboard.h */ = {isa = PBXFileReference; name = "IonicKeyboard.h"; path = "ionic-plugin-keyboard/IonicKeyboard.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		BF51600A95D341168BE980E6 /* MercadoPagoPlugin.m */ = {isa = PBXFileReference; name = "MercadoPagoPlugin.m"; path = "com.mercadopago.cordova.sdk/MercadoPago/MercadoPagoPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		A235E5059E574AAA9069534F /* MercadoPagoPlugin.h */ = {isa = PBXFileReference; name = "MercadoPagoPlugin.h"; path = "com.mercadopago.cordova.sdk/MercadoPago/MercadoPagoPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		4B584FCFABC546BDAC25F46D /* MercadoPagoSDK.framework */ = {isa = PBXFileReference; name = "MercadoPagoSDK.framework"; path = "ios/Plugins/com.mercadopago.cordova.sdk/MercadoPagoSDK.framework"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +85,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
-				FA87EB13DD17408781531669 /* MercadoPagoSDK.framework in Frameworks */,
+				D1B74CFC73AC400A810E39CE /* MercadoPagoSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +155,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				09665231F57D4C9A81852A4D /* MercadoPagoSDK.framework */,
+				4B584FCFABC546BDAC25F46D /* MercadoPagoSDK.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -182,8 +181,6 @@
 		307C750510C5A3420062BCA9 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				ED34B96350A54758952D87EB /* MercadoPagoPlugin.m */,
-				33C6C732948A49E68E12EC7A /* MercadoPagoPlugin.h */,
 				73700AEE6E534DD191FC6FE3 /* CDVLogger.m */,
 				FD9A1F5987314C64A4D4FF00 /* CDVLogger.h */,
 				C8C3884DA42749D18BD27242 /* CDVDevice.m */,
@@ -196,6 +193,8 @@
 				9C1994894A8F40E59A1E73F3 /* CDVStatusBar.h */,
 				103FDB0261BE4FC283F11EFB /* IonicKeyboard.m */,
 				2EA1054BFBE94E938943DC58 /* IonicKeyboard.h */,
+				BF51600A95D341168BE980E6 /* MercadoPagoPlugin.m */,
+				A235E5059E574AAA9069534F /* MercadoPagoPlugin.h */,
 			);
 			name = Plugins;
 			path = "ios/Plugins";
@@ -311,13 +310,13 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
-				D58861EFFC924C8883F264B4 /* MercadoPagoPlugin.m in Sources */,
 				B25AB0AC5AC443348EDA6F12 /* CDVLogger.m in Sources */,
 				E84D9EC67A554CF5845C89AA /* CDVDevice.m in Sources */,
 				228248CDFCFE4D789876D2BC /* CDVSplashScreen.m in Sources */,
 				05759E88B1814C9C9BB2B73D /* CDVViewController+SplashScreen.m in Sources */,
 				2017A4B396AB430380B4BA82 /* CDVStatusBar.m in Sources */,
 				C9E71B18DF8E4D85BAC959D1 /* IonicKeyboard.m in Sources */,
+				DEB2CC3192094EE6AA3F5865 /* MercadoPagoPlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +353,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"ios/Plugins/com.mercadopago.cordova.sdk\"",
+					"\"ios/Plugins/com.mercadopago.cordova.sdk\"",
 				);
 				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/$(PROJECT_NAME)/Bridging-Header.h";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -378,6 +378,7 @@
 				PRODUCT_NAME = "ios";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"ios/Plugins/com.mercadopago.cordova.sdk\"",
 					"\"ios/Plugins/com.mercadopago.cordova.sdk\"",
 				);
 				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/$(PROJECT_NAME)/Bridging-Header.h";

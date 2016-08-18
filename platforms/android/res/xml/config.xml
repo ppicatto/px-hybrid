@@ -19,6 +19,9 @@
         <param name="android-package" value="io.ionic.keyboard.IonicKeyboard" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="MercadoPago">
+        <param name="android-package" value="com.mercadopago.cordova.sdk.MercadoPagoPlugin" />
+    </feature>
     <name>ios</name>
     <description>
         An Ionic Framework and Cordova project.
@@ -28,7 +31,7 @@
     </author>
     <allow-navigation href="http://localhost:8100/*" />
     <allow-navigation href="http://192.168.1.9:8100/*" />
-    <content original-src="index.html" src="http://10.21.32.97:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
     <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -57,7 +60,4 @@
     <preference name="android-minSdkVersion" value="16" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashScreen" value="screen" />
-    <feature name="MercadoPago">
-        <param name="android-package" value="com.mercadopago.cordova.sdk.MercadoPagoPlugin" />
-    </feature>
 </widget>

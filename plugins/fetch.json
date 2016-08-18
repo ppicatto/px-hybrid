@@ -58,8 +58,9 @@
     },
     "com.mercadopago.cordova.sdk": {
         "source": {
-            "type": "local",
-            "path": "/Users/etorres/plugin"
+            "type": "git",
+            "url": "https://github.com/mercadopago/px-hybrid.git",
+            "subdir": "."
         },
         "is_top_level": true,
         "variables": {}
