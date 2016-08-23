@@ -14,7 +14,7 @@ It is also possible to install via repo url directly ( unstable )
 
 # Documentation
 
-  [Check out MercadoPago Developers Site!] (https://github.com/mercadopago/px-hybrid)
+  [Check out MercadoPago Developers Site!] (http://mercadopago.github.io/px-hybrid/)
   
 
 
