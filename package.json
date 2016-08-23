@@ -1,27 +1,33 @@
 {
-  "name": "px-mercadopago",
-  "version": "0.7.2",
+  "name": "mercadopago-plugin",
+  "version": "1.0.0",
+  "description": "This plugin allows to add MercadoPago to your application using MercadoPago Native library",
   "cordova": {
-    "id": "com.example.hello",
+    "id": "com.mercadopago.cordova.sdk",
     "platforms": [
       "android",
-      "ios",
-      "wp7"
+      "ios"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mercadopago/px-hybrid.git"
   },
   "keywords": [
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-ios",
-    "cordova-wp7"
+    "cordova-ios"
   ],
   "engines": [
     {
       "name": "cordova",
-      "version": ">=3.4.0"
+      "version": ">=3.0.0"
     }
   ],
   "author": "etorres",
-  "license": "ISC",
-  "description": ""
+  "license": "MIT License, see LICENSE.md for details",
+  "bugs": {
+    "url": "https://github.com/mercadopago/px-hybrid/issues"
+  },
+  "homepage": "https://github.com/mercadopago/px-hybrid#readme"
 }
