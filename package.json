@@ -1,6 +1,6 @@
 {
   "name": "mercadopago-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This plugin allows to add MercadoPago to your application using MercadoPago Native library",
   "cordova": {
     "id": "com.mercadopago.cordova.sdk",
@@ -29,5 +29,11 @@
   "bugs": {
     "url": "https://github.com/mercadopago/px-hybrid/issues"
   },
-  "homepage": "https://github.com/mercadopago/px-hybrid#readme"
+  "homepage": "https://github.com/mercadopago/px-hybrid#readme",
+  "dependencies": {
+    "xcode": "undefined0.8.3"
+  },
+  "devDependencies": {
+    "xcode": "undefined0.8.3"
+  }
 }

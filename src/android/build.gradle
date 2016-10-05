@@ -1,7 +1,4 @@
 
  dependencies {
-    compile ('com.mercadopago:sdk:2.0.1')    {
-       transitive = true
-       exclude group: 'com.google.android.gms'
-   }
+    compile ('com.mercadopago:sdk:2.0.1@aar') { transitive = true }
 }
