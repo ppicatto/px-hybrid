@@ -89,8 +89,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
 
           DecorationPreference decorationPreference = new DecorationPreference();
           if (data.getString(4) != "null") {
-              decorationPreference.setBaseColor(data.getString(2));
-
+              decorationPreference.setBaseColor(data.getString(4));
           }
           if (data.getBoolean(5)) {
               decorationPreference.enableDarkFont();
