@@ -2,6 +2,9 @@
 
 function MercadoPago() {}
 
+MercadoPago.prototype.startSavedCards = function(merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, paymentPreference, color, blackFont, title, footerText, confirmPromptText, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "startSavedCards", [merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, paymentPreference, color, blackFont, title, footerText, confirmPromptText]);
+};
 MercadoPago.prototype.setPaymentPreference = function(maxIntallments, defaultInstallments, excludedPaymentMethods, excludedPaymentTypes, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "setPaymentPreference", [maxIntallments, defaultInstallments, excludedPaymentMethods, excludedPaymentTypes]);
 };

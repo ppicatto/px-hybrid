@@ -22,6 +22,7 @@ import com.mercadopago.model.Issuer;
 import com.mercadopago.model.Item;
 import com.mercadopago.model.MerchantPayment;
 import com.mercadopago.model.BankDeal;
+import com.mercadopago.model.Card;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
 import com.mercadopago.model.Instruction;
@@ -31,6 +32,7 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.PaymentPreference;
 import com.mercadopago.model.PaymentResult;
 import com.mercadopago.model.Token;
+import com.mercadopago.core.MercadoPagoUI;
 
 import com.mercadopago.util.JsonUtil;
 
@@ -49,8 +51,8 @@ import java.util.List;
 
 public class MercadoPagoPlugin extends CordovaPlugin {
     private CallbackContext callback = null;
-    
-    
+
+
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
 
@@ -82,14 +84,41 @@ public class MercadoPagoPlugin extends CordovaPlugin {
 
             return true;
 
+        } else if (action.equals("startSavedCards")) {
+          cordova.setActivityResultCallback (this);
+
+          DecorationPreference decorationPreference = new DecorationPreference();
+          if (data.getString(4) != "null") {
+              decorationPreference.setBaseColor(data.getString(2));
+
+          }
+          if (data.getBoolean(5)) {
+              decorationPreference.enableDarkFont();
+          }
+
+          new MercadoPagoUI.Activities.SavedCardsActivityBuilder()
+                                .setActivity(this.cordova.getActivity())
+                                .setMerchantBaseUrl(data.getString(0))
+                                .setMerchantGetCustomerUri(data.getString(1))
+                                .setMerchantAccessToken(data.getString(2))
+                                .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(3),PaymentPreference.class))
+                                .setDecorationPreference(decorationPreference)
+                                .setTitle(data.getString(6))
+                                .setFooter(data.getString(7))
+                                .setSelectionConfirmPromptText(data.getString(8))
+                                .startActivity();
+
+            callback = callbackContext;
+            return true;
+
         } else if (action.equals("startCheckout")) {
             cordova.setActivityResultCallback (this);
-            
+
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(2) != "null") {
                 decorationPreference.setBaseColor(data.getString(2));
-                
+
             }
             if (data.getBoolean(3)) {
                 decorationPreference.enableDarkFont();
@@ -102,20 +131,20 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .setCheckoutPreferenceId(data.getString(1))
                     .startCheckoutActivity();
 
-            
+
             callback = callbackContext;
-            
-            
+
+
             return true;
-            
-            
+
+
         } else if (action.equals("showPaymentVault")){
-            
+
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(3) != "null") {
                 decorationPreference.setBaseColor(data.getString(3));
-                
+
             }
             if (data.getBoolean(4)){
                 decorationPreference.enableDarkFont();
@@ -149,17 +178,17 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             }
 
             mp.startPaymentVaultActivity();
-            
+
             return true;
-            
-            
+
+
         } else if (action.equals("showCardWithoutInstallments")){
-            
+
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(1) != "null") {
                 decorationPreference.setBaseColor(data.getString(1));
-                
+
             }
             if (data.getBoolean(2)){
                 decorationPreference.enableDarkFont();
@@ -173,23 +202,23 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(3),PaymentPreference.class))
                     .setInstallmentsEnabled(false)
                     .startCardVaultActivity();
-            
+
             return true;
-            
+
         } else if (action.equals("showCardWithInstallments")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
-            
+
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(3) != "null") {
                 decorationPreference.setBaseColor(data.getString(3));
-                
+
             }
             if (data.getBoolean(4)){
                 decorationPreference.enableDarkFont();
             }
-            
+
             BigDecimal amount = new BigDecimal(data.getInt(2));
             MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
                 .setActivity(this.cordova.getActivity())
@@ -214,47 +243,47 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 mp.setSite(Sites.VENEZUELA);
             }
             mp.startCardVaultActivity();
-            
+
             return true;
-            
+
         } else if (action.equals("showPaymentMethods")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(1) != "null") {
                 decorationPreference.setBaseColor(data.getString(1));
-                
+
             }
             if (data.getBoolean(2)){
                 decorationPreference.enableDarkFont();
             }
-            
+
             new MercadoPago.StartActivityBuilder()
                 .setActivity(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .setDecorationPreference(decorationPreference)
                 .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(3),PaymentPreference.class))
                 .startPaymentMethodsActivity();
-            
+
             return true;
-            
+
         } else if (action.equals("showIssuers")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
-            
+
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(2) != "null") {
                 decorationPreference.setBaseColor(data.getString(2));
-                
+
             }
             if (data.getBoolean(3)){
                 decorationPreference.enableDarkFont();
             }
             PaymentMethod paymentMethod = new PaymentMethod();
             paymentMethod.setId(data.getString(1));
-            
+
             new MercadoPago.StartActivityBuilder()
                 .setActivity(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
@@ -263,26 +292,26 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .startIssuersActivity();
 
             return true;
-            
+
         } else if (action.equals("showInstallments")){
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
             DecorationPreference decorationPreference = new DecorationPreference();
-            
+
             if (data.getString(5) != "null") {
                 decorationPreference.setBaseColor(data.getString(5));
-                
+
             }
             if (data.getBoolean(6)){
                 decorationPreference.enableDarkFont();
             }
-            
+
             PaymentMethod paymentMethod = new PaymentMethod();
             paymentMethod.setId(data.getString(3));
             Issuer issuer = new Issuer();
             issuer.setId(data.getLong(4));
             BigDecimal amount = new BigDecimal(data.getInt(2));
-            
+
             MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
                     .setActivity(this.cordova.getActivity())
                     .setPublicKey(data.getString(0))
@@ -307,29 +336,29 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 mp.setSite(Sites.VENEZUELA);
             }
             mp.startInstallmentsActivity();
-            
+
             return true;
         } else {
             if (action.equals("showBankDeals")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 DecorationPreference decorationPreference = new DecorationPreference();
-                
+
                 if (data.getString(1) != "null") {
                     decorationPreference.setBaseColor(data.getString(1));
-                    
+
                 }
                 if (data.getBoolean(2)) {
                     decorationPreference.enableDarkFont();
                 }
-                
+
                 new MercadoPago.StartActivityBuilder()
                         .setActivity(this.cordova.getActivity())
                         .setPublicKey(data.getString(0))
                         .setDecorationPreference(decorationPreference)
                         .startBankDealsActivity();
-                
+
                 return true;
 
             } else if (action.equals("showPaymentResult")) {
@@ -346,33 +375,33 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPayment(payment)
                 .setPaymentMethod(paymentMethod)
                 .startPaymentResultActivity();
-                
+
                 return true;
             } else if (action.equals("createPayment")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 final PaymentMethod paymentMethod = new PaymentMethod();
                 paymentMethod.setId(data.getString(8));
                 int installments = data.getInt(9);
                 Long cardIssuerId = data.getLong(10);
                 String token = data.getString(11);
-                
+
                 BigDecimal amount = new BigDecimal(data.getInt(3));
                 if (paymentMethod != null) {
-                    
+
                     Item item = new Item(data.getString(1), data.getInt(2), amount);
-                    
+
                     String paymentMethodId = paymentMethod.getId();
-                    
+
                     MerchantPayment payment = new MerchantPayment(item, installments,
                                                                   cardIssuerId, token, paymentMethodId, data.getLong(4), data.getString(5));
-                    
+
                     // Enviar los datos a tu servidor
                     MerchantServer.createPayment(this.cordova.getActivity(), data.getString(6), data.getString(7), payment, new Callback<Payment>() {
                         @Override
                         public void success(Payment payment) {
-                            
+
                             if (MercadoPagoUtil.isCard(paymentMethod.getPaymentTypeId())) {
                                 Gson gson = new Gson();
                                 String mpPayment = gson.toJson(payment);
@@ -382,12 +411,12 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                                     js.put("payment", mpPayment);
                                     js.put("payment_methods", mpPaymentMethod);
                                 } catch (JSONException e) {
-                                    
+
                                     e.printStackTrace();
                                 }
                                 callback.success(js.toString());
                             } else {
-                                
+
                                 Gson gson = new Gson();
                                 String mpPayment = gson.toJson(payment);
                                 String mpPaymentMethod = gson.toJson(paymentMethod);
@@ -401,28 +430,28 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                                 callback.success(js.toString());
                             }
                         }
-                        
+
                         @Override
                         public void failure(ApiException apiException) {
                             callback.success(apiException.getError());
-                            
+
                         }
                     });
                 } else {
                     Toast.makeText(this.cordova.getActivity(), "Invalid payment method", Toast.LENGTH_LONG).show();
                 }
-                
+
                 return true;
-                
+
             } else if (action.equals("getPaymentMethods")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.getPaymentMethods(new Callback<List<PaymentMethod>>() {
                     @Override
                     public void success(List<PaymentMethod> paymentMethods) {
@@ -430,7 +459,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         String pm = gson.toJson(paymentMethods);
                         callback.success(pm);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
@@ -440,15 +469,15 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             } else if (action.equals("getIssuers")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 String paymentMethodId = data.getString(1);
                 String bin = data.getString(2);
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.getIssuers(paymentMethodId, bin, new Callback<List<Issuer>>() {
                     @Override
                     public void success(List<Issuer> issuers) {
@@ -456,7 +485,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         String issuer = gson.toJson(issuers);
                         callback.success(issuer);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
@@ -466,18 +495,18 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             } else if (action.equals("getInstallments")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 String paymentMethodId = data.getString(1);
                 String bin = data.getString(2);
                 Long issuerId = data.getLong(3);
-                
+
                 BigDecimal amount = new BigDecimal(data.getInt(4));
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.getInstallments(bin, amount, issuerId, paymentMethodId, new Callback<List<Installment>>() {
                     @Override
                     public void success(List<Installment> installments) {
@@ -485,7 +514,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         String installment = gson.toJson(installments);
                         callback.success(installment);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
@@ -495,12 +524,12 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             } else if (action.equals("getIdentificationTypes")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.getIdentificationTypes(new Callback<List<IdentificationType>>() {
                     @Override
                     public void success(List<IdentificationType> identificationTypes) {
@@ -508,7 +537,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         String identificationType = gson.toJson(identificationTypes);
                         callback.success(identificationType);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
@@ -518,14 +547,14 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             } else if (action.equals("createToken")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 CardToken cardToken = new CardToken(data.getString(1), data.getInt(2), data.getInt(3), data.getString(4), data.getString(5), data.getString(6), data.getString(7));
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.createToken(cardToken, new Callback<Token>() {
                     @Override
                     public void success(Token token) {
@@ -533,23 +562,23 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         String mptoken = gson.toJson(token);
                         callback.success(mptoken);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
                     }
                 });
                 return true;
-                
+
             } else if (action.equals("getBankDeals")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.getBankDeals(new Callback<List<BankDeal>>() {
                     @Override
                     public void success(List<BankDeal> bankDeals) {
@@ -557,50 +586,67 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                         String bankDeal = gson.toJson(bankDeals);
                         callback.success(bankDeal);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
                     }
                 });
                 return true;
-                
+
             } else if (action.equals("getPaymentResult")) {
                 cordova.setActivityResultCallback(this);
                 callback = callbackContext;
-                
+
                 Long paymentId = data.getLong(1);
                 String paymentTypeId = data.getString(2);
-                
+
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
                 .build();
-                
+
                 mercadoPago.getPaymentResult(paymentId, paymentTypeId, new Callback<PaymentResult>() {
                     @Override
                     public void success(PaymentResult paymentResult) {
-                        
+
                         Gson gson = new Gson();
                         String mpPaymentResult = gson.toJson(paymentResult);
                         callback.success(mpPaymentResult);
                     }
-                    
+
                     @Override
                     public void failure(ApiException error) {
                         callback.error(error.toString());
                     }
                 });
                 return true;
-                
+
             } else {
                 return false;
             }
         }
     }
-    
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == MercadoPago.PAYMENT_VAULT_REQUEST_CODE) {
+
+        if(requestCode == MercadoPagoUI.Activities.CUSTOMER_CARDS_REQUEST_CODE) {
+          if (resultCode == Activity.RESULT_OK) {
+            Card card = JsonUtil.getInstance().fromJson(data.getStringExtra("card"), Card.class);
+            if(card != null) {
+              Gson gson = new Gson();
+              callback.success(gson.toJson(card));
+            } else {
+              callback.success("");
+            }
+          } else {
+              if ((data != null) && (data.hasExtra("mpException"))) {
+                  MPException mpException = JsonUtil.getInstance()
+                  .fromJson(data.getStringExtra("mpException"), MPException.class);
+                  callback.error(mpException.getMessage());
+              }
+          }
+        } else if(requestCode == MercadoPago.PAYMENT_VAULT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 PaymentMethod mppaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
                 Issuer mpissuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
@@ -617,7 +663,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     js.put("issuer", issuer);
                     js.put("token", token);
                     js.put("payer_cost", payerCost);
-                    
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -635,8 +681,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 Issuer mpissuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
                 Token mptoken = JsonUtil.getInstance().fromJson(data.getStringExtra("token"), Token.class);
                 PayerCost mppayerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
-                
-                
+
+
                 Gson gson = new Gson();
                 String paymentMethod = gson.toJson(mppaymentMethod);
                 String issuer = gson.toJson(mpissuer);
@@ -648,12 +694,12 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     js.put("issuer", issuer);
                     js.put("token", token);
                     js.put("payer_cost", payerCost);
-                    
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 callback.success(js.toString());
-                
+
             } else {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
@@ -664,7 +710,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         }else if(requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK) {
                 PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
-                
+
                 Gson gson = new Gson();
                 callback.success(gson.toJson(paymentMethod));
             } else {
@@ -677,10 +723,10 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         } else if (requestCode == MercadoPago.ISSUERS_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK) {
                 Issuer issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
-                
+
                 Gson gson = new Gson();
                 callback.success(gson.toJson(issuer));
-                
+
             } else {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
@@ -691,7 +737,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         } else if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK) {
                 PayerCost payerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
-                
+
                 Gson gson = new Gson();
                 callback.success(gson.toJson(payerCost));
             }
@@ -702,20 +748,20 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                     callback.error(mpException.getMessage());
                 }
             }
-            
+
         } else if (requestCode == MercadoPago.CHECKOUT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                
+
                 // Listo! El pago ya fue procesado por MP.
                 Payment payment = JsonUtil.getInstance().fromJson(data.getStringExtra("payment"), Payment.class);
-                
+
                 if (payment != null) {
                     Gson gson = new Gson();
                     callback.success(gson.toJson(payment));
                 } else {
                     callback.success("El usuario no concretó el pago.");
                 }
-                
+
             } else {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
@@ -724,6 +770,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 }
             }
         }
-        
+
     }
 }
