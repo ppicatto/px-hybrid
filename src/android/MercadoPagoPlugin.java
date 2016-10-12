@@ -88,24 +88,91 @@ public class MercadoPagoPlugin extends CordovaPlugin {
           cordova.setActivityResultCallback (this);
 
           DecorationPreference decorationPreference = new DecorationPreference();
-          if (data.getString(4) != "null") {
-              decorationPreference.setBaseColor(data.getString(4));
+          if (data.getString(3) != "null") {
+              decorationPreference.setBaseColor(data.getString(3));
           }
-          if (data.getBoolean(5)) {
+          if (data.getBoolean(4)) {
               decorationPreference.enableDarkFont();
           }
 
-          new MercadoPagoUI.Activities.SavedCardsActivityBuilder()
+          String mode = data.getString(8);
+
+          MercadoPagoUI.Activities.SavedCardsActivityBuilder builder = new MercadoPagoUI.Activities.SavedCardsActivityBuilder()
                                 .setActivity(this.cordova.getActivity())
                                 .setMerchantBaseUrl(data.getString(0))
                                 .setMerchantGetCustomerUri(data.getString(1))
                                 .setMerchantAccessToken(data.getString(2))
-                                .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(3),PaymentPreference.class))
+                                .setPaymentPreference(JsonUtil.getInstance().fromJson(data.getString(9),PaymentPreference.class))
                                 .setDecorationPreference(decorationPreference)
-                                .setTitle(data.getString(6))
-                                .setFooter(data.getString(7))
-                                .setSelectionConfirmPromptText(data.getString(8))
-                                .startActivity();
+                                .setTitle(data.getString(5))
+                                .setFooter(data.getString(6))
+                                .setSelectionConfirmPromptText(data.getString(7));
+
+            if(mode.equals("delete")) {
+              builder.setSelectionImage(android.R.drawable.ic_delete);
+            }
+
+            builder.startActivity();
+
+            callback = callbackContext;
+            return true;
+
+        } else if (action.equals("startCardSelection")) {
+
+          cordova.setActivityResultCallback(this);
+
+          DecorationPreference decorationPreference = new DecorationPreference();
+          if (data.getString(6) != "null") {
+              decorationPreference.setBaseColor(data.getString(6));
+          }
+          if (data.getBoolean(7)) {
+              decorationPreference.enableDarkFont();
+          }
+
+          List<String> excluded = new ArrayList();
+          excluded.add(PaymentTypes.ACCOUNT_MONEY);
+          excluded.add(PaymentTypes.ATM);
+          excluded.add(PaymentTypes.BANK_TRANSFER);
+          excluded.add(PaymentTypes.DIGITAL_CURRENCY);
+          excluded.add(PaymentTypes.TICKET);
+
+          PaymentPreference paymentPreference = new PaymentPreference();
+          paymentPreference.setExcludedPaymentTypeIds(excluded);
+
+          PaymentPreference merchantPaymentPreference = JsonUtil.getInstance().fromJson(data.getString(8),PaymentPreference.class);
+
+          if(merchantPaymentPreference != null) {
+            paymentPreference.setExcludedPaymentMethodIds(merchantPaymentPreference.getExcludedPaymentMethodIds());
+          }
+
+          BigDecimal amount = new BigDecimal(data.getInt(2));
+          MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
+                          .setActivity(this.cordova.getActivity())
+                          .setPublicKey(data.getString(0))
+                          .setAmount(amount)
+                          .setMerchantBaseUrl(data.getString(3))
+                          .setMerchantGetCustomerUri(data.getString(4))
+                          .setMerchantAccessToken(data.getString(5))
+                          .setPaymentPreference(paymentPreference)
+                          .setDecorationPreference(decorationPreference);
+
+
+            if (data.getString(1).toUpperCase().equals("ARGENTINA")){
+                mp.setSite(Sites.ARGENTINA);
+            } else if (data.getString(1).toUpperCase().equals("BRASIL")){
+                mp.setSite(Sites.BRASIL);
+            } else if (data.getString(1).toUpperCase().equals("CHILE")){
+                mp.setSite(Sites.CHILE);
+            } else if (data.getString(1).toUpperCase().equals("COLOMBIA")){
+                mp.setSite(Sites.COLOMBIA);
+            } else if (data.getString(1).toUpperCase().equals("MEXICO")){
+                mp.setSite(Sites.MEXICO);
+            } else if (data.getString(1).toUpperCase().equals("USA")){
+                mp.setSite(Sites.USA);
+            } else if (data.getString(1).toUpperCase().equals("VENEZUELA")){
+                mp.setSite(Sites.VENEZUELA);
+            }
+            mp.startPaymentVaultActivity();
 
             callback = callbackContext;
             return true;
