@@ -6,7 +6,7 @@ MercadoPago.prototype.startCardSelection = function(publicKey, site, amount, mer
   cordova.exec(successCallback, errorCallback, "MercadoPago", "startCardSelection", [publicKey, site, amount, merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, color, blackFont, paymentPreference]);
 };
 MercadoPago.prototype.startSavedCards = function(merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, color, blackFont, title, footerText, confirmPromptText, mode, paymentPreference, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPago", "startSavedCards", [merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, color, blackFont, title, footerText, confirmPromptText, paymentPreference, mode]);
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "startSavedCards", [merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, color, blackFont, title, footerText, confirmPromptText, mode, paymentPreference]);
 };
 MercadoPago.prototype.setPaymentPreference = function(maxIntallments, defaultInstallments, excludedPaymentMethods, excludedPaymentTypes, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "setPaymentPreference", [maxIntallments, defaultInstallments, excludedPaymentMethods, excludedPaymentTypes]);
