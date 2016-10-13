@@ -145,7 +145,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             paymentPreference.setExcludedPaymentMethodIds(merchantPaymentPreference.getExcludedPaymentMethodIds());
           }
 
-          BigDecimal amount = new BigDecimal(data.getInt(2));
+          BigDecimal amount = new BigDecimal(data.getDouble(2));
           MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
                           .setActivity(this.cordova.getActivity())
                           .setPublicKey(data.getString(0))
@@ -218,7 +218,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
 
             cordova.setActivityResultCallback (this);
             callback = callbackContext;
-            BigDecimal amount = new BigDecimal(data.getInt(2));
+            BigDecimal amount = new BigDecimal(data.getDouble(2));
             MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
                     .setActivity(this.cordova.getActivity())
                     .setPublicKey(data.getString(0))
@@ -285,7 +285,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 decorationPreference.enableDarkFont();
             }
 
-            BigDecimal amount = new BigDecimal(data.getInt(2));
+            BigDecimal amount = new BigDecimal(data.getDouble(2));
             MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
                 .setActivity(this.cordova.getActivity())
                 .setPublicKey(data.getString(0))
@@ -376,7 +376,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             paymentMethod.setId(data.getString(3));
             Issuer issuer = new Issuer();
             issuer.setId(data.getLong(4));
-            BigDecimal amount = new BigDecimal(data.getInt(2));
+            BigDecimal amount = new BigDecimal(data.getDouble(2));
 
             MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
                     .setActivity(this.cordova.getActivity())
@@ -453,7 +453,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 Long cardIssuerId = data.getLong(10);
                 String token = data.getString(11);
 
-                BigDecimal amount = new BigDecimal(data.getInt(3));
+                BigDecimal amount = new BigDecimal(data.getDouble(3));
                 if (paymentMethod != null) {
 
                     Item item = new Item(data.getString(1), data.getInt(2), amount);
@@ -566,7 +566,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 String bin = data.getString(2);
                 Long issuerId = data.getLong(3);
 
-                BigDecimal amount = new BigDecimal(data.getInt(4));
+                BigDecimal amount = new BigDecimal(data.getDouble(4));
 
                 MercadoPago mercadoPago = new MercadoPago.Builder()
                 .setContext(this.cordova.getActivity())
