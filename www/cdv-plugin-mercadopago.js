@@ -32,7 +32,7 @@ MercadoPago.prototype.showInstallments = function(publicKey, site, amount, payme
 MercadoPago.prototype.showBankDeals = function(publicKey, color, blackFont, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "showBankDeals", [publicKey, color, blackFont]);
 };
-MercadoPago.prototype.createPayment = function(publicKey, itemID, itemQuantity, itemPrice, campaignId, accessToken, url, uri, paymentMethod, cardIssuerId, installments, tokenId, successCallback, errorCallback) {
+MercadoPago.prototype.createPayment = function(publicKey, itemID, itemQuantity, itemPrice, campaignId, accessToken, url, uri, paymentMethod, installments, cardIssuerId, tokenId, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "createPayment", [publicKey, itemID, itemQuantity, itemPrice, campaignId, accessToken, url, uri, paymentMethod, installments, cardIssuerId, tokenId]);
 };
 MercadoPago.prototype.showPaymentResult = function(publicKey, payment, paymentTypeId, successCallback, errorCallback) {
