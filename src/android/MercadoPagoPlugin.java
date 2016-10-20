@@ -676,8 +676,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             MerchantServer.createPayment(this.cordova.getActivity(), merchantBaseUrl, merchantGetCustomerUri, payment, new Callback<Payment>() {
                 @Override
                 public void success(Payment payment) {
-                        Gson gson = new Gson();
-                        String mpPayment = gson.toJson(payment);
+                        String mpPayment = JsonUtil.getInstance().toJson(payment);
                         JSONObject js = new JSONObject();
                         try {
                             js.put("payment", mpPayment);
@@ -710,8 +709,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         mercadoPago.getPaymentMethods(new Callback<List<PaymentMethod>>() {
             @Override
             public void success(List<PaymentMethod> paymentMethods) {
-                Gson gson = new Gson();
-                String pm = gson.toJson(paymentMethods);
+
+                String pm = JsonUtil.getInstance().toJson(paymentMethods);
                 callback.success(pm);
             }
 
@@ -737,8 +736,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         mercadoPago.getIssuers(paymentMethodId, bin, new Callback<List<Issuer>>() {
             @Override
             public void success(List<Issuer> issuers) {
-                Gson gson = new Gson();
-                String issuer = gson.toJson(issuers);
+
+                String issuer = JsonUtil.getInstance().toJson(issuers);
                 callback.success(issuer);
             }
 
@@ -767,8 +766,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         mercadoPago.getInstallments(bin, amount, issuerId, paymentMethodId, new Callback<List<Installment>>() {
             @Override
             public void success(List<Installment> installments) {
-                Gson gson = new Gson();
-                String installment = gson.toJson(installments);
+                String installment = JsonUtil.getInstance().toJson(installments);
                 callback.success(installment);
             }
 
@@ -791,8 +789,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         mercadoPago.getIdentificationTypes(new Callback<List<IdentificationType>>() {
             @Override
             public void success(List<IdentificationType> identificationTypes) {
-                Gson gson = new Gson();
-                String identificationType = gson.toJson(identificationTypes);
+                String identificationType = JsonUtil.getInstance().toJson(identificationTypes);
                 callback.success(identificationType);
             }
 
@@ -817,8 +814,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         mercadoPago.createToken(cardToken, new Callback<Token>() {
             @Override
             public void success(Token token) {
-                Gson gson = new Gson();
-                String mptoken = gson.toJson(token);
+
+                String mptoken = JsonUtil.getInstance().toJson(token);
                 callback.success(mptoken);
             }
 
@@ -841,8 +838,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         mercadoPago.getBankDeals(new Callback<List<BankDeal>>() {
             @Override
             public void success(List<BankDeal> bankDeals) {
-                Gson gson = new Gson();
-                String bankDeal = gson.toJson(bankDeals);
+
+                String bankDeal = JsonUtil.getInstance().toJson(bankDeals);
                 callback.success(bankDeal);
             }
 
@@ -869,8 +866,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             @Override
             public void success(PaymentResult paymentResult) {
 
-                Gson gson = new Gson();
-                String mpPaymentResult = gson.toJson(paymentResult);
+                String mpPaymentResult = JsonUtil.getInstance().toJson(paymentResult);
                 callback.success(mpPaymentResult);
             }
 
@@ -902,15 +898,11 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             }
         } else if (requestCode == MercadoPago.PAYMENT_VAULT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                PaymentMethod mppaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
-                Issuer mpissuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
-                Token mptoken = JsonUtil.getInstance().fromJson(data.getStringExtra("token"), Token.class);
-                PayerCost mppayerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
-                Gson gson = new Gson();
-                String paymentMethod = gson.toJson(mppaymentMethod);
-                String issuer = gson.toJson(mpissuer);
-                String token = gson.toJson(mptoken);
-                String payerCost = gson.toJson(mppayerCost);
+                String paymentMethod = data.getStringExtra("paymentMethod");
+                String issuer = data.getStringExtra("issuer");
+                String token = data.getStringExtra("token");
+                String payerCost = data.getStringExtra("payerCost");
+
                 JSONObject js = new JSONObject();
                 try {
                     js.put("payment_method", paymentMethod);
@@ -933,17 +925,11 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             }
         } else if (requestCode == MercadoPago.CARD_VAULT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                PaymentMethod mppaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
-                Issuer mpissuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
-                Token mptoken = JsonUtil.getInstance().fromJson(data.getStringExtra("token"), Token.class);
-                PayerCost mppayerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
+                String paymentMethod = data.getStringExtra("paymentMethod");
+                String issuer = data.getStringExtra("issuer");
+                String token = data.getStringExtra("token");
+                String payerCost = data.getStringExtra("payerCost");
 
-
-                Gson gson = new Gson();
-                String paymentMethod = gson.toJson(mppaymentMethod);
-                String issuer = gson.toJson(mpissuer);
-                String token = gson.toJson(mptoken);
-                String payerCost = gson.toJson(mppayerCost);
                 JSONObject js = new JSONObject();
                 try {
                     js.put("payment_method", paymentMethod);
@@ -967,10 +953,9 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             }
         } else if (requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                String paymentMethod = data.getStringExtra("paymentMethod");
 
-                Gson gson = new Gson();
-                callback.success(gson.toJson(paymentMethod));
+                callback.success(paymentMethod);
             } else {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
@@ -982,10 +967,9 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             }
         } else if (requestCode == MercadoPago.ISSUERS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                Issuer issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+                String issuer = data.getStringExtra("issuer");
 
-                Gson gson = new Gson();
-                callback.success(gson.toJson(issuer));
+                callback.success(issuer);
 
             } else {
                 if ((data != null) && (data.hasExtra("mpException"))) {
@@ -998,10 +982,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             }
         } else if (requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                PayerCost payerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
-
-                Gson gson = new Gson();
-                callback.success(gson.toJson(payerCost));
+                String payerCost = data.getStringExtra("payerCost");
+                callback.success(payerCost);
             } else {
                 if ((data != null) && (data.hasExtra("mpException"))) {
                     MPException mpException = JsonUtil.getInstance()
@@ -1016,11 +998,10 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             if (resultCode == Activity.RESULT_OK && data != null) {
 
                 // Listo! El pago ya fue procesado por MP.
-                Payment payment = JsonUtil.getInstance().fromJson(data.getStringExtra("payment"), Payment.class);
+                String payment = data.getStringExtra("payment");
 
                 if (payment != null) {
-                    Gson gson = new Gson();
-                    callback.success(gson.toJson(payment));
+                    callback.success(payment);
                 } else {
                     callback.success("El usuario no concretó el pago.");
                 }
