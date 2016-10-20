@@ -311,7 +311,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
     }
 
     private void createPaymentRecovery(Payment payment, Token token, PaymentMethod paymentMethod, PayerCost payerCost, Issuer issuer, CallbackContext callbackContext) {
-        cordova.setActivityResultCallback(this);
+        
         try {
             PaymentRecovery paymentRecovery = new PaymentRecovery(token, payment, paymentMethod, payerCost, issuer);
             callbackContext.success(JsonUtil.getInstance().toJson(paymentRecovery));
