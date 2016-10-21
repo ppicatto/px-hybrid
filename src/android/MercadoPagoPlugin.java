@@ -41,7 +41,7 @@ import com.mercadopago.core.MercadoPagoUI;
 import com.mercadopago.util.JsonUtil;
 
 import com.mercadopago.util.MercadoPagoUtil;
-import com.mercadopago.mpconnect.MPConnect;
+import com.mercadopago.connect.MPConnect;
 
 import org.apache.cordova.*;
 import org.json.JSONArray;
@@ -311,7 +311,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
     }
 
     private void createPaymentRecovery(Payment payment, Token token, PaymentMethod paymentMethod, PayerCost payerCost, Issuer issuer, CallbackContext callbackContext) {
-        
+
         try {
             PaymentRecovery paymentRecovery = new PaymentRecovery(token, payment, paymentMethod, payerCost, issuer);
             callbackContext.success(JsonUtil.getInstance().toJson(paymentRecovery));
