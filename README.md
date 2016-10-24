@@ -6,7 +6,7 @@ This plugin allows to add MercadoPago to your application using MercadoPago Nati
 # Installation
 First, install MercadoPago Plugin by running the following
 
-    cordova plugin add mercadopago-plugin
+    cordova plugin add mercadopago-plugin@1.0.2
 
 It is also possible to install via repo url directly ( unstable )
 
