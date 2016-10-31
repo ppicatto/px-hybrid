@@ -6,6 +6,6 @@ repositories {
 }
 
 dependencies {
-    compile 'com.mercadopago:connect:1.0.3'
+    compile 'com.mercadopago:connect:1.0.4'
     compile ('com.mercadopago:sdk:2.1.0-rc5@aar') { transitive = true }
 }

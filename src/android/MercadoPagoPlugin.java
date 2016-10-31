@@ -41,7 +41,8 @@ import com.mercadopago.core.MercadoPagoUI;
 import com.mercadopago.util.JsonUtil;
 
 import com.mercadopago.util.MercadoPagoUtil;
-import com.mercadopago.connect.MPConnect;
+//import com.mercadopago.connect.MPConnect;
+import com.mercadopago.mpconnect.MPConnect;
 
 import org.apache.cordova.*;
 import org.json.JSONArray;
@@ -66,7 +67,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             String merchantBaseUrl = data.getString(1);
             String merchantGetCredentialsUri = data.getString(2);
             String merchantAccessToken = data.getString(3);
-            startMercadoPagoConnect(appId, merchantBaseUrl, merchantGetCredentialsUri, merchantAccessToken, callbackContext);
+            String redirectUri = data.getString(4);
+            startMercadoPagoConnect(appId, merchantBaseUrl, merchantGetCredentialsUri, merchantAccessToken, redirectUri, callbackContext);
             return true;
 
         } else if (action.equals("setPaymentPreference")) {
@@ -274,16 +276,19 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         }
     }
 
-    private void startMercadoPagoConnect(String appID, String merchantBaseUrl, String merchantGetCredentialsUri, String merchantAccessToken, CallbackContext callbackContext) throws JSONException {
+    private void startMercadoPagoConnect(String appID, String merchantBaseUrl, String merchantGetCredentialsUri, String merchantAccessToken, String redirectUri, CallbackContext callbackContext) throws JSONException {
         cordova.setActivityResultCallback(this);
         callback = callbackContext;
-        new MPConnect.StartActivityBuilder()
+        MPConnect.StartActivityBuilder mc = new MPConnect.StartActivityBuilder()
                         .setActivity(this.cordova.getActivity())
                         .setAppId(appID)
                         .setMerchantAccessToken(merchantAccessToken)
                         .setMerchantBaseUrl(merchantBaseUrl)
-                        .setMerchantGetCredentialsUri(merchantGetCredentialsUri)
-                        .startConnectActivity();
+                        .setMerchantGetCredentialsUri(merchantGetCredentialsUri);
+        if (redirectUri != "null") {
+            mc.setRedirectUri(redirectUri);
+        }
+        mc.startConnectActivity();
     }
 
     private void createPaymentPreference(Integer maxAcceptedInstallments, Integer defaultInstallments, JSONArray excludedPaymentMethodsJson, JSONArray excludedPaymentTypesJson, CallbackContext callbackContext) throws JSONException {

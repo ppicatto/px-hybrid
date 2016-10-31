@@ -68,7 +68,7 @@ MercadoPago.prototype.getCustomer = function(merchantBaseUrl, merchantGetCustome
 MercadoPago.prototype.createPaymentRecovery = function(payment, token, paymentMethod, payerCost, issuer, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "MercadoPago", "createPaymentRecovery", [payment, token, paymentMethod, payerCost, issuer]);
 };
-MercadoPago.prototype.startMercadoPagoConnect = function(appId, merchantBaseUrl, merchantGetCredentialsUri, merchantAccessToken, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "MercadoPago", "startMercadoPagoConnect", [appId, merchantBaseUrl, merchantGetCredentialsUri, merchantAccessToken]);
+MercadoPago.prototype.startMercadoPagoConnect = function(appId, merchantBaseUrl, merchantGetCredentialsUri, merchantAccessToken, redirectUri, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "MercadoPago", "startMercadoPagoConnect", [appId, merchantBaseUrl, merchantGetCredentialsUri, merchantAccessToken, redirectUri]);
 };
 module.exports = new MercadoPago();
