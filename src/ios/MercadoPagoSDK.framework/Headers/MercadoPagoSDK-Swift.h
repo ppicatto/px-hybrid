@@ -491,6 +491,17 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK11Fingerprint")
 @end
 
 
+SWIFT_CLASS("_TtC14MercadoPagoSDK13FlowTrackInfo")
+@interface FlowTrackInfo : NSObject
+@end
+
+
+SWIFT_CLASS("_TtC14MercadoPagoSDK9GATracker")
+@interface GATracker : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
 SWIFT_CLASS("_TtC14MercadoPagoSDK18MercadoPagoService")
 @interface MercadoPagoService : NSObject
 - (void)request:(NSString * _Nonnull)uri params:(NSString * _Nullable)params body:(id _Nullable)body method:(NSString * _Nonnull)method headers:(NSDictionary * _Nullable)headers cache:(BOOL)cache success:(void (^ _Nonnull)(id _Nullable jsonResult))success failure:(void (^ _Nullable)(NSError * _Nonnull error))failure;
@@ -1426,6 +1437,18 @@ SWIFT_CLASS("_TtC14MercadoPagoSDK25PaymentTotalTableViewCell")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 - (void)awakeFromNib;
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;
+@end
+
+
+SWIFT_CLASS("_TtC14MercadoPagoSDK16PaymentTrackInfo")
+@interface PaymentTrackInfo : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC14MercadoPagoSDK14PaymentTracker")
+@interface PaymentTracker : NSObject
++ (void)request:(NSString * _Nonnull)url params:(NSString * _Nullable)params body:(id _Nullable)body method:(NSString * _Nonnull)method headers:(NSDictionary * _Nullable)headers success:(void (^ _Nonnull)(id _Nullable))success failure:(void (^ _Nullable)(NSError * _Nonnull))failure;
 @end
 
 
