@@ -431,7 +431,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
     private void startPaymentVault(String publicKey, String site, BigDecimal amount, String color, Boolean blackFont, Boolean installmentsEnabled, PaymentPreference paymentPreference, CallbackContext callbackContext) {
         DecorationPreference decorationPreference = new DecorationPreference();
 
-        if (color != null) {
+        if (color != "null") {
             decorationPreference.setBaseColor(color);
         }
         if (blackFont) {
