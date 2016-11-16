@@ -3,14 +3,14 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.mercadopago.cordova.sdk"
-    version="1.1.2">
-
+    version="1.1.7">
+    
     <name>MercadoPago</name>
-
+    
     <description>This plugin allows to add MercadoPago to your application using MercadoPago Native library</description>
-
+    
     <license>MIT License, see LICENSE.md for details</license>
-
+    
     <engines>
             <engine name="cordova" version="&gt;=3.0.0" />
     </engines>
@@ -18,9 +18,9 @@
     <js-module src="www/cdv-plugin-mercadopago.js" name="MercadoPago">
         <clobbers target="MercadoPago" />
     </js-module>
-
+    
      <dependency id="cordova-plugin-add-swift-support" version="1.3.2"/>
-
+    
     <hook type="after_platform_add" src="hooks/addEmbedded.js" />
 
     <platform name="android">
@@ -35,17 +35,19 @@
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
 
     </platform>
-    <platform name="ios">
-        
-        <config-file target="config.xml" parent="/*">
-            <feature name="MercadoPago">
-                <param name="ios-package" value="MercadoPagoPlugin" />
-            </feature>
-        </config-file>
-        
-        <header-file src="src/ios/MercadoPagoPlugin.h" target-dir="MercadoPago"/>
-        <source-file src="src/ios/MercadoPagoPlugin.m" target-dir="MercadoPago"/>
-        <framework src="src/ios/MercadoPagoSDK.framework" custom="true" embed="true"/>
-    </platform>
+    
+
+      <platform name="ios">
+    
+    <config-file target="config.xml" parent="/*">
+      <feature name="MercadoPago">
+        <param name="ios-package" value="MercadoPagoPlugin" />
+      </feature>
+    </config-file>
+
+    <header-file src="src/ios/MercadoPagoPlugin.h" target-dir="MercadoPago"/>
+    <source-file src="src/ios/MercadoPagoPlugin.m" target-dir="MercadoPago"/>
+    <framework src="src/ios/MercadoPagoSDK.framework" custom="true" embed="true"/>
+  </platform>
 
 </plugin>

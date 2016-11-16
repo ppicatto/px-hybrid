@@ -272,12 +272,15 @@
     }else {
         [MercadoPagoContext setLightTextColor];
     }
+    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
     
-    NSData *data = [[[command arguments] objectAtIndex:5] dataUsingEncoding:NSUTF8StringEncoding];
-    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentPreference *pp = [PaymentPreference fromJSON:paymentPrefJson];
+    if([[command arguments] objectAtIndex:5]!= (id)[NSNull null]){
+        NSData *data = [[[command arguments] objectAtIndex:5] dataUsingEncoding:NSUTF8StringEncoding];
+        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
+    }
     
-    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:2]doubleValue] paymentPreference:pp callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
+    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:2]doubleValue] paymentPreference:paymentPreference callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
         
@@ -328,14 +331,19 @@
     }else {
         [MercadoPagoContext setLightTextColor];
     }
+    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
+    
+    if([[command arguments] objectAtIndex:5]!= (id)[NSNull null]){
+        NSData *data = [[[command arguments] objectAtIndex:5] dataUsingEncoding:NSUTF8StringEncoding];
+        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
+    }
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     
-    NSData *data = [[[command arguments] objectAtIndex:5] dataUsingEncoding:NSUTF8StringEncoding];
-    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
     
-    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:paymentPref amount:[[[command arguments] objectAtIndex:2]doubleValue] paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
+    
+    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:paymentPreference amount:[[[command arguments] objectAtIndex:2]doubleValue] paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
         NSString *jsonToken = [token toJSONString];
@@ -388,11 +396,17 @@
     }
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
-    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
     
-    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:paymentPref amount:100.0 paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
+    
+    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
+    
+    if([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
+        NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
+        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
+    }
+    
+    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:paymentPreference amount:100.0 paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
         NSString *jsonToken = [token toJSONString];
@@ -443,12 +457,15 @@
     
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     if ([[command arguments] objectAtIndex:3] != (id)[NSNull null]){
+        PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
         
-        NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
-        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
+        if([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
+            NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
+            id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
+        }
         
-        MercadoPagoUIViewController *viewPaymentMethods = [MPStepBuilder startPaymentMethodsStepWithPreference:paymentPref callback:^(PaymentMethod *paymentMethod) {
+        MercadoPagoUIViewController *viewPaymentMethods = [MPStepBuilder startPaymentMethodsStepWithPreference:paymentPreference callback:^(PaymentMethod *paymentMethod) {
             CDVPluginResult* result = [CDVPluginResult
                                        resultWithStatus:CDVCommandStatus_OK
                                        messageAsString: [paymentMethod toJSONString]];
@@ -545,11 +562,15 @@
     Issuer *issuer =[[Issuer alloc]init];
     issuer._id=[[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:4]];
     
-    NSData *data = [[[command arguments] objectAtIndex:7] dataUsingEncoding:NSUTF8StringEncoding];
-    id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentPreference *paymentPref = [PaymentPreference fromJSON:paymentPrefJson];
+    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
     
-    MercadoPagoUIViewController *navInstallments = [MPStepBuilder startInstallmentsStep:nil paymentPreference:paymentPref amount:[[[command arguments] objectAtIndex:2]doubleValue] issuer:issuer paymentMethodId:[[command arguments] objectAtIndex:3] callback:^(PayerCost * payerCost) {
+    if([[command arguments] objectAtIndex:7]!= (id)[NSNull null]){
+        NSData *data = [[[command arguments] objectAtIndex:7] dataUsingEncoding:NSUTF8StringEncoding];
+        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
+    }
+    
+    MercadoPagoUIViewController *navInstallments = [MPStepBuilder startInstallmentsStep:nil paymentPreference:paymentPreference amount:[[[command arguments] objectAtIndex:2]doubleValue] issuer:issuer paymentMethodId:[[command arguments] objectAtIndex:3] callback:^(PayerCost * payerCost) {
         
         CDVPluginResult* result = [CDVPluginResult
                                    resultWithStatus:CDVCommandStatus_OK
@@ -604,13 +625,15 @@
     id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
     Payment *payment = [Payment fromJSON:json];
+    data = [[[command arguments] objectAtIndex:2] dataUsingEncoding:NSUTF8StringEncoding];
+    json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentMethod *paymentMethod = [PaymentMethod fromJSON:json];
     
-    UINavigationController *navInstructions = [MPStepBuilder startInstructionsStep:payment paymentTypeId:@"ticket" callback:^(Payment *  payment, enum CongratsState status) {
-        
+    UINavigationController *navPaymentResult = [MPStepBuilder startPaymentResultStep:payment paymentMethod:paymentMethod callback:^(Payment * _Nonnull payment, enum CongratsState status) {
         [rootViewController dismissViewControllerAnimated:YES completion:^{}];
     }];
     
-    [rootViewController presentViewController:navInstructions animated:YES completion:^{}];
+    [rootViewController presentViewController:navPaymentResult animated:YES completion:^{}];
 }
 
 -(void) showInNavigationController:(UIViewController *)viewControllerBase{
