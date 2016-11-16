@@ -1,11 +1,9 @@
 repositories {
     jcenter()
-    maven {
-        url 'https://dl.bintray.com/mreverter/maven'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compile 'com.mercadopago:connect:1.0.4'
+    compile 'com.mercadopago:connect:1.0.6'
     compile ('com.mercadopago:sdk:2.1.0-rc5@aar') { transitive = true }
 }
