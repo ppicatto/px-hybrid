@@ -119,7 +119,7 @@
                   <p>
                      <pre class="snippet">
                        <code id="flavor_2_step_1" class="line-numbers language-html">
-                       $ cordova plugin add mercadopago-plugin@1.0.2
+                       $ cordova plugin add mercadopago-plugin
                        </code>
                         <button class="copy-button" alt="Copiar código">
                            <img src="./img/clippy.svg" width="13">
@@ -540,8 +540,8 @@ Integer installments, Long cardIssuerId, final PaymentMethod paymentMethod) {
                         <code class="line-numbers language-javascript">
                         $scope.showPaymentResult = function(){
                           var payment; // respuesta de pago
-                          var paymentTypeId = "ticket";
-                          MercadoPago.showPaymentResult(publicKey, paymentId, paymentTypeId, success, failure);
+                          var paymentMethod = {} ; // el objeto entero
+                          MercadoPago.showPaymentResult(publicKey, payment, paymentMethod, success, failure);
                         };
                         var success = function(response) {
                         };
