@@ -58,7 +58,7 @@
     [MercadoPagoContext setPublicKey:publicKey];
     
     if ([[command arguments] objectAtIndex:2]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -232,7 +232,7 @@
     int quantity = [[[command arguments] objectAtIndex:2]intValue];
     double price = [[[command arguments] objectAtIndex:3]doubleValue];
     
-    Item *item = [[Item alloc]initWith_id:[[command arguments] objectAtIndex:1] title:@"title" quantity:quantity unitPrice: price];
+    Item *item = [[Item alloc]initWith_id:[[command arguments] objectAtIndex:1] title:nil quantity:quantity unitPrice:price description:nil];
     
     Issuer *is =[[ Issuer alloc]init];
     is._id = [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:10]];
@@ -266,7 +266,7 @@
     [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
     
     if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -292,7 +292,7 @@
         
         
         NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
-        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_methods"];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
         
         
         if (payerCost != nil && issuer != nil && token != nil){
@@ -326,7 +326,7 @@
     [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
     
     if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -347,8 +347,8 @@
         id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
     }
-    
-    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:paymentPreference amount:[[[command arguments] objectAtIndex:2]doubleValue] paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
+
+    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:paymentPreference amount:[[[command arguments] objectAtIndex:2]doubleValue] cardInformation:nil paymentMethods:nil token:nil timer:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
         NSString *jsonToken = [token toJSONString];
@@ -393,7 +393,7 @@
     NSString* callbackId = [command callbackId];
     
     if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -413,8 +413,7 @@
         id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
     }
-    
-    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:paymentPreference amount:100.0 paymentMethods:nil token:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
+    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:paymentPreference amount:100.0 cardInformation:nil paymentMethods:nil token:nil timer:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
         
         NSString *jsonPaymentMethod = [paymentMethod toJSONString];
         NSString *jsonToken = [token toJSONString];
@@ -456,7 +455,7 @@
     NSString* callbackId = [command callbackId];
     
     if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -525,7 +524,7 @@
     NSString* callbackId = [command callbackId];
     
     if ([[command arguments] objectAtIndex:2]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -571,7 +570,7 @@
     [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
     
     if ([[command arguments] objectAtIndex:5]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:5] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:5] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -623,7 +622,7 @@
     NSString* callbackId = [command callbackId];
     
     if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:.9];
+        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
         [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
     } else {
         UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
@@ -661,12 +660,12 @@
     
     UINavigationController *navPaymentResult = [MPStepBuilder startPaymentResultStep:payment paymentMethod:paymentMethod callback:^(Payment * _Nonnull payment, enum CongratsState status) {
         
-        if (status == (CongratsState) CongratsStateOK){
+        if (status == (CongratsState) CongratsStateOk){
             CDVPluginResult* result = [CDVPluginResult
                                        resultWithStatus:CDVCommandStatus_OK
                                        messageAsString:@"{\"nextAction\":\"continue\"}"];
             [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        } else if (status == (CongratsState) CongratsStateCANCEL_SELECT_OTHER){
+        } else if (status == (CongratsState) CongratsStateCancel_SELECT_OTHER){
             CDVPluginResult* result = [CDVPluginResult
                                        resultWithStatus:CDVCommandStatus_OK
                                        messageAsString:@"{\"nextAction\":\"select_other_payment_method123\"}"];
@@ -687,7 +686,7 @@
 
 -(void) showInNavigationController:(UIViewController *)viewControllerBase{
     
-    MPNavigationController *navCon = [[MPNavigationController alloc]initWithRootViewController:viewControllerBase];
+    UINavigationController *navCon = [[UINavigationController alloc]initWithRootViewController:viewControllerBase];
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     [rootViewController presentViewController:navCon animated:YES completion:^{}];
     
