@@ -349,7 +349,7 @@
         NSString *jsonToken = [token toJSONString];
         
         NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
-        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_methods"];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
         [mpResponse setObject:jsonToken forKey:@"token"];
         
         if (payerCost != nil && issuer != nil ){
@@ -412,7 +412,7 @@
         NSString *jsonToken = [token toJSONString];
         
         NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
-        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_methods"];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
         [mpResponse setObject:jsonToken forKey:@"token"];
         
         if (issuer != nil ){

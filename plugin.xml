@@ -19,7 +19,7 @@
         <clobbers target="MercadoPago" />
     </js-module>
 
-     <dependency id="cordova-plugin-add-swift-support" version="1.3.2"/>
+     <dependency id="cordova-plugin-add-swift-support" version="1.6.0"/>
 
 <!--    <hook type="after_platform_add" src="hooks/addEmbedded.js" />-->
 
@@ -46,7 +46,7 @@
         <header-file src="src/ios/MercadoPagoPlugin.h" target-dir="MercadoPago"/>
         <source-file src="src/ios/MercadoPagoPlugin.m" target-dir="MercadoPago"/>
         <framework src="src/ios/MercadoPagoSDK.framework" custom="true" embed="true"/>
-        <framework src="MercadoPagoSDK" type="podspec" spec="~> 2.2.3" />
+        <framework src="MercadoPagoSDK" type="podspec" spec="~> 2.2.4" />
     </platform>
 
 </plugin>
