@@ -106,8 +106,9 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             Boolean blackFont = data.getBoolean(7);
             Boolean installmentsEnabled = data.getBoolean(8);
             PaymentPreference paymentPreference = JsonUtil.getInstance().fromJson(data.getString(9), PaymentPreference.class);
+            String payerEmail = data.getString(10);
 
-            startCardSelection(publicKey, site, amount, merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, color, blackFont, installmentsEnabled, paymentPreference, callbackContext);
+            startCardSelection(publicKey, site, amount, merchantBaseUrl, merchantGetCustomerUri, merchantAccessToken, color, blackFont, installmentsEnabled, paymentPreference, payerEmail, callbackContext);
             return true;
 
         } else if (action.equals("startCheckout")) {
@@ -128,7 +129,8 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             Boolean blackFont = data.getBoolean(4);
             Boolean installmentsEnabled = data.getBoolean(5);
             PaymentPreference paymentPreference = JsonUtil.getInstance().fromJson(data.getString(6), PaymentPreference.class);
-            startPaymentVault(publicKey, site, amount, color, blackFont, installmentsEnabled, paymentPreference, callbackContext);
+            String payerEmail = data.getString(7);
+            startPaymentVault(publicKey, site, amount, color, blackFont, installmentsEnabled, paymentPreference, payerEmail, callbackContext);
             return true;
 
         } else if (action.equals("showCardWithoutInstallments")) {
@@ -352,7 +354,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         builder.startActivity();
     }
 
-    private void startCardSelection(String publicKey, String site, BigDecimal amount, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, String color, Boolean blackFont, Boolean installmentsEnabled, PaymentPreference merchantPaymentPreference, CallbackContext callbackContext) {
+    private void startCardSelection(String publicKey, String site, BigDecimal amount, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, String color, Boolean blackFont, Boolean installmentsEnabled, PaymentPreference merchantPaymentPreference, String payerEmail, CallbackContext callbackContext) {
         cordova.setActivityResultCallback(this);
         callback = callbackContext;
         DecorationPreference decorationPreference = new DecorationPreference();
@@ -388,6 +390,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setMerchantAccessToken(merchantAccessToken)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
+                .setPayerEmail(payerEmail)
                 .setDecorationPreference(decorationPreference);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -428,7 +431,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .startCheckoutActivity();
     }
 
-    private void startPaymentVault(String publicKey, String site, BigDecimal amount, String color, Boolean blackFont, Boolean installmentsEnabled, PaymentPreference paymentPreference, CallbackContext callbackContext) {
+    private void startPaymentVault(String publicKey, String site, BigDecimal amount, String color, Boolean blackFont, Boolean installmentsEnabled, PaymentPreference paymentPreference, String payerEmail, CallbackContext callbackContext) {
         DecorationPreference decorationPreference = new DecorationPreference();
 
         if (color != "null") {
@@ -446,6 +449,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setDecorationPreference(decorationPreference)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
+                .setPayerEmail(payerEmail)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
