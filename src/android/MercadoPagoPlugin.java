@@ -369,6 +369,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         excluded.add(PaymentTypes.BANK_TRANSFER);
         excluded.add(PaymentTypes.DIGITAL_CURRENCY);
         excluded.add(PaymentTypes.TICKET);
+        excluded.add(PaymentTypes.DEBIT_CARD);
 
         PaymentPreference paymentPreference = new PaymentPreference();
         paymentPreference.setExcludedPaymentTypeIds(excluded);
@@ -388,6 +389,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setMerchantAccessToken(merchantAccessToken)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
+                .setDiscountEnabled(false)
                 .setDecorationPreference(decorationPreference);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -438,6 +440,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             decorationPreference.enableDarkFont();
         }
 
+
         cordova.setActivityResultCallback(this);
         callback = callbackContext;
         MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
@@ -446,6 +449,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setDecorationPreference(decorationPreference)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
+                .setDirectDiscountEnabled(false)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -484,6 +488,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setPaymentRecovery(paymentRecovery)
                 .setInstallmentsEnabled(false)
+                .setDirectDiscountEnabled(false)
                 .startCardVaultActivity();
 
         cordova.setActivityResultCallback(this);
@@ -509,6 +514,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setPaymentRecovery(paymentRecovery)
                 .setInstallmentsEnabled(true)
+                .setDirectDiscountEnabled(false)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -546,6 +552,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(publicKey)
                 .setDecorationPreference(decorationPreference)
                 .setPaymentPreference(paymentPreference)
+                .setDirectDiscountEnabled(false)
                 .startPaymentMethodsActivity();
 
     }
@@ -569,6 +576,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(publicKey)
                 .setDecorationPreference(decorationPreference)
                 .setPaymentMethod(paymentMethod)
+                .setDirectDiscountEnabled(false)
                 .startIssuersActivity();
     }
 
@@ -596,6 +604,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setAmount(amount)
                 .setIssuer(issuer)
+                .setDirectDiscountEnabled(false)
                 .setPaymentMethod(paymentMethod);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -633,6 +642,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setActivity(this.cordova.getActivity())
                 .setPublicKey(publicKey)
                 .setDecorationPreference(decorationPreference)
+                .setDirectDiscountEnabled(false)
                 .startBankDealsActivity();
     }
 
@@ -644,6 +654,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(publicKey)
                 .setPayment(payment)
                 .setPaymentMethod(paymentMethod)
+                .setDirectDiscountEnabled(false)
                 .startPaymentResultActivity();
     }
 
