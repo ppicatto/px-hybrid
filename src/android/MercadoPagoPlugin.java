@@ -449,7 +449,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setDecorationPreference(decorationPreference)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -488,7 +488,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setPaymentRecovery(paymentRecovery)
                 .setInstallmentsEnabled(false)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .startCardVaultActivity();
 
         cordova.setActivityResultCallback(this);
@@ -514,7 +514,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setPaymentRecovery(paymentRecovery)
                 .setInstallmentsEnabled(true)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -552,7 +552,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(publicKey)
                 .setDecorationPreference(decorationPreference)
                 .setPaymentPreference(paymentPreference)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .startPaymentMethodsActivity();
 
     }
@@ -576,7 +576,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(publicKey)
                 .setDecorationPreference(decorationPreference)
                 .setPaymentMethod(paymentMethod)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .startIssuersActivity();
     }
 
@@ -604,7 +604,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setAmount(amount)
                 .setIssuer(issuer)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .setPaymentMethod(paymentMethod);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -642,7 +642,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setActivity(this.cordova.getActivity())
                 .setPublicKey(publicKey)
                 .setDecorationPreference(decorationPreference)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .startBankDealsActivity();
     }
 
@@ -654,7 +654,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPublicKey(publicKey)
                 .setPayment(payment)
                 .setPaymentMethod(paymentMethod)
-                .setDirectDiscountEnabled(false)
+                .setDiscountEnabled(false)
                 .startPaymentResultActivity();
     }
 
