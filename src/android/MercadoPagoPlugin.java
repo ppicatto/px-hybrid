@@ -326,7 +326,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         }
     }
 
-    private void startSavedCards(Customer customer, String color, Boolean blackFont, String title, String footerText, String confirmPromptText, String mode, PaymentPreference paymentPreference, CallbackContext callbackContext) {
+    private void startSavedCards(Customer customer, String color, Boolean blackFont, String title, String customActionText, String confirmPromptText, String mode, PaymentPreference paymentPreference, CallbackContext callbackContext) {
         cordova.setActivityResultCallback(this);
         callback = callbackContext;
         DecorationPreference decorationPreference = new DecorationPreference();
@@ -343,18 +343,16 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentPreference(paymentPreference)
                 .setDecorationPreference(decorationPreference)
                 .setTitle(title)
-                .setFooter(footerText)
+                .setCustomActionMessage(customActionText)
                 .setSelectionConfirmPromptText(confirmPromptText);
 
-        if (mode.equals("delete")) {
-            builder.setSelectionImage(android.R.drawable.ic_delete);
-        }
         builder.startActivity();
     }
 
     private void startCardSelection(String publicKey, String site, BigDecimal amount, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, String color, Boolean blackFont, Boolean installmentsEnabled, PaymentPreference merchantPaymentPreference, CallbackContext callbackContext) {
         cordova.setActivityResultCallback(this);
         callback = callbackContext;
+        Boolean showBankDeals = true;
         DecorationPreference decorationPreference = new DecorationPreference();
         if (color != "null") {
             decorationPreference.setBaseColor(color);
@@ -378,6 +376,10 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             paymentPreference.setExcludedPaymentMethodIds(merchantPaymentPreference.getExcludedPaymentMethodIds());
             paymentPreference.setDefaultInstallments(merchantPaymentPreference.getDefaultInstallments());
             paymentPreference.setMaxAcceptedInstallments(merchantPaymentPreference.getMaxInstallments());
+            if(merchantPaymentPreference.getMaxInstallments() == 1
+                    || merchantPaymentPreference.getDefaultInstallments() == 1) {
+                showBankDeals = false;
+            }
         }
 
         MercadoPago.StartActivityBuilder mp = new MercadoPago.StartActivityBuilder()
@@ -389,6 +391,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setMerchantAccessToken(merchantAccessToken)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
+                .setShowBankDeals(showBankDeals)
                 .setDiscountEnabled(false)
                 .setDecorationPreference(decorationPreference);
 
@@ -489,6 +492,7 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setPaymentRecovery(paymentRecovery)
                 .setInstallmentsEnabled(false)
                 .setDiscountEnabled(false)
+                .setShowBankDeals(false)
                 .startCardVaultActivity();
 
         cordova.setActivityResultCallback(this);
