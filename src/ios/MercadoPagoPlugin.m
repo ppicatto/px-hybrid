@@ -73,19 +73,54 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
 }
 
 - (void) getCustomer:(CDVInvokedUrlCommand*)command {
-    [self setEnviroment];
-    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:nil extraOptionTitle:@"Add Card"];
-    CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
-        
-    }];
+
+    //Get Merchant Base Url
+    NSString *merchantBaseUrl = [[command arguments] objectAtIndex:0];
+    
+    //Get Merchant Get Customer Uri
+    NSString *merchantGetCustomerUri = [[command arguments] objectAtIndex:1];
+    
+    //Get Merchant Access Token
+    NSString *merchantAccessToken = [[command arguments] objectAtIndex:2];
+    
     ServicePreference* servicePref = [[ServicePreference alloc] init];
-    [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
     NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
-    [params setValue:@"mla-cards-data" forKey:@"merchant_access_token"];
-    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:@"mla-cards-data"];
-    [servicePref setGetCustomerWithBaseURL:@"https://www.mercadopago.com" URI:@"/checkout/examples/getCustomer" additionalInfo:params];
+    [params setValue:merchantAccessToken forKey:@"merchant_access_token"];
+    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:merchantAccessToken];
+    [servicePref setGetCustomerWithBaseURL:merchantBaseUrl URI:merchantGetCustomerUri additionalInfo:params];
     [MercadoPagoCheckout setServicePreference:servicePref];
-    [self showInNavigationController:vc];
+    
+    //Get CallbackID
+    NSString* callbackId = [command callbackId];
+
+    //Get Customer
+    [MerchantServer getCustomer:^(Customer * cust) {
+        CDVPluginResult* result = [CDVPluginResult
+        resultWithStatus:CDVCommandStatus_OK
+        messageAsString:[cust toJSONString]];
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    } failure:^(NSError * error) {
+        [self.commandDelegate sendPluginResult:nil callbackId:callbackId];
+    }];
+    
+    
+    
+    
+    
+    //PULPO'S CODE
+//    [self setEnviroment];
+//    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:nil extraOptionTitle:@"Add Card"];
+//    CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
+//        
+//    }];
+//    ServicePreference* servicePref = [[ServicePreference alloc] init];
+//    [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
+//    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
+//    [params setValue:@"mla-cards-data" forKey:@"merchant_access_token"];
+//    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:@"mla-cards-data"];
+//    [servicePref setGetCustomerWithBaseURL:@"https://www.mercadopago.com" URI:@"/checkout/examples/getCustomer" additionalInfo:params];
+//    [MercadoPagoCheckout setServicePreference:servicePref];
+//    [self showInNavigationController:vc];
 }
 
 - (void)setPaymentPreference:(CDVInvokedUrlCommand*)command
