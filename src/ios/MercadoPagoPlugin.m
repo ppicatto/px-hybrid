@@ -98,27 +98,6 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     [MercadoPagoCheckout setDecorationPreference:decoPref];
     
     [self showInNavigationController:vc];
-    
-    
-    
-    
-    
-    //PULPO'S CODE
-    
-//    [self setEnviroment];
-//    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:nil extraOptionTitle:@"Add Card"];
-//    CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
-//        
-//    }];
-//    ServicePreference* servicePref = [[ServicePreference alloc] init];
-//    [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
-//    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
-//    [params setValue:@"mla-cards-data" forKey:@"merchant_access_token"];
-//    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:@"mla-cards-data"];
-//    [servicePref setGetCustomerWithBaseURL:@"https://www.mercadopago.com" URI:@"/checkout/examples/getCustomer" additionalInfo:params];
-//    [MercadoPagoCheckout setServicePreference:servicePref];
-//    [self showInNavigationController:vc];
-
 }
 
 - (void) getCustomer:(CDVInvokedUrlCommand*)command {
