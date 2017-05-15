@@ -56,19 +56,68 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
 
 
 - (void) startSavedCards:(CDVInvokedUrlCommand*)command {
-    [self setEnviroment];
-    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:nil extraOptionTitle:@"Add Card"];
+    
+    //Get Customer
+    NSData *customerData = [[[command arguments] objectAtIndex:0] dataUsingEncoding:NSUTF8StringEncoding];
+    id customerJson = [NSJSONSerialization JSONObjectWithData:customerData options:0 error:nil];
+    Customer *customer = [Customer fromJSON:customerJson];
+    
+    //Get Decoration Preference Color
+    UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
+    
+    //Get Black Font Bool Value
+    NSNumber *blackFont = [NSNumber numberWithBool:[[command arguments] objectAtIndex:2]];
+    
+    //Get Title
+    NSString *title = [[command arguments] objectAtIndex:3];
+    
+    //Get Footer Text
+    NSString *footerText = [[command arguments] objectAtIndex:4];
+    
+    //Get Confirm Prompt Text
+    NSString *confirmPromptText = [[command arguments] objectAtIndex:5];
+    
+    //Get Mode
+    NSString *mode = [[command arguments] objectAtIndex:6];
+    
+    //Get Payment Preference
+    NSData *data = [[[command arguments] objectAtIndex:7] dataUsingEncoding:NSUTF8StringEncoding];
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
+    
+    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:customer.cards extraOptionTitle:@"Add Card"];
     CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
-        
     }];
-    ServicePreference* servicePref = [[ServicePreference alloc] init];
-    [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
-    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
-    [params setValue:@"mla-cards-data" forKey:@"merchant_access_token"];
-    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:@"mla-cards-data"];
-    [servicePref setGetCustomerWithBaseURL:@"https://www.mercadopago.com" URI:@"/checkout/examples/getCustomer" additionalInfo:params];
-    [MercadoPagoCheckout setServicePreference:servicePref];
+    
+    
+    
+    DecorationPreference* decoPref = [[DecorationPreference alloc] initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont) {
+        [decoPref enableDarkFont];
+    };
+    [MercadoPagoCheckout setDecorationPreference:decoPref];
+    
     [self showInNavigationController:vc];
+    
+    
+    
+    
+    
+    //PULPO'S CODE
+    
+//    [self setEnviroment];
+//    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:nil extraOptionTitle:@"Add Card"];
+//    CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
+//        
+//    }];
+//    ServicePreference* servicePref = [[ServicePreference alloc] init];
+//    [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
+//    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
+//    [params setValue:@"mla-cards-data" forKey:@"merchant_access_token"];
+//    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:@"mla-cards-data"];
+//    [servicePref setGetCustomerWithBaseURL:@"https://www.mercadopago.com" URI:@"/checkout/examples/getCustomer" additionalInfo:params];
+//    [MercadoPagoCheckout setServicePreference:servicePref];
+//    [self showInNavigationController:vc];
 
 }
 
