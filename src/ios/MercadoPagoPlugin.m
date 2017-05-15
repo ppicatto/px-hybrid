@@ -36,22 +36,22 @@
 
 - (void)startFlavorTwo:(CDVInvokedUrlCommand*)command
 {
-    [self startCardSelection:command];
+    [self showCardWithoutInstallments:command];
 
   
 }
 
-NSString* publicKey = @"TEST-e4bdd1cf-bcb2-43f7-b565-ed4c9ea25be7";
-NSString* accessToken = @"";
-NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
+//NSString* publicKey = @"TEST-e4bdd1cf-bcb2-43f7-b565-ed4c9ea25be7";
+//NSString* accessToken = @"";
+//NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
 
 
 -(void) setEnviroment{
   //  [MercadoPagoContext setPublicKey:@"APP_USR-5a399d42-6015-4f6a-8ff8-dd7d368068f8"];
 //    [MercadoPagoContext setPublicKey:@"TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a"];
   //  [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
-    [MercadoPagoContext setSiteID:@"MLA"];
-    [MercadoPagoContext setDisplayDefaultLoadingWithFlag:NO];
+//    [MercadoPagoContext setSiteID:@"MLA"];
+//    [MercadoPagoContext setDisplayDefaultLoadingWithFlag:NO];
 }
 
 
@@ -66,7 +66,7 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
     
     //Get Black Font Bool Value
-    NSNumber *blackFont = [NSNumber numberWithBool:[[command arguments] objectAtIndex:2]];
+    BOOL blackFont = [[[command arguments] objectAtIndex:2]boolValue];
     
     //Get Title
     NSString *title = [[command arguments] objectAtIndex:3];
@@ -78,24 +78,25 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     NSString *confirmPromptText = [[command arguments] objectAtIndex:5];
     
     //Get Mode
-    NSString *mode = [[command arguments] objectAtIndex:6];
+//    NSString *mode = [[command arguments] objectAtIndex:6];
     
     //Get Payment Preference
     NSData *data = [[[command arguments] objectAtIndex:7] dataUsingEncoding:NSUTF8StringEncoding];
     id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
     
+    DecorationPreference* dp = [[DecorationPreference alloc] initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont){
+        [dp enableDarkFont];
+    }else {
+        [dp enableLightFont];
+    }
+    
+    [MercadoPagoCheckout setDecorationPreference:dp];
+    
     CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:customer.cards extraOptionTitle:@"Add Card"];
     CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
     }];
-    
-    
-    
-    DecorationPreference* decoPref = [[DecorationPreference alloc] initWithBaseColor:color fontName:nil fontLightName:nil];
-    if (blackFont) {
-        [decoPref enableDarkFont];
-    };
-    [MercadoPagoCheckout setDecorationPreference:decoPref];
     
     [self showInNavigationController:vc];
 }
@@ -179,18 +180,28 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:6] alpha:1];
     
     //Get Black Font Bool Value
-    NSNumber *blackFont=[NSNumber numberWithBool:[[command arguments] objectAtIndex:7]];
+    BOOL blackFont = [[[command arguments] objectAtIndex:7]boolValue];
     
-    //Create Checkout Preference
-    Payer *payer = [[Payer alloc] initWith_id:@"payerId" email:@"payer@email.com" type:nil identification:nil entityType:nil];
-    Item *item = [[Item alloc] initWith_id:@"itemId" title:@"item title" quantity:1 unitPrice:amount description:nil currencyId:@"ARS"];
-    NSArray *items = [NSArray arrayWithObjects:item, nil];
+    //Get Installments Enabled Bool Value
+    BOOL installmentsEnabled = [[[command arguments] objectAtIndex:8]boolValue];
+
     
-        //Get Payment Preference
+    //Get Payment Preference
     NSData *data = [[[command arguments] objectAtIndex:9] dataUsingEncoding:NSUTF8StringEncoding];
     id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
-    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", @"debit_card", @"prepaid_card", @"digital_currency", nil];
+    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", @"debit_card", @"prepaid_card", @"digital_currency", @"account_money", nil];
+
+    if (!installmentsEnabled) {
+        [paymentPref setDefaultInstallments:1];
+    }
+    
+    
+    
+    //Create Checkout Preference
+    Payer *payer = [[Payer alloc] initWith_id:@"payer_id" email:@"payer_email" type:nil identification:nil entityType:nil];
+    Item *item = [[Item alloc] initWith_id:@"item_id" title:@"item_title" quantity:1 unitPrice:amount description:nil currencyId:@"ARS"];
+    NSArray *items = [NSArray arrayWithObjects:item, nil];
     
     CheckoutPreference* pref = [[CheckoutPreference alloc] initWithItems:items payer:payer paymentMethods:paymentPref];
     //--Create Checkout Preference
@@ -200,6 +211,15 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     [fp disableReviewAndConfirmScreen];
     
     DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont){
+        [dp enableDarkFont];
+    }else {
+        [dp enableLightFont];
+    }
+    
+    ServicePreference* sp = [[ServicePreference alloc]init];
+    NSDictionary *extraParams = @{@"merchant_access_token" : merchantAccessToken};
+    [sp setGetCustomerWithBaseURL:merchantBaseUrl URI:merchantGetCustomerUri additionalInfo:extraParams];
     //--Checkout Customization Preferences
     
     UINavigationController* new  = [[UINavigationController alloc]init];
@@ -214,6 +234,39 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     
     [rootViewController presentViewController:new animated:YES completion:^{}];
     //--Create and Start Checkout
+    
+    //Callback
+    NSString* callbackId = [command callbackId];
+    
+    [MercadoPagoCheckout setPaymentDataCallbackWithPaymentDataCallback:^(PaymentData * pd) {
+
+        [new dismissViewControllerAnimated:true completion:nil];
+        
+        NSString *jsonPaymentMethod = [pd.paymentMethod toJSONString];
+        NSString *jsonToken = [pd.token toJSONString];
+        NSString *jsonPayerCost = [pd.payerCost toJSONString];
+        
+        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
+        [mpResponse setObject:jsonToken forKey:@"token"];
+        [mpResponse setObject:jsonPayerCost forKey:@"payer_cost"];
+        
+        if (pd.issuer != nil ){
+            NSString *jsonIssuer = [pd.issuer toJSONString];
+            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
+        }
+        
+        NSError * err;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
+        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        CDVPluginResult* result = [CDVPluginResult
+                                   resultWithStatus:CDVCommandStatus_OK
+                                   messageAsString: myString];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+        
+    }];
+    //--Callback
 }
 
 - (void)showCardWithoutInstallments:(CDVInvokedUrlCommand*)command {
@@ -225,19 +278,21 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
     
     //Get Black Font Bool Value
-    NSNumber *blackFont=[NSNumber numberWithBool:[[command arguments] objectAtIndex:3]];
+    BOOL blackFont = [[[command arguments] objectAtIndex:2]boolValue];
     
-    //Create Checkout Preference
-    Payer *payer = [[Payer alloc] initWith_id:@"payerId" email:@"payer@email.com" type:nil identification:nil entityType:nil];
-    Item *item = [[Item alloc] initWith_id:@"itemId" title:@"item title" quantity:1 unitPrice:100 description:nil currencyId:@"ARS"];
-    NSArray *items = [NSArray arrayWithObjects:item, nil];
-    
-        //Get Payment Preference
-    NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
+    //Get Payment Preference
+    NSData *data = [[[command arguments] objectAtIndex:4] dataUsingEncoding:NSUTF8StringEncoding];
     id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
     paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", @"debit_card", @"prepaid_card", @"digital_currency", nil];
     paymentPref.maxAcceptedInstallments = 1;
+
+    
+    
+    //Create Checkout Preference
+    Payer *payer = [[Payer alloc] initWith_id:@"payer_id" email:@"payer_email" type:nil identification:nil entityType:nil];
+    Item *item = [[Item alloc] initWith_id:@"item_id" title:@"item_title" quantity:1 unitPrice:100 description:nil currencyId:@"ARS"];
+    NSArray *items = [NSArray arrayWithObjects:item, nil];
     
     CheckoutPreference* pref = [[CheckoutPreference alloc] initWithItems:items payer:payer paymentMethods:paymentPref];
     //--Create Checkout Preference
@@ -247,6 +302,11 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     [fp disableReviewAndConfirmScreen];
     
     DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont){
+        [dp enableDarkFont];
+    }else {
+        [dp enableLightFont];
+    }
     //--Checkout Customization Preferences
     
     UINavigationController* new  = [[UINavigationController alloc]init];
@@ -260,6 +320,46 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     
     [rootViewController presentViewController:new animated:YES completion:^{}];
     //--Create and Start Checkout
+    
+    //Callback
+    NSString* callbackId = [command callbackId];
+    
+    [MercadoPagoCheckout setPaymentDataCallbackWithPaymentDataCallback:^(PaymentData * pd) {
+        
+        [new dismissViewControllerAnimated:true completion:nil];
+        
+        NSString *jsonPaymentMethod = [pd.paymentMethod toJSONString];
+        NSString *jsonToken = [pd.token toJSONString];
+        NSString *jsonPayerCost = [pd.payerCost toJSONString];
+        
+        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
+        [mpResponse setObject:jsonToken forKey:@"token"];
+        [mpResponse setObject:jsonPayerCost forKey:@"payer_cost"];
+        
+        if (pd.issuer != nil ){
+            NSString *jsonIssuer = [pd.issuer toJSONString];
+            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
+        }
+        
+        NSError * err;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
+        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        CDVPluginResult* result = [CDVPluginResult
+                                   resultWithStatus:CDVCommandStatus_OK
+                                   messageAsString: myString];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+        
+    }];
+    //--Callback
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -335,14 +435,17 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     Payment *payment = [Payment fromJSON:json];
     
-    //Get PaymentTypeID
-    NSString *paymentTypeID = [[command arguments] objectAtIndex:2];
+    //Get Payment Method
+    data = [[[command arguments] objectAtIndex:2] dataUsingEncoding:NSUTF8StringEncoding];
+    json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentMethod *paymentMethod = [PaymentMethod fromJSON:json];
+    
+
     
     // Create PaymentData
     PaymentData *paymentData = [PaymentData alloc];
     
-    PaymentMethod * pm = [[PaymentMethod alloc] initWith_id:payment.paymentMethodId name:@"cargavirtual" paymentTypeId:paymentTypeID];
-    paymentData.paymentMethod = pm;
+    paymentData.paymentMethod = paymentMethod;
     
     Issuer *issuer = [[Issuer alloc] init];
     NSNumber *issuerID = [NSNumber numberWithInteger:payment.issuerId];
@@ -354,7 +457,7 @@ NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
     paymentData.payerCost = payerCost;
     
     Token *token = [[Token alloc] initWith_id:payment.tokenId publicKey:pk cardId:nil luhnValidation:nil status:nil usedDate:nil cardNumberLength:18 creationDate:nil lastFourDigits:nil firstSixDigit:nil securityCodeLength:4 expirationMonth:01 expirationYear:99 lastModifiedDate:nil dueDate:nil cardHolder:nil];
-    paymentData.token = token;
+    paymentData.token = nil;
     
     paymentData.payer = payment.payer;
     
