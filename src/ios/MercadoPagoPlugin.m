@@ -84,6 +84,34 @@
     [vm setTitleWithTitle:title];
     
     CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
+        
+        NSString* callbackId = [command callbackId];
+        
+        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
+        
+        if (card != nil) {
+            NSString *jsonCard = [card toJSONString];
+            [mpResponse setObject:jsonCard forKey:@"card"];
+        }
+        
+//        if (card.paymentMethod != nil ){
+//            NSString *jsonPaymentMethod = [card.paymentMethod toJSONString];
+//            [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
+//        }
+//        
+//        if (card.issuer != nil ){
+//            NSString *jsonIssuer = [card.issuer toJSONString];
+//            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
+//        }
+        
+        NSError * err;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
+        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        CDVPluginResult* result = [CDVPluginResult
+                                   resultWithStatus:CDVCommandStatus_OK
+                                   messageAsString: myString];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
     }];
     
     [self showInNavigationController:vc];
