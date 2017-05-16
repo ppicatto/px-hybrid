@@ -80,7 +80,9 @@
     
     [MercadoPagoCheckout setDecorationPreference:dp];
     
-    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:customer.cards extraOptionTitle:@"Add Card"];
+    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:customer.cards extraOptionTitle:footerText confirmPromptText: confirmPromptText];
+    [vm setTitleWithTitle:title];
+    
     CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
     }];
     
