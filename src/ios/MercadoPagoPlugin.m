@@ -133,29 +133,6 @@
     }];
 }
 
-- (void)setPaymentPreference:(CDVInvokedUrlCommand*)command
-{
-
-     NSString* callbackId = [command callbackId];
-     
-     PaymentPreference *pp = [[PaymentPreference alloc]init];
-     
-     NSArray *exPaymentMethods = [[command arguments] objectAtIndex:2];
-     pp.excludedPaymentMethodIds = exPaymentMethods;
-     NSArray *exPaymentTypes = [[command arguments] objectAtIndex:3];
-     pp.excludedPaymentTypeIds = exPaymentTypes;
-     pp.maxAcceptedInstallments = [[[command arguments] objectAtIndex:0]integerValue];
-     pp.defaultInstallments =[[[command arguments] objectAtIndex:1]integerValue];
-     
-     
-     CDVPluginResult* result = [CDVPluginResult
-     resultWithStatus:CDVCommandStatus_OK
-     messageAsString:[pp toJSONString]];
-     
-     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
- 
-}
-
 - (void)startCardSelection:(CDVInvokedUrlCommand*)command {
     
     //Get Public Key
@@ -444,6 +421,29 @@
     
 }
 
+
+- (void)setPaymentPreference:(CDVInvokedUrlCommand*)command
+{
+    
+    NSString* callbackId = [command callbackId];
+    
+    PaymentPreference *pp = [[PaymentPreference alloc]init];
+    
+    NSArray *exPaymentMethods = [[command arguments] objectAtIndex:2];
+    pp.excludedPaymentMethodIds = exPaymentMethods;
+    NSArray *exPaymentTypes = [[command arguments] objectAtIndex:3];
+    pp.excludedPaymentTypeIds = exPaymentTypes;
+    pp.maxAcceptedInstallments = [[[command arguments] objectAtIndex:0]integerValue];
+    pp.defaultInstallments =[[[command arguments] objectAtIndex:1]integerValue];
+    
+    
+    CDVPluginResult* result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_OK
+                               messageAsString:[pp toJSONString]];
+    
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    
+}
 
 - (void)startCheckout:(CDVInvokedUrlCommand*)command
 {
