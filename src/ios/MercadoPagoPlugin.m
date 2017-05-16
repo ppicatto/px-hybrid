@@ -41,20 +41,6 @@
   
 }
 
-//NSString* publicKey = @"TEST-e4bdd1cf-bcb2-43f7-b565-ed4c9ea25be7";
-//NSString* accessToken = @"";
-//NSString* prefID = @"243966003-d64b4270-10c8-43b2-9600-3009cdfe4fa9";
-
-
--(void) setEnviroment{
-  //  [MercadoPagoContext setPublicKey:@"APP_USR-5a399d42-6015-4f6a-8ff8-dd7d368068f8"];
-//    [MercadoPagoContext setPublicKey:@"TEST-ad365c37-8012-4014-84f5-6c895b3f8e0a"];
-  //  [MercadoPagoContext setPayerAccessToken:@"APP_USR-1094487241196549-081708-4bc39f94fd147e7ce839c230c93261cb__LA_LC__-145698489"];
-//    [MercadoPagoContext setSiteID:@"MLA"];
-//    [MercadoPagoContext setDisplayDefaultLoadingWithFlag:NO];
-}
-
-
 - (void) startSavedCards:(CDVInvokedUrlCommand*)command {
     
     //Get Customer
