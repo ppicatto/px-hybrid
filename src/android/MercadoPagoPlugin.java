@@ -367,7 +367,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         excluded.add(PaymentTypes.BANK_TRANSFER);
         excluded.add(PaymentTypes.DIGITAL_CURRENCY);
         excluded.add(PaymentTypes.TICKET);
-        excluded.add(PaymentTypes.DEBIT_CARD);
 
         PaymentPreference paymentPreference = new PaymentPreference();
         paymentPreference.setExcludedPaymentTypeIds(excluded);
