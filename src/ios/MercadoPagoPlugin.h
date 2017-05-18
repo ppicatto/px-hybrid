@@ -5,6 +5,8 @@
 
 @property (nonatomic, retain) MercadoPagoCheckout * cho;
 
+- (void) sendCallback:(NSString*)resultString callbackID:(NSString*)callbackID;
+- (void) sendErrorCallback:(NSString*)error errorCallbackID:(NSString*)errorCallbackID;
 - (void) startCheckout:(CDVInvokedUrlCommand*)command;
 - (void) getPaymentMethods:(CDVInvokedUrlCommand*)command;
 - (void) setPaymentPreference:(CDVInvokedUrlCommand*)command;
@@ -24,6 +26,7 @@
 - (void) showInstallments:(CDVInvokedUrlCommand*)command;
 - (void) showBankDeals:(CDVInvokedUrlCommand*)command;
 - (void) showInNavigationController:(UIViewController *)viewControllerBase;
+- (void) dissmissNavigationController:(UINavigationController *)navigationController;
 - (void) startSavedCards:(CDVInvokedUrlCommand*)command;
 - (void) getCustomer:(CDVInvokedUrlCommand*)command;
 - (NSString *) toString:(NSArray*)array;
