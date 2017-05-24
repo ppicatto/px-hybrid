@@ -29,6 +29,7 @@
 - (void) dissmissNavigationController:(UINavigationController *)navigationController;
 - (void) startSavedCards:(CDVInvokedUrlCommand*)command;
 - (void) getCustomer:(CDVInvokedUrlCommand*)command;
+- (void) startCardSelection:(CDVInvokedUrlCommand*)command;
 - (NSString *) toString:(NSArray*)array;
 - (NSString *) getSiteID:(NSString*)site;
 
