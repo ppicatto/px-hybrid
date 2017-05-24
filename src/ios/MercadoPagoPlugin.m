@@ -138,7 +138,8 @@
     NSString *pk = [[command arguments] objectAtIndex:0];
     
     //Get Site ID
-    NSString *siteID = [[command arguments] objectAtIndex:1];
+   
+    NSString *siteID =  [self getSiteID:[[command arguments] objectAtIndex:1]];
     
     //Get Amount
     double amount = [[[command arguments] objectAtIndex:2]doubleValue];
