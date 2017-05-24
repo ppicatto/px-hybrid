@@ -375,8 +375,10 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             paymentPreference.setExcludedPaymentMethodIds(merchantPaymentPreference.getExcludedPaymentMethodIds());
             paymentPreference.setDefaultInstallments(merchantPaymentPreference.getDefaultInstallments());
             paymentPreference.setMaxAcceptedInstallments(merchantPaymentPreference.getMaxInstallments());
-            if(merchantPaymentPreference.getMaxInstallments() == 1
-                    || merchantPaymentPreference.getDefaultInstallments() == 1) {
+            Integer maxInstallments = merchantPaymentPreference.getMaxInstallments();
+            Integer defaultInstallments = merchantPaymentPreference.getDefaultInstallments();
+            if((maxInstallments != null && maxInstallments == 1)
+                    || (defaultInstallments != null && defaultInstallments == 1)) {
                 showBankDeals = false;
             }
         }
