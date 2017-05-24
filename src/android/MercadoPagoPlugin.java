@@ -391,7 +391,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
                 .setShowBankDeals(showBankDeals)
-                .setDiscountEnabled(false)
                 .setDecorationPreference(decorationPreference);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -451,7 +450,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setDecorationPreference(decorationPreference)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
-                .setDiscountEnabled(false)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
