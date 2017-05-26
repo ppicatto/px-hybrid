@@ -20,6 +20,7 @@
     </js-module>
 
      <dependency id="cordova-plugin-add-swift-support" version="1.6.0"/>
+     <dependency id="cordova-plugin-cocoapod-support" version="1.3.0"/>
 
 <!--    <hook type="after_platform_add" src="hooks/addEmbedded.js" />-->
 
@@ -36,7 +37,8 @@
 
     </platform>
     <platform name="ios">
-
+      <pods-config ios-min-version="9.0" use-frameworks="true"/>
+      <pod name="MercadoPagoSDK" version="3.0.0-BETA-32" />
         <config-file target="config.xml" parent="/*">
             <feature name="MercadoPago">
                 <param name="ios-package" value="MercadoPagoPlugin" />
@@ -46,7 +48,6 @@
         <header-file src="src/ios/MercadoPagoPlugin.h" target-dir="MercadoPago"/>
         <source-file src="src/ios/MercadoPagoPlugin.m" target-dir="MercadoPago"/>
      <!--  <framework src="src/ios/MercadoPagoSDK.framework" custom="true" embed="true"/> -->
-       <framework src="MercadoPagoSDK" type="podspec" spec="3.0.0-BETA-26" />
     </platform>
 
 </plugin>
