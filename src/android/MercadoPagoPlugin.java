@@ -367,7 +367,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
         excluded.add(PaymentTypes.BANK_TRANSFER);
         excluded.add(PaymentTypes.DIGITAL_CURRENCY);
         excluded.add(PaymentTypes.TICKET);
-        excluded.add(PaymentTypes.DEBIT_CARD);
 
         PaymentPreference paymentPreference = new PaymentPreference();
         paymentPreference.setExcludedPaymentTypeIds(excluded);
@@ -376,8 +375,10 @@ public class MercadoPagoPlugin extends CordovaPlugin {
             paymentPreference.setExcludedPaymentMethodIds(merchantPaymentPreference.getExcludedPaymentMethodIds());
             paymentPreference.setDefaultInstallments(merchantPaymentPreference.getDefaultInstallments());
             paymentPreference.setMaxAcceptedInstallments(merchantPaymentPreference.getMaxInstallments());
-            if(merchantPaymentPreference.getMaxInstallments() == 1
-                    || merchantPaymentPreference.getDefaultInstallments() == 1) {
+            Integer maxInstallments = merchantPaymentPreference.getMaxInstallments();
+            Integer defaultInstallments = merchantPaymentPreference.getDefaultInstallments();
+            if((maxInstallments != null && maxInstallments == 1)
+                    || (defaultInstallments != null && defaultInstallments == 1)) {
                 showBankDeals = false;
             }
         }
@@ -392,7 +393,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
                 .setShowBankDeals(showBankDeals)
-                .setDiscountEnabled(false)
                 .setDecorationPreference(decorationPreference);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
@@ -452,7 +452,6 @@ public class MercadoPagoPlugin extends CordovaPlugin {
                 .setDecorationPreference(decorationPreference)
                 .setInstallmentsEnabled(installmentsEnabled)
                 .setPaymentPreference(paymentPreference)
-                .setDiscountEnabled(false)
                 .setAmount(amount);
 
         if (site.toUpperCase().equals("ARGENTINA")) {
