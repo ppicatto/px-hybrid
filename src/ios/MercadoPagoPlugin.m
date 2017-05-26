@@ -96,6 +96,10 @@
             [self sendCallback:@"footerSelected" callbackID:callbackId];
         }
     }];
+    vc.callbackCancel = ^{
+       [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
     
     [self showInNavigationController:vc];
 }
@@ -211,6 +215,11 @@
     //Create and Start Checkout
     MercadoPagoCheckout* cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:navCon paymentResult:nil];
 
+    cho.callbackCancel = ^{
+        [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
+    
     [pref setSiteId:siteID];
     [MercadoPagoCheckout setFlowPreference:fp];
     [MercadoPagoCheckout setDecorationPreference:dp];
@@ -245,7 +254,7 @@
         
         [self sendCallback:myString callbackID:callbackId];
     }];
-    //--Callback
+    
 }
 
 - (void)showCardWithoutInstallments:(CDVInvokedUrlCommand*)command {
@@ -290,23 +299,28 @@
     }
     //--Checkout Customization Preferences
     [MercadoPagoCheckout setServicePreference:[[ServicePreference alloc]init]];
-    UINavigationController* new  = [[UINavigationController alloc]init];
+    navCon  = [[UINavigationController alloc]init];
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     
     //Create and Start Checkout
-    self.cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:new paymentResult:nil];
+    self.cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:navCon paymentResult:nil];
     [MercadoPagoCheckout setFlowPreference:fp];
     [MercadoPagoCheckout setDecorationPreference:dp];
     [cho start];
     
-    [rootViewController presentViewController:new animated:YES completion:^{}];
+    self.cho.callbackCancel = ^{
+        [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
+    
+    [rootViewController presentViewController:navCon animated:YES completion:^{}];
     //--Create and Start Checkout
     
     //Callback
     [MercadoPagoCheckout setPaymentDataCallbackWithPaymentDataCallback:^(PaymentData * pd) {
         
-        [new dismissViewControllerAnimated:true completion:nil];
-        
+      // [navCon dismissViewControllerAnimated:true completion:nil];
+        [self dissmissNavigationController];
         NSString *jsonPaymentMethod = [pd.paymentMethod toJSONString];
         NSString *jsonToken = [pd.token toJSONString];
         
@@ -417,6 +431,11 @@
         
         
     }];
+    
+    congratsViewController.callbackCancel = ^{
+        [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
     
     [self showInNavigationController:congratsViewController];
     
