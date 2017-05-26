@@ -1,5 +1,7 @@
-#import "MercadoPagoPlugin.h"
+
 @import MercadoPagoSDK;
+#import "MercadoPagoPlugin.h"
+
 @interface UIColor (fromHex)
 + (UIColor *)colorwithHexString:(NSString *)hexStr alpha:(CGFloat)alpha;
 @end
@@ -29,6 +31,415 @@
 
 @end
 @implementation MercadoPagoPlugin
+
+@synthesize cho;
+
+- (void) sendCallback:(NSString*)resultString callbackID:(NSString*)callbackID {
+    CDVPluginResult* result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_OK
+                               messageAsString:resultString];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackID];
+}
+
+- (void) sendErrorCallback:(NSString*)error errorCallbackID:(NSString*)errorCallbackID {
+    CDVPluginResult* result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_ERROR
+                               messageAsString:error.description];
+    [self.commandDelegate sendPluginResult:result callbackId:errorCallbackID];
+}
+
+- (void) startSavedCards:(CDVInvokedUrlCommand*)command {
+    
+    //Get Customer
+    NSData *customerData = [[[command arguments] objectAtIndex:0] dataUsingEncoding:NSUTF8StringEncoding];
+    id customerJson = [NSJSONSerialization JSONObjectWithData:customerData options:0 error:nil];
+    Customer *customer = [Customer fromJSON:customerJson];
+    
+    //Get Decoration Preference Color
+    UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
+    
+    //Get Black Font Bool Value
+    BOOL blackFont = [[[command arguments] objectAtIndex:2]boolValue];
+    
+    //Get Title
+    NSString *title = [[command arguments] objectAtIndex:3];
+    
+    //Get Footer Text
+    NSString *footerText = [[command arguments] objectAtIndex:4];
+    
+    //Get Confirm Prompt Text
+    NSString *confirmPromptText = [[command arguments] objectAtIndex:5];
+    
+    //Get Callback ID
+    NSString* callbackId = [command callbackId];
+    
+    
+    DecorationPreference* dp = [[DecorationPreference alloc] initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont){
+        [dp enableDarkFont];
+    }else {
+        [dp enableLightFont];
+    }
+    
+    [MercadoPagoCheckout setDecorationPreference:dp];
+    
+    CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:customer.cards extraOptionTitle:footerText confirmPromptText: confirmPromptText];
+    [vm setTitleWithTitle:title];
+    
+    CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
+        
+        [self dissmissNavigationController];
+        
+        if (card != nil) {
+            [self sendCallback:[card toJSONString] callbackID:callbackId];
+        } else {
+            [self sendCallback:@"footerSelected" callbackID:callbackId];
+        }
+    }];
+    vc.callbackCancel = ^{
+       [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
+    
+    [self showInNavigationController:vc];
+}
+
+- (void) getCustomer:(CDVInvokedUrlCommand*)command {
+    
+    //Get Merchant Base Url
+    NSString *merchantBaseUrl = [[command arguments] objectAtIndex:0];
+    
+    //Get Merchant Get Customer Uri
+    NSString *merchantGetCustomerUri = [[command arguments] objectAtIndex:1];
+    
+    //Get Merchant Access Token
+    NSString *merchantAccessToken = [[command arguments] objectAtIndex:2];
+    
+    ServicePreference* servicePref = [[ServicePreference alloc] init];
+    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
+    [params setValue:merchantAccessToken forKey:@"merchant_access_token"];
+    [MercadoPagoContext setMerchantAccessTokenWithMerchantAT:merchantAccessToken];
+    [servicePref setGetCustomerWithBaseURL:merchantBaseUrl URI:merchantGetCustomerUri additionalInfo:params];
+    [MercadoPagoCheckout setServicePreference:servicePref];
+    
+    //Get CallbackID
+    NSString* callbackId = [command callbackId];
+    
+    //Get Customer
+    [MerchantServer getCustomer:^(Customer * customer) {
+        [self sendCallback:[customer toJSONString] callbackID:callbackId];
+    } failure:^(NSError * error) {
+        [self sendErrorCallback:error.description errorCallbackID:callbackId];
+    }];
+}
+
+-(void) startCardSelection:(CDVInvokedUrlCommand*)command {
+    [self showCardWithInstallments:command];
+}
+- (void)showCardWithInstallments:(CDVInvokedUrlCommand*)command {
+    
+    //Get Public Key
+    NSString *pk = [[command arguments] objectAtIndex:0];
+    
+    //Get Site ID
+   
+    NSString *siteID =  [self getSiteID:[[command arguments] objectAtIndex:1]];
+    
+    //Get Amount
+    double amount = [[[command arguments] objectAtIndex:2]doubleValue];
+    
+    //Get Merchant Base Url
+    NSString *merchantBaseUrl = [[command arguments] objectAtIndex:3];
+    
+    //Get Merchant Get Customer Uri
+    NSString *merchantGetCustomerUri = [[command arguments] objectAtIndex:4];
+    
+    //Get Merchant Access Token
+    NSString *merchantAccessToken = [[command arguments] objectAtIndex:5];
+    
+    //Get Decoration Preference Color
+    UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:6] alpha:1];
+    
+    //Get Black Font Bool Value
+    BOOL blackFont = [[[command arguments] objectAtIndex:7]boolValue];
+    
+    //Get Installments Enabled Bool Value
+    BOOL installmentsEnabled = [[[command arguments] objectAtIndex:8]boolValue];
+    
+    
+    //Get Payment Preference
+    NSData *data = [[[command arguments] objectAtIndex:9] dataUsingEncoding:NSUTF8StringEncoding];
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
+    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", /*@"debit_card",*/ @"prepaid_card", @"digital_currency", @"account_money", nil];
+    
+    if (!installmentsEnabled) {
+        [paymentPref setDefaultInstallments:1];
+        [paymentPref setMaxAcceptedInstallments:1];
+    }
+    
+    //Get Callback ID
+    NSString* callbackId = [command callbackId];
+    
+    
+    //Create Checkout Preference
+    Payer *payer = [[Payer alloc] initWith_id:@"payer_id" email:@"dummy@mail.com" type:nil identification:nil entityType:nil];
+    Item *item = [[Item alloc] initWith_id:@"item_id" title:@"item_title" quantity:1 unitPrice:amount description:nil currencyId:@"ARS"];
+    NSArray *items = [NSArray arrayWithObjects:item, nil];
+    
+    CheckoutPreference* pref = [[CheckoutPreference alloc] initWithItems:items payer:payer paymentMethods:paymentPref];
+    //--Create Checkout Preference
+    
+    //Checkout Customization Preferences
+    FlowPreference* fp = [[FlowPreference alloc]init];
+    [fp disableReviewAndConfirmScreen];
+    
+    DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont){
+        [dp enableDarkFont];
+    }else {
+        [dp enableLightFont];
+    }
+    
+    ServicePreference* sp = [[ServicePreference alloc]init];
+    NSDictionary *extraParams = @{@"merchant_access_token" : merchantAccessToken};
+    [sp setGetCustomerWithBaseURL:merchantBaseUrl URI:merchantGetCustomerUri additionalInfo:extraParams];
+    //--Checkout Customization Preferences
+    
+    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+
+    navCon = [[UINavigationController alloc]init];
+    
+    CardFormViewController.showBankDeals = NO;
+    
+    //Create and Start Checkout
+    MercadoPagoCheckout* cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:navCon paymentResult:nil];
+
+    cho.callbackCancel = ^{
+        [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
+    
+    [pref setSiteId:siteID];
+    [MercadoPagoCheckout setFlowPreference:fp];
+    [MercadoPagoCheckout setDecorationPreference:dp];
+
+    [rootViewController presentViewController:navCon animated:YES completion:^{[cho start];}];
+    //--Create and Start Checkout
+    [MercadoPagoCheckout setServicePreference:sp];
+    //Callback
+    [MercadoPagoCheckout setPaymentDataCallbackWithPaymentDataCallback:^(PaymentData * pd) {
+        [self dissmissNavigationController];
+        NSString *jsonPaymentMethod = [pd.paymentMethod toJSONString];
+        NSString *jsonToken = [pd.token toJSONString];
+        NSString *jsonPayerCost = [pd.payerCost toJSONString];
+        
+        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
+        [mpResponse setObject:jsonToken forKey:@"token"];
+        if (jsonPayerCost) {
+            [mpResponse setObject:jsonPayerCost forKey:@"payer_cost"];
+        }
+        if (pd.issuer != nil ){
+            NSString *jsonIssuer = [pd.issuer toJSONString];
+            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
+        }
+        if (pd.discount) {
+            NSString *jsonDiscount = [pd.discount toJSONString];
+            [mpResponse setObject:jsonDiscount forKey:@"discount"];
+        }
+        NSError * err;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
+        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        [self sendCallback:myString callbackID:callbackId];
+    }];
+    
+}
+
+- (void)showCardWithoutInstallments:(CDVInvokedUrlCommand*)command {
+    
+    //Get Public Key
+    NSString *pk = [[command arguments] objectAtIndex:0];
+    
+    //Get Decoration Preference Color
+    UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
+    
+    //Get Black Font Bool Value
+    BOOL blackFont = [[[command arguments] objectAtIndex:2]boolValue];
+    
+    //Get Payment Preference
+    NSData *data = [[[command arguments] objectAtIndex:4] dataUsingEncoding:NSUTF8StringEncoding];
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
+    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", /*@"debit_card",*/ @"prepaid_card", @"digital_currency", nil];
+    paymentPref.maxAcceptedInstallments = 1;
+    CardFormViewController.showBankDeals = NO;
+    //Get Callback ID
+    NSString* callbackId = [command callbackId];
+    
+    
+    //Create Checkout Preference
+    Payer *payer = [[Payer alloc] initWith_id:@"payer_id" email:@"payer_email" type:nil identification:nil entityType:nil];
+    Item *item = [[Item alloc] initWith_id:@"item_id" title:@"item_title" quantity:1 unitPrice:100 description:nil currencyId:@"ARS"];
+    NSArray *items = [NSArray arrayWithObjects:item, nil];
+    
+    CheckoutPreference* pref = [[CheckoutPreference alloc] initWithItems:items payer:payer paymentMethods:paymentPref];
+    //--Create Checkout Preference
+    
+    //Checkout Customization Preferences
+    FlowPreference* fp = [[FlowPreference alloc]init];
+    [fp disableReviewAndConfirmScreen];
+    [fp disableDiscount];
+    DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color fontName:nil fontLightName:nil];
+    if (blackFont){
+        [dp enableDarkFont];
+    }else {
+        [dp enableLightFont];
+    }
+    //--Checkout Customization Preferences
+    [MercadoPagoCheckout setServicePreference:[[ServicePreference alloc]init]];
+    navCon  = [[UINavigationController alloc]init];
+    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    
+    //Create and Start Checkout
+    self.cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:navCon paymentResult:nil];
+    [MercadoPagoCheckout setFlowPreference:fp];
+    [MercadoPagoCheckout setDecorationPreference:dp];
+    [cho start];
+    
+    self.cho.callbackCancel = ^{
+        [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
+    
+    [rootViewController presentViewController:navCon animated:YES completion:^{}];
+    //--Create and Start Checkout
+    
+    //Callback
+    [MercadoPagoCheckout setPaymentDataCallbackWithPaymentDataCallback:^(PaymentData * pd) {
+        
+      // [navCon dismissViewControllerAnimated:true completion:nil];
+        [self dissmissNavigationController];
+        NSString *jsonPaymentMethod = [pd.paymentMethod toJSONString];
+        NSString *jsonToken = [pd.token toJSONString];
+        
+        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
+        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
+        [mpResponse setObject:jsonToken forKey:@"token"];
+        
+        if (pd.issuer != nil ){
+            NSString *jsonIssuer = [pd.issuer toJSONString];
+            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
+        }
+        
+        NSError * err;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
+        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        [self sendCallback:myString callbackID:callbackId];
+    }];
+    //--Callback
+}
+
+- (void)showPaymentResult:(CDVInvokedUrlCommand*)command {
+    //Get Public Key
+    NSString *pk = [[command arguments] objectAtIndex:0];
+    
+    //Get Payment
+    NSData *data = [[[command arguments] objectAtIndex:1] dataUsingEncoding:NSUTF8StringEncoding];
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    Payment *payment = [Payment fromJSON:json];
+    
+    //Get Payment Method
+    data = [[[command arguments] objectAtIndex:2] dataUsingEncoding:NSUTF8StringEncoding];
+    json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    PaymentMethod *paymentMethod = [PaymentMethod fromJSON:json];
+    
+    //Get Callback ID
+    NSString* callbackId = [command callbackId];
+    
+    // Create PaymentData
+    PaymentData *paymentData = [PaymentData alloc];
+    
+    paymentData.paymentMethod = paymentMethod;
+    
+    Issuer *issuer = [[Issuer alloc] init];
+    NSNumber *issuerID = [NSNumber numberWithInteger:payment.issuerId];
+    issuer._id = issuerID;
+    paymentData.issuer = issuer;
+    
+    NSArray *labels = [[NSArray alloc] initWithObjects:@"labels", nil];
+    PayerCost *dummyPayerCost = [[PayerCost alloc] initWithInstallments:1 installmentRate:0 labels:labels minAllowedAmount:1 maxAllowedAmount:10000000 recommendedMessage:nil installmentAmount:payment.transactionAmount totalAmount:payment.transactionAmount];
+    dummyPayerCost.totalAmount = payment.transactionAmount;
+    paymentData.payerCost = dummyPayerCost;
+    
+    if (payment.card != nil) {
+        Token *token = [[Token alloc] initWith_id:payment.tokenId publicKey:pk cardId:nil luhnValidation:nil status:payment.status usedDate:nil cardNumberLength:payment.card.paymentMethod.settings[0].cardNumber.length creationDate:nil lastFourDigits:payment.card.lastFourDigits firstSixDigit:payment.card.firstSixDigits securityCodeLength:3 expirationMonth:payment.card.expirationMonth expirationYear:payment.card.expirationYear lastModifiedDate:payment.card.dateLastUpdated dueDate:nil cardHolder:payment.card.cardHolder];
+        paymentData.token = token;
+    } else {
+        paymentData.token = nil;
+    }
+    
+    paymentData.payer = payment.payer;
+    
+    paymentData.transactionDetails = payment.transactionDetails;
+    
+    if (payment.couponAmount == 0) {
+        paymentData.discount = nil;
+    } else {
+        DiscountCoupon *discount = [[DiscountCoupon alloc] init];
+        NSNumber *discountAmount = [NSNumber numberWithDouble:payment.couponAmount];
+        discount.amount = payment.transactionAmount;
+        discount.coupon_amount = [discountAmount stringValue];
+        discount.amount_off = [discountAmount stringValue];
+        
+        paymentData.discount = discount;
+    }
+    //--Create PaymentData
+    
+    PaymentResult *paymentResult = [[PaymentResult alloc] initWithPayment:payment paymentData:paymentData];
+    
+    Item *itemDummy = [[Item alloc] initWith_id:@"item_ID" title:@"item" quantity:1 unitPrice:payment.transactionAmount description:@"item_description" currencyId:payment.currencyId];
+    NSArray *items = [[NSArray alloc] initWithObjects:itemDummy, nil];
+    CheckoutPreference *pref = [[CheckoutPreference alloc] initWithItems:items payer:paymentData.payer paymentMethods:nil];
+    
+    PaymentResultScreenPreference* prPref = [[PaymentResultScreenPreference alloc] init];
+    
+    PaymentResultViewController* congratsViewController = [[PaymentResultViewController alloc] initWithPaymentResult:paymentResult checkoutPreference:pref paymentResultScreenPreference:prPref callback:^(enum CongratsState actionState) {
+        
+        [self dissmissNavigationController];
+        
+        NSString *responseMessage;
+        
+        if (actionState == CongratsStateCancel_SELECT_OTHER || actionState == CongratsStateCancel_RETRY || actionState == CongratsStateCancel_RECOVER) {
+            responseMessage = @"select_other_payment_method";
+        } else if (actionState == CongratsStateCall_FOR_AUTH) {
+            responseMessage = @"recover_payment";
+        } else {
+            responseMessage = @"continue";
+        }
+        
+        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
+        [mpResponse setObject:responseMessage forKey:@"nextAction"];
+        
+        NSError * err;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
+        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        [self sendCallback:myString callbackID:callbackId];
+        
+        
+    }];
+    
+    congratsViewController.callbackCancel = ^{
+        [self sendCallback:@"backPressed" callbackID:callbackId];
+        [self dissmissNavigationController];
+    };
+    
+    [self showInNavigationController:congratsViewController];
+    
+}
 - (void)setPaymentPreference:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = [command callbackId];
@@ -42,655 +453,22 @@
     pp.maxAcceptedInstallments = [[[command arguments] objectAtIndex:0]integerValue];
     pp.defaultInstallments =[[[command arguments] objectAtIndex:1]integerValue];
     
-    
-    CDVPluginResult* result = [CDVPluginResult
-                               resultWithStatus:CDVCommandStatus_OK
-                               messageAsString:[pp toJSONString]];
-    
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-}
-- (void)startCheckout:(CDVInvokedUrlCommand*)command
-{
-    NSString* callbackId = [command callbackId];
-    NSString* publicKey = [[command arguments] objectAtIndex:0];
-    NSString* prefId = [[command arguments] objectAtIndex:1];
-    
-    [MercadoPagoContext setPublicKey:publicKey];
-    
-    if ([[command arguments] objectAtIndex:2]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:3]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UINavigationController *choFlow =[MPFlowBuilder startCheckoutViewController:prefId callback:^(Payment *payment) {
-        NSString *mppayment = [payment toJSONString];
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString:mppayment];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    }callbackCancel:^{
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString:@"backPressed"];
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-    }];
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    [rootViewController presentViewController:choFlow animated:YES completion:^{}];
-    
-}
-- (void)getPaymentMethods:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    [MPServicesBuilder getPaymentMethods:^(NSArray<PaymentMethod *> *paymentMethods) {
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [self toString:paymentMethods]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError *error) {
-        
-    }];
-    
-}
-- (void)getIssuers:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    PaymentMethod *pm = [[PaymentMethod alloc]init];
-    pm._id = @"visa";
-    [MPServicesBuilder getIssuers:pm bin:nil success:^(NSArray<Issuer *> *issuers) {
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [self toString:issuers]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError *error) {
-        
-    }];
-    
-}
-- (void)getInstallments:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    Issuer *is = [[ Issuer alloc]init];
-    
-    is._id = [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:3]];
-    
-    [MPServicesBuilder getInstallments:[[command arguments] objectAtIndex:2] amount:[[[command arguments] objectAtIndex:4] doubleValue ]issuer:is paymentMethodId:[[command arguments] objectAtIndex:1] success:^(NSArray<Installment *> *installments) {
-        
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [self toString:installments]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError * error) {
-        
-    }];
-}
-- (void)getIdentificationTypes:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    
-    [MPServicesBuilder getIdentificationTypes:^(NSArray<IdentificationType *> * identificationTypes) {
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [self toString:identificationTypes]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError * error) {
-        
-    }];
-}
-- (void)createToken:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    NSInteger expy = [[[command arguments] objectAtIndex:3] integerValue];
-    NSInteger expm = [[[command arguments] objectAtIndex:2] integerValue];
-    
-    CardToken *cardToken =[[CardToken alloc]initWithCardNumber:[[command arguments] objectAtIndex:1] expirationMonth:expm expirationYear:expy securityCode:[[command arguments] objectAtIndex:4] cardholderName:[[command arguments] objectAtIndex:5] docType:[[command arguments] objectAtIndex:6] docNumber:[[command arguments] objectAtIndex:7]];
-    
-    [MPServicesBuilder createNewCardToken:cardToken success:^(Token * token) {
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [token toJSONString]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError * error) {
-        
-        NSLog(@"error: %@ \n",[error localizedDescription]);
-    }];
-}
-- (void)getBankDeals:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    [MPServicesBuilder getPromos:^(NSArray<Promo *> * promo) {
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [self toString:promo]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError * error) {
-        NSLog(@"error: %@ \n",[error localizedDescription]);
-    }];
-}
-- (void)getPaymentResult:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    int payment = [[[command arguments] objectAtIndex:1] intValue];
-    
-    [MPServicesBuilder getInstructions:payment paymentTypeId:@"ticket" success:^(InstructionsInfo * instruction) {
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [instruction toJSONString]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-    } failure:^(NSError * error) {
-        NSLog(@"error: %@ \n",[error localizedDescription]);
-    }];
-}
-- (void)createPayment:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    int quantity = [[[command arguments] objectAtIndex:2]intValue];
-    double price = [[[command arguments] objectAtIndex:3]doubleValue];
-    
-    Item *item = [[Item alloc]initWith_id:[[command arguments] objectAtIndex:1] title:nil quantity:quantity unitPrice:price description:nil];
-    
-    Issuer *is =[[ Issuer alloc]init];
-    is._id = [[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:10]];
-    
-    PaymentMethod *pm = [[PaymentMethod alloc]init];
-    pm._id = [[command arguments] objectAtIndex:8];
-    
-    [MercadoPagoContext setMerchantAccessToken:[[command arguments] objectAtIndex:5]];
-    
-    MerchantPayment *mp=[[MerchantPayment alloc]initWithItems:item installments:[[command arguments] objectAtIndex:9] cardIssuer:is tokenId:[[command arguments] objectAtIndex:11] paymentMethod:pm campaignId:[[command arguments] objectAtIndex:4]];
-    
-    [MPServicesBuilder createPayment:[[command arguments] objectAtIndex:6] merchantPaymentUri:[[command arguments] objectAtIndex:7] payment:mp success:^(Payment * payment) {
-        NSString *mppayment = [payment toJSONString];
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: mppayment];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-    } failure:^(NSError * error) {
-        NSLog(@"error: %@ \n",[error localizedDescription]);
-    }];
+    [self sendCallback:[pp toJSONString] callbackID:callbackId];
 }
 
-- (void)showPaymentVault:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    
-    NSString* callbackId = [command callbackId];
-    
-    [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
-    
-    if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:4]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
-    
-    if([[command arguments] objectAtIndex:6]!= (id)[NSNull null]){
-        NSData *data = [[[command arguments] objectAtIndex:6] dataUsingEncoding:NSUTF8StringEncoding];
-        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
-    }
-    
-    UINavigationController *paymentFlow = [MPFlowBuilder startPaymentVaultViewController:[[[command arguments] objectAtIndex:2]doubleValue] paymentPreference:paymentPreference callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
-        
-        NSString *jsonPaymentMethod = [paymentMethod toJSONString];
-        
-        
-        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
-        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
-        
-        
-        if (payerCost != nil && issuer != nil && token != nil){
-            NSString *jsonIssuer = [issuer toJSONString];
-            NSString *jsonPayerCost = [payerCost toJSONString];
-            NSString *jsonToken = [token toJSONString];
-            [mpResponse setObject:jsonToken forKey:@"token"];
-            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
-            [mpResponse setObject:jsonPayerCost forKey:@"payer_cost"];
-        }
-        
-        NSError * err;
-        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
-        NSString * mpJsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: mpJsonString];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-    }callbackCancel: nil];
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    [rootViewController presentViewController:paymentFlow animated:YES completion:^{}];
-}
-- (void)showCardWithInstallments:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
-    
-    if ([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:3] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:4]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
-    
-    if([[command arguments] objectAtIndex:6]!= (id)[NSNull null]){
-        NSData *data = [[[command arguments] objectAtIndex:6] dataUsingEncoding:NSUTF8StringEncoding];
-        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
-    }
-
-    UINavigationController *choFlow = [MPFlowBuilder startCardFlow:paymentPreference amount:[[[command arguments] objectAtIndex:2]doubleValue] cardInformation:nil paymentMethods:nil token:nil timer:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer, PayerCost * payerCost) {
-        
-        NSString *jsonPaymentMethod = [paymentMethod toJSONString];
-        NSString *jsonToken = [token toJSONString];
-        
-        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
-        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
-        [mpResponse setObject:jsonToken forKey:@"token"];
-        
-        if (payerCost != nil && issuer != nil ){
-            NSString *jsonIssuer = [issuer toJSONString];
-            NSString *jsonPayerCost = [payerCost toJSONString];
-            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
-            [mpResponse setObject:jsonPayerCost forKey:@"payer_cost"];
-        }
-        
-        NSError * err;
-        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
-        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: myString];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-        
-    } callbackCancel:^{
-
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString:@"backPressed"];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    
-    
-    [rootViewController presentViewController:choFlow animated:YES completion:^{}];
-}
-- (void)showCardWithoutInstallments:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:2]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
-    
-    if([[command arguments] objectAtIndex:4]!= (id)[NSNull null]){
-        NSData *data = [[[command arguments] objectAtIndex:4] dataUsingEncoding:NSUTF8StringEncoding];
-        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
-    }
-    UINavigationController *choFlow = [MPStepBuilder startCreditCardForm:paymentPreference amount:100.0 cardInformation:nil paymentMethods:nil token:nil timer:nil callback:^(PaymentMethod * paymentMethod, Token * token, Issuer * issuer) {
-        
-        NSString *jsonPaymentMethod = [paymentMethod toJSONString];
-        NSString *jsonToken = [token toJSONString];
-        
-        NSMutableDictionary *mpResponse = [[NSMutableDictionary alloc] init];
-        [mpResponse setObject:jsonPaymentMethod forKey:@"payment_method"];
-        [mpResponse setObject:jsonToken forKey:@"token"];
-        
-        if (issuer != nil ){
-            NSString *jsonIssuer = [issuer toJSONString];
-            [mpResponse setObject:jsonIssuer forKey:@"issuer"];
-        }
-        
-        NSError * err;
-        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:mpResponse options:0 error:&err];
-        NSString * myString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: myString];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-        
-    } callbackCancel:^{
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString:@"backPressed"];
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    
-    [rootViewController presentViewController:choFlow animated:YES completion:^{}];
-}
-- (void)showPaymentMethods:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:2]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    if ([[command arguments] objectAtIndex:3] != (id)[NSNull null]){
-        
-        PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
-        
-        if([[command arguments] objectAtIndex:3]!= (id)[NSNull null]){
-            NSData *data = [[[command arguments] objectAtIndex:3] dataUsingEncoding:NSUTF8StringEncoding];
-            id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
-        }
-        
-        MercadoPagoUIViewController *viewPaymentMethods = [MPStepBuilder startPaymentMethodsStepWithPreference:paymentPreference callback:^(PaymentMethod *paymentMethod) {
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString: [paymentMethod toJSONString]];
-            
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-            [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-            
-            
-        }];
-        [viewPaymentMethods setCallbackCancel:^{
-                CDVPluginResult* result = [CDVPluginResult
-                                           resultWithStatus:CDVCommandStatus_OK
-                                           messageAsString:@"backPressed"];
-                [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-            [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-        }];
-        [self showInNavigationController:viewPaymentMethods];
-        
-    } else {
-        PaymentMethodsViewController *viewPaymentMethods = [MPStepBuilder startPaymentMethodsStepWithPreference:nil callback:^(PaymentMethod *paymentMethod) {
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString: [paymentMethod toJSONString]];
-            
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-            [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-            
-            
-        }];
-        [viewPaymentMethods setCallbackCancel:^{
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString:@"backPressed"];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-            [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-        }];
-        [self showInNavigationController:viewPaymentMethods];
-    }
-}
-- (void)showIssuers:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    if ([[command arguments] objectAtIndex:2]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:2] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:3]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-        
-    } else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    PaymentMethod *pm = [[PaymentMethod alloc]init];
-    pm._id = [[command arguments] objectAtIndex:1];
-    
-    
-    MercadoPagoUIViewController *viewIssuers = [MPStepBuilder startIssuersStep:pm callback:^(Issuer * issuer){
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [issuer toJSONString]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-        
-    }];
-    [viewIssuers setCallbackCancel:^{
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString:@"backPressed"];
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    
-    [self showInNavigationController:viewIssuers];
-}
-- (void)showInstallments:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    [MercadoPagoContext setSiteID:[self getSiteID:[[command arguments] objectAtIndex:1]]];
-    
-    if ([[command arguments] objectAtIndex:5]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:5] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:6]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    Issuer *issuer =[[Issuer alloc]init];
-    issuer._id=[[NSNumber alloc] initWithInt:[[command arguments] objectAtIndex:4]];
-    
-    PaymentPreference *paymentPreference = [[PaymentPreference alloc]init];
-    
-    if([[command arguments] objectAtIndex:7]!= (id)[NSNull null]){
-        NSData *data = [[[command arguments] objectAtIndex:7] dataUsingEncoding:NSUTF8StringEncoding];
-        id paymentPrefJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        paymentPreference = [PaymentPreference fromJSON:paymentPrefJson];
-    }
-    
-    MercadoPagoUIViewController *navInstallments = [MPStepBuilder startInstallmentsStep:nil paymentPreference:paymentPreference amount:[[[command arguments] objectAtIndex:2]doubleValue] issuer:issuer paymentMethodId:[[command arguments] objectAtIndex:3] callback:^(PayerCost * payerCost) {
-        
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString: [payerCost toJSONString]];
-        
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    [navInstallments setCallbackCancel:^{
-        CDVPluginResult* result = [CDVPluginResult
-                                   resultWithStatus:CDVCommandStatus_OK
-                                   messageAsString:@"backPressed"];
-        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    
-    
-    [self showInNavigationController:navInstallments];
-}
-
-- (void)showBankDeals:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    if ([[command arguments] objectAtIndex:1]!= (id)[NSNull null]){
-        UIColor *color = [UIColor colorwithHexString:[[command arguments] objectAtIndex:1] alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    } else {
-        UIColor *color = [UIColor colorwithHexString:MERCADO_PAGO_BASE_COLOR alpha:1];
-        [MercadoPagoContext setupPrimaryColor:color complementaryColor:nil];
-    }
-    if ([[[command arguments] objectAtIndex:2]boolValue]){
-        [MercadoPagoContext setDarkTextColor];
-    }else {
-        [MercadoPagoContext setLightTextColor];
-    }
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    UIViewController *promo = [MPStepBuilder startPromosStep:^{
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    
-    [self showInNavigationController:promo];
-}
-- (void)showPaymentResult:(CDVInvokedUrlCommand*)command
-{
-    [MercadoPagoContext setPublicKey:[[command arguments] objectAtIndex:0]];
-    NSString* callbackId = [command callbackId];
-    
-    
-    UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    
-    NSData *data = [[[command arguments] objectAtIndex:1] dataUsingEncoding:NSUTF8StringEncoding];
-    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    
-    Payment *payment = [Payment fromJSON:json];
-    data = [[[command arguments] objectAtIndex:2] dataUsingEncoding:NSUTF8StringEncoding];
-    json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentMethod *paymentMethod = [PaymentMethod fromJSON:json];
-    
-    UINavigationController *navPaymentResult = [MPStepBuilder startPaymentResultStep:payment paymentMethod:paymentMethod callback:^(Payment * _Nonnull payment, enum CongratsState status) {
-        
-        if (status == (CongratsState) CongratsStateOk){
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString:@"{\"nextAction\":\"continue\"}"];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        } else if (status == (CongratsState) CongratsStateCancel_SELECT_OTHER){
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString:@"{\"nextAction\":\"select_other_payment_method123\"}"];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        } else {
-            CDVPluginResult* result = [CDVPluginResult
-                                       resultWithStatus:CDVCommandStatus_OK
-                                       messageAsString:@"{\"nextAction\":\"recover_payment\"}"];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-        }
-    
-
-        [rootViewController dismissViewControllerAnimated:YES completion:^{}];
-    }];
-    
-    [rootViewController presentViewController:navPaymentResult animated:YES completion:^{}];
-}
+UINavigationController *navCon = nil;
 
 -(void) showInNavigationController:(UIViewController *)viewControllerBase{
     
-    UINavigationController *navCon = [[UINavigationController alloc]initWithRootViewController:viewControllerBase];
+    navCon = [[UINavigationController alloc]initWithRootViewController:viewControllerBase];
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     [rootViewController presentViewController:navCon animated:YES completion:^{}];
-    
 }
+
+-(void) dissmissNavigationController{
+    [navCon dismissViewControllerAnimated:true completion:^{}];
+}
+
 -(NSString *)toString:(NSArray*)array{
     NSString* json= @"[";
     
@@ -702,6 +480,7 @@
     json = [json stringByAppendingString: @"]"];
     return json;
 }
+
 -(NSString *)getSiteID:(NSString*)site{
     if ([[site uppercaseString] isEqual: @"ARGENTINA"]){
         return @"MLA";
@@ -719,4 +498,5 @@
         return @"MLV";
     }
 }
+
 @end
