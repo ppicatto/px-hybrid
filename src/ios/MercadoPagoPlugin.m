@@ -168,10 +168,8 @@
     
     
     //Get Payment Preference
-    NSData *data = [[[command arguments] objectAtIndex:9] dataUsingEncoding:NSUTF8StringEncoding];
-    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
-    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", /*@"debit_card",*/ @"prepaid_card", @"digital_currency", @"account_money", nil];
+    PaymentPreference *paymentPref = [[PaymentPreference alloc]init];
+    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", @"prepaid_card", @"digital_currency", @"account_money", nil];
     
     if (!installmentsEnabled) {
         [paymentPref setDefaultInstallments:1];
@@ -269,10 +267,8 @@
     BOOL blackFont = [[[command arguments] objectAtIndex:2]boolValue];
     
     //Get Payment Preference
-    NSData *data = [[[command arguments] objectAtIndex:4] dataUsingEncoding:NSUTF8StringEncoding];
-    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    PaymentPreference *paymentPref = [PaymentPreference fromJSON:json];
-    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", /*@"debit_card",*/ @"prepaid_card", @"digital_currency", nil];
+    PaymentPreference *paymentPref = [[PaymentPreference alloc] init];
+    paymentPref.excludedPaymentTypeIds = [NSSet setWithObjects:@"atm", @"ticket", @"bank_transfer", @"prepaid_card", @"digital_currency", nil];
     paymentPref.maxAcceptedInstallments = 1;
     CardFormViewController.showBankDeals = NO;
     //Get Callback ID
