@@ -74,7 +74,7 @@
     NSString* callbackId = [command callbackId];
     
     
-    DecorationPreference* dp = [[DecorationPreference alloc] initWithBaseColor:color fontName:nil fontLightName:nil];
+    DecorationPreference* dp = [[DecorationPreference alloc] initWithBaseColor:color];
     if (blackFont){
         [dp enableDarkFont];
     }else {
@@ -84,7 +84,7 @@
     [MercadoPagoCheckout setDecorationPreference:dp];
     
     CardsAdminViewModel* vm = [[CardsAdminViewModel alloc] initWithCards:customer.cards extraOptionTitle:footerText confirmPromptText: confirmPromptText];
-    [vm setTitleWithTitle:title];
+    [vm setScreenTitleWithTitle:title];
     
     CardsAdminViewController* vc = [[CardsAdminViewController alloc] initWithViewModel:vm callback:^(Card * card) {
         
@@ -192,7 +192,7 @@
     FlowPreference* fp = [[FlowPreference alloc]init];
     [fp disableReviewAndConfirmScreen];
     
-    DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color fontName:nil fontLightName:nil];
+    DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color];
     if (blackFont){
         [dp enableDarkFont];
     }else {
@@ -211,7 +211,7 @@
     CardFormViewController.showBankDeals = NO;
     
     //Create and Start Checkout
-    MercadoPagoCheckout* cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:navCon paymentResult:nil];
+    MercadoPagoCheckout* cho = [[MercadoPagoCheckout alloc] initWithPublicKey:pk checkoutPreference:pref discount:nil navigationController:navCon];
 
     cho.callbackCancel = ^{
         [self sendCallback:@"backPressed" callbackID:callbackId];
@@ -287,7 +287,7 @@
     FlowPreference* fp = [[FlowPreference alloc]init];
     [fp disableReviewAndConfirmScreen];
     [fp disableDiscount];
-    DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color fontName:nil fontLightName:nil];
+    DecorationPreference* dp = [[DecorationPreference alloc]initWithBaseColor:color];
     if (blackFont){
         [dp enableDarkFont];
     }else {
@@ -299,7 +299,7 @@
     UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     
     //Create and Start Checkout
-    self.cho = [[MercadoPagoCheckout alloc] initWithPublicKey: pk accessToken: nil checkoutPreference:pref paymentData:nil discount:nil navigationController:navCon paymentResult:nil];
+    self.cho = [[MercadoPagoCheckout alloc] initWithPublicKey:pk checkoutPreference:pref discount:nil navigationController:navCon];
     [MercadoPagoCheckout setFlowPreference:fp];
     [MercadoPagoCheckout setDecorationPreference:dp];
     [cho start];
@@ -361,8 +361,7 @@
     paymentData.paymentMethod = paymentMethod;
     
     Issuer *issuer = [[Issuer alloc] init];
-    NSNumber *issuerID = [NSNumber numberWithInteger:payment.issuerId];
-    issuer._id = issuerID;
+    issuer._id = [NSString stringWithFormat:@"%ld",(long)payment.issuerId];
     paymentData.issuer = issuer;
     
     NSArray *labels = [[NSArray alloc] initWithObjects:@"labels", nil];
