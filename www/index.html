@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+            <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+                <title></title>
+                
+                <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+                    <link href="css/style.css" rel="stylesheet">
+                        
+                        <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+                         <link href="css/ionic.app.css" rel="stylesheet">
+                         -->
+                        
+                        <!-- ionic/angularjs js -->
+                        <script src="lib/ionic/js/ionic.bundle.js"></script>
+                        
+                        <script src="cordova.js"></script>
+                        
+                        <!-- your app's js -->
+                        <script src="js/app.js"></script>
+                        </head>
+    <body ng-app="starter" ng-controller="StarterCtrl" class="platform-ios platform-cordova platform-webview">
+        
+        <ion-pane>
+            <ion-header-bar class="bar-stable">
+                <h1 class="title">Integración TaxiBA</h1>
+            </ion-header-bar>
+            <ion-content>
+                <br>
+
+                <h4 class="title"><center>Agregar y borrar tarjetas</h4></center>
+
+                <button class="yellowButton button-block" on-touch="getCustomer()">
+                    Get Customer
+                </button>
+                <br>
+                <button class="yellowButton button-block" on-touch="startConnect()">
+                    Connect
+                </button>
+                <br>
+                <br>
+                <button class="yellowButton button-block" ng-click="startSavedCards()">
+                    Administrador de tarjetas (Customer con cards)
+                </button>
+                <br>
+                <button class="yellowButton button-block" ng-click="startSavedCardsSinCards()">
+                    Administrador de tarjetas (Customer sin cards)
+                </button>
+                <br>
+                <button class="yellowButton button-block" on-touch="cardAdminFlow()">
+                    Flujo administrador de tarjetas
+                </button>
+                <br>
+                <br>
+                <h4 class="title"><center>Flujo de componente de Tarjeta</h4></center>
+                <button class="yellowButton button-block" ng-click="showCardWithoutInstallments()">
+                    Tarjeta Sin Cuotas
+                </button>
+                <br>
+                <button class="yellowButton button-block" ng-click="startCardSelection()">
+                    Start Card Selection
+                </button>
+                <br>
+                <br>
+                <h4 class="title"><center>Resultado de Pago</h4></center>
+                <button class="yellowButton button-block" ng-click="showPaymentResultApproved()">
+                    Resultado de Pago Aprobado
+                </button>
+                <br>
+                <button class="yellowButton button-block" ng-click="showPaymentResultRejected()">
+                    Resultado de Pago Rechazado
+                </button>
+
+                <br>
+
+            </ion-content>
+        </ion-pane>
+    </body>
+</html>

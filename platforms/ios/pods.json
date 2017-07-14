@@ -1,0 +1,8 @@
+{
+    "MercadoPagoSDK": {
+        "name": "MercadoPagoSDK",
+        "type": "podspec",
+        "spec": "3.0.0-BETA-39",
+        "count": 1
+    }
+}

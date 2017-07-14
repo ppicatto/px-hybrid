@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="tracking-1.2.3">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/com.mercadopago/tracking/1.2.3/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/com.mercadopago/tracking/1.2.3/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mercadopago/tracking/1.2.3/ee90738a9b5843dbb02711d9e4bbc4afb334fd0b/tracking-1.2.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

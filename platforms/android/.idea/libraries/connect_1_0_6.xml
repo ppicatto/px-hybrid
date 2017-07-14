@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="connect-1.0.6">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/com.mercadopago/connect/1.0.6/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/com.mercadopago/connect/1.0.6/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mercadopago/connect/1.0.6/d2c90179312e69ca020f5d1e0da8288e0f6c9e45/connect-1.0.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
